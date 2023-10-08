@@ -17,16 +17,18 @@ export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService
-  ) {}
+  ) {}    
 
   //-----------------------구글 로그인-----------------------------//
   @Get("/user/login/google")
+  // @Get("/auth/google/callback")
   @UseGuards(AuthGuard("google"))
   async loginGoogle(
-    @Req() req: Request & IOAuthUser,
-    @Res() res: Response
+    // @Req() req: Request & IOAuthUser,
+    // @Res() res: Response
   ) {
-    this.authService.OAuthLogin({ req, res });
+    console.log(1)
+    return await this.authService.OAuthLogin({ });
   }
 
   //-----------------------카카오 로그인-----------------------------//
@@ -36,7 +38,8 @@ export class AuthController {
     @Req() req: Request & IOAuthUser, 
     @Res() res: Response
   ) {
-    this.authService.OAuthLogin({ req, res });
+    console.log(11111111111)
+    await this.authService.OAuthLogin({ req, res });
   }
 
   //-----------------------네이버 로그인-----------------------------//
@@ -46,7 +49,7 @@ export class AuthController {
     @Req() req: Request & IOAuthUser,
     @Res() res: Response
   ) {
-    this.authService.OAuthLogin({ req, res });
+    await this.authService.OAuthLogin({ req, res });
   }
 
   @Get("favicon.ico")

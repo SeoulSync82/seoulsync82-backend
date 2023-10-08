@@ -10,11 +10,13 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConfigService } from './config/config.service';
+import Joi from 'joi';
+import { JwtAccessStrategy } from './commons/auth/jwt-access.strategy';
+import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-    name: 'SeoulSync82_local',
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
@@ -26,7 +28,6 @@ import { ConfigService } from './config/config.service';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         entities: [__dirname + '/entities/**.entity{.ts,.js}'],
-        //entities: ['dist/modules/scheduler/**.entity{.ts,.js}'],
         logging: true,
         synchronize: false,
         keepConnectionAlive: true,

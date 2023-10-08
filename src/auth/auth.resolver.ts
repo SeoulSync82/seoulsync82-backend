@@ -1,5 +1,4 @@
 import {
-  CACHE_MANAGER,
   Inject,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -16,6 +15,7 @@ import { UserService } from '../user/user.service';
 import * as jwt from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
 import { IContext } from 'src/commons/type/context';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Resolver()
 export class AuthResolver {
@@ -94,5 +94,5 @@ export class AuthResolver {
   //   }
 
   //   return '로그아웃에 성공하였습니다.';
-  // }
+  // // }
 }

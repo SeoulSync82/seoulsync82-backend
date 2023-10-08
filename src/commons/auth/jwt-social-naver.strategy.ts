@@ -1,12 +1,15 @@
+import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-naver";
+import { ConfigService } from "src/config/config.service";
 
+@Injectable()
 export class JwtNaverStrategy extends PassportStrategy(Strategy, "naver") {
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     super({
-      clientID: process.env.NAVER_CLIENT_ID,
-      clientSecret: process.env.NAVER_CLIENT_SECRET,
-      callbackURL: process.env.NAVER_CALLBACK_URL,
+      clientID: configService.get('NAVER_ID'), //.env파일에 들어있음
+      clientSecret: configService.get('NAVER_SECRET'), //.env파일에 들어있음
+      callbackURL: 'http://localhost:3456/auth/naver/callback', //.env파일에 들어있음
     });
   }
 

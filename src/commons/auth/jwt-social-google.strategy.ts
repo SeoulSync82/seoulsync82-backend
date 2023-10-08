@@ -1,19 +1,24 @@
+import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-google-oauth20";
+import { ConfigService } from "src/config/config.service";
 
+@Injectable()
 export class JwtGoogleStrategy extends PassportStrategy(Strategy, "google") {
   //UseGuards의 이름과 동일해야함
-  constructor() {
-    //constructor에서 성공하면 아래의 validate로 넘겨주고, 만약 실패하면 멈춰지고 에러 반환
+  constructor(private readonly configService: ConfigService) {
+    // console.log(configService)
+    console.log(33333333333333333333333)
     super({
       //자식의 constructor를 부모의 constructor에 넘기는 방법은 super를 사용하면 된다.
-      clientID: process.env.GOOGLE_CLIENT_ID, //.env파일에 들어있음
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET, //.env파일에 들어있음
-      callbackURL: process.env.GOOGLE_CALLBACK_URL, //.env파일에 들어있음
+      clientID: configService.get('GOOGLE_ID'), //.env파일에 들어있음
+      clientSecret: configService.get('GOOGLE_SECRET'), //.env파일에 들어있음
+      callbackURL: 'http://localhost:3456/auth/google/callback', //.env파일에 들어있음
       scope: ["email", "profile"],
     });
+    console.log(33333333333333333333333)
   }
-
+  
   validate(accessToken, refreshToken, profile) {
     // console.log(accessToken);
     // console.log(refreshToken);

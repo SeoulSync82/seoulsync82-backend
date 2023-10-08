@@ -6,6 +6,10 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
+import * as dotenv from 'dotenv';
+// dotenv.config();
+// console.log(process.env);
+// console.log("GOOGLE_ID: ", process.env.DB_USERNAME);  
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -33,6 +37,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
+  
   await app.listen(3456);
 }
 bootstrap();

@@ -14,7 +14,7 @@ export class AuthService {
     ) {}
 
     
-  async OAuthLogin({ req, res }) {
+  async OAuthLogin({ }) {
     // 1. 회원조회
     // let user = await this.userService.findOne({ email: req.user.email }); //user를 찾아서
 
@@ -24,5 +24,6 @@ export class AuthService {
     // // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
     // this.setRefreshToken({ user, res });
     // res.redirect("리다이렉트할 url주소");
+    return 1
   }
 }

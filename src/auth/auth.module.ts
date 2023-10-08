@@ -11,13 +11,18 @@ import { JwtKakaoStrategy } from "src/commons/auth/jwt-social-kakao.strategy";
 import { UserService } from "src/user/user.service";
 import { UserEntity } from "src/entites/user.entity";
 import { JwtAccessStrategy } from "src/commons/auth/jwt-access.strategy";
+import { ConfigModule } from "src/config/config.module";
+import { ConfigService } from "src/config/config.service";
+import { CacheModule } from "@nestjs/cache-manager";
 
 @Module({
   imports: [
+    ConfigModule,
     JwtModule.register({}),
     TypeOrmModule.forFeature([
       UserEntity, //
     ]),
+    CacheModule.register(),
   ],
   providers: [
     JwtAccessStrategy, //accessToken
