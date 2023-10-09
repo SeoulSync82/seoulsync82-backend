@@ -1,26 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "src/config/config.service";
 import { UserService } from "src/user/user.service";
-import { GoogleLoginAuthOutputDto } from "./dto/google-login-auth.dto";
-import { ValidateAuthInputDto, ValidateAuthOutputDto } from "./dto/validate-auth.dto";
-import { Request, Response } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { Provider } from "src/entites/user.entity";
-import { UserQueryRepository } from "src/user/user.query.repository";
-import { GoogleRequest } from "./interfaces/auth.interface";
+import {
+  IAuthServiceGetAccessToken,
+  IAuthServiceSetRefreshToken,
+} from "src/auth/interfaces/auth-service.interface";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,  
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    private readonly userQueryRepository: UserQueryRepository,
     ) {}
 
     
-  async OAuthLogin({ }) {
+  async OAuthLogin({ req, res }) {
     // 1. 회원조회
     // let user = await this.userService.findOne({ email: req.user.email }); //user를 찾아서
 
@@ -30,68 +24,5 @@ export class AuthService {
     // // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
     // this.setRefreshToken({ user, res });
     // res.redirect("리다이렉트할 url주소");
-    return 1
-  }
-
-  async validateUser(validateAuthInputDto: ValidateAuthInputDto) {
-    try {
-      const { email } = validateAuthInputDto;
-      const user = await this.userService.getUser({ email });
-      if (!user) return { ok: false, error: '존재하지 않는 이메일 계정입니다.' };
-      return { ok: true, data: user };
-    } catch (error) {
-      return { ok: false, error: '로그인 인증에 실패하였습니다.' };
-    }
-  }
-
-  async googleLogin(req: GoogleRequest,
-    res: Response,
-    // googleLoginAuthInputDto,
-  ): Promise<GoogleLoginAuthOutputDto> {
-    try {
-      // const { email, firstName, lastName, photo } = googleLoginAuthInputDto;
-      const {
-        user: { email, firstName, lastName, photo },
-      } = req;
-
-      // 유저 중복 검사
-      const findUser = await this.userQueryRepository.findOneOrCreate(
-        { email },
-        // { email, firstName, lastName, photo, provider: Provider.Google },
-      );
-      if (findUser && findUser.provider !== Provider.Google) {
-        return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
-      }
-
-      // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
-      const findUserPayload = { id: findUser.id };
-      const accessToken = jwt.sign(findUserPayload, this.configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'), {
-        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
-      });
-      const refreshToken = jwt.sign({}, this.configService.get('JWT_REFRESH_TOKEN_SECRET_KEY'), {
-        expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
-        audience: String(findUser.id),
-      });
-
-      /* refreshToken 필드 업데이트 */
-      // findUser.refreshToken = refreshToken;
-      // await this.userRepository.save(findUser);
-
-      // 쿠키 설정
-      const now = new Date();
-      now.setDate(now.getDate() + +this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
-      res.cookie('refreshToken', refreshToken, {
-        expires: now,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      });
-      return {
-        ok: true,
-        accessToken,
-      };
-    } catch (error) {
-      return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
-    }
   }
 }
