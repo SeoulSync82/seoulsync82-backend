@@ -40,8 +40,13 @@ export class AuthController {
     @Req() req: GoogleRequest,
     // @Res({ passthrough: true }) res: Response,
     @Res() res: Response,
-  ): Promise<GoogleLoginAuthOutputDto> {
+  )
+  // : Promise<GoogleLoginAuthOutputDto> 
+  {
     console.log(23231223123123332)
-    return this.authService.googleLogin(req, res);
+    const { user } = req;
+    // res.redirect('http://localhost:3000/auth/test-guard2');
+    return res.send(user);
+    // return this.authService.googleLogin(req, res);
   }
 }
