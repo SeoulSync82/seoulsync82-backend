@@ -1,9 +1,23 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
+
+export enum Provider {
+  Local,
+  Google,
+}
 @Entity({ name: 'user' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  @IsString()
+  public photo?: string;
+
+  @Column({ type: 'enum', enum: Provider, default: Provider.Local })
+  public provider: Provider;
 
   @Column()
   uuid: string;
