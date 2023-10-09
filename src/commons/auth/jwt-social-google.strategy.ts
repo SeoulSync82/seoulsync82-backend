@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport-google-oauth20";
+import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
 import { ConfigService } from "src/config/config.service";
 
 @Injectable()
-export class JwtGoogleStrategy extends PassportStrategy(Strategy, "google") {
+export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   //UseGuards의 이름과 동일해야함
   constructor(private readonly configService: ConfigService) {
     // console.log(configService)
@@ -19,15 +19,26 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, "google") {
     console.log(33333333333333333333333)
   }
   
-  validate(accessToken, refreshToken, profile) {
-    // console.log(accessToken);
-    // console.log(refreshToken);
-    // console.log(profile);
-
+  authorizationParams(): { [key: string]: string } {
     return {
-      name: profile.displayName,
-      email: profile.emails[0].value,
-      hashedPassword: "1234",
+      access_type: 'offline',
+      prompt: 'consent',
     };
+  }
+
+  async validate(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) {
+   console.log('success')
+    try {
+      const { name, emails, photos } = profile;
+      const user = {
+        email: emails[0].value,
+        firstName: name.familyName,
+        lastName: name.givenName,
+        photo: photos[0].value,
+      };
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
   }
 }

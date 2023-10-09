@@ -1,16 +1,11 @@
 import { Controller, Get, Req, Res, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Request, Response } from "express";
+import { GoogleAuthGuard } from "src/commons/auth/google-auth.guard";
 import { UserService } from "src/user/user.service";
 import { AuthService } from "./auth.service";
-
-interface IOAuthUser {
-  user: {
-    name: string;
-    email: string;
-    password: string;
-  };
-}
+import { GoogleLoginAuthOutputDto } from "./dto/google-login-auth.dto";
+import { GoogleRequest } from "./interfaces/auth.interface";
 
 @Controller()
 export class AuthController {
@@ -20,43 +15,33 @@ export class AuthController {
   ) {}    
 
   //-----------------------구글 로그인-----------------------------//
+  // @Get("/user/login/google")
+  // // @Get("/auth/google/callback")
+  // @UseGuards(AuthGuard("google"))
+  // async loginGoogle(
+  //   // @Req() req: Request & IOAuthUser,
+  //   // @Res() res: Response
+  // ) {
+  //   console.log(1)
+  //   return await this.authService.OAuthLogin({ });
+  // }
+
+
   @Get("/user/login/google")
-  // @Get("/auth/google/callback")
-  @UseGuards(AuthGuard("google"))
-  async loginGoogle(
-    // @Req() req: Request & IOAuthUser,
-    // @Res() res: Response
-  ) {
-    console.log(1)
-    return await this.authService.OAuthLogin({ });
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth(@Req() _req: Request) {
+    console.log(232332)
   }
 
-  //-----------------------카카오 로그인-----------------------------//
-  @Get("/user/login/kakao")
-  @UseGuards(AuthGuard("kakao"))
-  async loginKakao(
-    @Req() req: Request & IOAuthUser, 
-    @Res() res: Response
-  ) {
-    console.log(11111111111)
-    await this.authService.OAuthLogin({ req, res });
-  }
-
-  //-----------------------네이버 로그인-----------------------------//
-  @Get("/user/login/naver")
-  @UseGuards(AuthGuard("naver"))
-  async loginNaver(
-    @Req() req: Request & IOAuthUser,
-    @Res() res: Response
-  ) {
-    await this.authService.OAuthLogin({ req, res });
-  }
-
-  @Get("favicon.ico")
-  favicon(
-    @Req() req: Request & IOAuthUser, //
-    @Res() res: Response
-  ) {
-    res.status(204).end();
+  /* Get Google Auth Callback */
+  @Get('/auth/google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthCallback(
+    @Req() req: GoogleRequest,
+    // @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
+  ): Promise<GoogleLoginAuthOutputDto> {
+    console.log(23231223123123332)
+    return this.authService.googleLogin(req, res);
   }
 }

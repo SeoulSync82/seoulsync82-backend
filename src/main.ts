@@ -23,6 +23,7 @@ async function bootstrap() {
           : ['error', 'warn', 'log', 'verbose', 'debug'],
     },
   );
+  console.log("서버시작후")
   const configService = app.get(ConfigService);
   
   const config = new DocumentBuilder()
@@ -37,7 +38,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  
+  console.log('listen')
   await app.listen(3456);
 }
 bootstrap();
