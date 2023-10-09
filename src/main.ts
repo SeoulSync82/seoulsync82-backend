@@ -1,31 +1,21 @@
 import { NestFactory } from '@nestjs/core';
-import {
-  NestFastifyApplication,
-  FastifyAdapter,
-} from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
 import * as dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
-// console.log("GOOGLE_ID: ", process.env.DB_USERNAME);  
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({ logger: false }),
-    {
-      forceCloseConnections: false,
-      logger:
-        process.env.NODE_ENV === 'production'
-          ? ['error', 'warn', 'log', 'debug']
-          : ['error', 'warn', 'log', 'verbose', 'debug'],
-    },
-  );
-  console.log("서버시작후")
+  const app = await NestFactory.create(AppModule, {
+    logger:
+      process.env.NODE_ENV === 'production'
+        ? ['error', 'warn', 'log', 'debug']
+        : ['error', 'warn', 'log', 'verbose', 'debug'],
+  });
+
   const configService = app.get(ConfigService);
-  
+
   const config = new DocumentBuilder()
     .setTitle('SeoulSync82')
     .setDescription('The SeoulSync82 API description')
@@ -36,9 +26,11 @@ async function bootstrap() {
       'access-token',
     )
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  console.log('listen')
+
   await app.listen(3456);
 }
+
 bootstrap();
