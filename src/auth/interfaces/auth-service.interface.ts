@@ -1,13 +1,13 @@
-// import { Response, Request } from 'express';
-// import { IAuthUser } from 'src/commons/type/context';
-// import { UserEntity } from 'src/entites/user.entity';
+import { Response, Request } from 'express';
+import { IAuthUser } from 'src/commons/type/context';
+import { UserEntity } from 'src/entites/user.entity';
 
-// export interface IAuthServiceGetAccessToken {
-//   user: UserEntity | IAuthUser['user'];
-// }
+export interface IAuthServiceGetAccessToken {
+  user: UserEntity | IAuthUser['user'];
+}
 
-// export interface IAuthServiceSetRefreshToken {
-//   user: UserEntity;
-//   res: Response;
-//   req: Request;
-// }
+export interface IAuthServiceSetRefreshToken {
+  user: UserEntity;
+  res: Response;
+  req: Request;
+}
