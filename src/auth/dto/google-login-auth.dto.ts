@@ -1,4 +1,3 @@
-
 import { IsOptional, IsString } from 'class-validator';
 import { PickType } from '@nestjs/mapped-types';
 import { CoreOutput } from 'src/commons/dtos/core.dto';

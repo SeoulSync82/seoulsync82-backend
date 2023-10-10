@@ -1,10 +1,10 @@
-import { ConsoleLogger, Injectable } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { Profile, Strategy } from "passport-kakao";
-import { ConfigService } from "src/config/config.service";
+import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { Profile, Strategy } from 'passport-kakao';
+import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
-export class JwtKakaoStrategy extends PassportStrategy(Strategy, "kakao") {
+export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('KAKAO_ID'), //.env파일에 들어있음
@@ -21,7 +21,7 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     done: (error: any, user?: any, info?: any) => void,
   ) {
     try {
-      console.log(profile)
+      console.log(profile);
       const { _json } = profile;
       const user = {
         email: _json.kakao_account.email,
