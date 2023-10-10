@@ -23,7 +23,6 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     try {
       console.log(profile)
       const { _json } = profile;
-      console.log(_json.properties)
       const user = {
         email: _json.kakao_account.email,
         nickname: _json.properties.nickname,
