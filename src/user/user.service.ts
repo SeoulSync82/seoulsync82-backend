@@ -10,9 +10,9 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
-  async getUser(getUserInputDto){
+  async getUser(getUserInputDto) {
     // const user = UserEntity
-    const data = 0
-    return data
+    const data = 0;
+    return data;
   }
 }

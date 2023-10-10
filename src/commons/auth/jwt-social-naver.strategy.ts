@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport-naver";
-import { ConfigService } from "src/config/config.service";
+import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-naver';
+import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
-export class JwtNaverStrategy extends PassportStrategy(Strategy, "naver") {
+export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('NAVER_ID'), //.env파일에 들어있음
@@ -21,7 +21,7 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, "naver") {
     return {
       name: profile.displayName,
       email: profile._json.email,
-      password: profile.id, 
+      password: profile.id,
     };
   }
 }

@@ -1,6 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
-
 
 export enum Provider {
   Local,

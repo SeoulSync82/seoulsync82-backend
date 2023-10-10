@@ -1,7 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity({ name: 'course' })
-export class CourseEntity {
+@Entity({ name: 'reaction' })
+export class ReactionEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -9,10 +9,16 @@ export class CourseEntity {
   uuid: string;
 
   @Column()
-  count: number;
+  user_uuid: string;
 
   @Column()
-  image: string;
+  target_uuid: string;
+
+  @Column()
+  user_name: string;
+
+  @Column()
+  linked: number;
 
   @Column('datetime', {
     name: 'created_at',

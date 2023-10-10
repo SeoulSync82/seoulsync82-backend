@@ -1,26 +1,25 @@
-import { Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "src/config/config.service";
-import { UserService } from "src/user/user.service";
-import { GoogleLoginAuthOutputDto } from "./dto/google-login-auth.dto";
-import { ValidateAuthInputDto, ValidateAuthOutputDto } from "./dto/validate-auth.dto";
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from 'src/config/config.service';
+import { UserService } from 'src/user/user.service';
+import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
+import { ValidateAuthInputDto, ValidateAuthOutputDto } from './dto/validate-auth.dto';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { Provider } from "src/entites/user.entity";
-import { UserQueryRepository } from "src/user/user.query.repository";
-import { GoogleRequest } from "./interfaces/auth.interface";
+import { Provider } from 'src/entites/user.entity';
+import { UserQueryRepository } from 'src/user/user.query.repository';
+import { GoogleRequest } from './interfaces/auth.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,  
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly userQueryRepository: UserQueryRepository,
-    ) {}
+  ) {}
 
-    
-  async OAuthLogin({ }) {
+  async OAuthLogin({}) {
     // 1. 회원조회
     // let user = await this.userService.findOne({ email: req.user.email }); //user를 찾아서
 
@@ -30,7 +29,7 @@ export class AuthService {
     // // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
     // this.setRefreshToken({ user, res });
     // res.redirect("리다이렉트할 url주소");
-    return 1
+    return 1;
   }
 
   async validateUser(validateAuthInputDto: ValidateAuthInputDto) {
@@ -44,7 +43,8 @@ export class AuthService {
     }
   }
 
-  async googleLogin(req: GoogleRequest,
+  async googleLogin(
+    req: GoogleRequest,
     res: Response,
     // googleLoginAuthInputDto,
   ): Promise<GoogleLoginAuthOutputDto> {
@@ -65,9 +65,13 @@ export class AuthService {
 
       // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = { id: findUser.id };
-      const accessToken = jwt.sign(findUserPayload, this.configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'), {
-        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
-      });
+      const accessToken = jwt.sign(
+        findUserPayload,
+        this.configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
+        {
+          expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+        },
+      );
       const refreshToken = jwt.sign({}, this.configService.get('JWT_REFRESH_TOKEN_SECRET_KEY'), {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
