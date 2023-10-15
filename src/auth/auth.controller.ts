@@ -5,7 +5,7 @@ import { GoogleAuthGuard } from 'src/commons/auth/google-auth.guard';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
-import { GoogleRequest, KakaoRequest } from './interfaces/auth.interface';
+import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
 @Controller()
 export class AuthController {
@@ -39,16 +39,11 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(
     @Req() req: GoogleRequest,
-    // @Res({ passthrough: true }) res: Response,
-    @Res() res: Response,
-  ) // : Promise<GoogleLoginAuthOutputDto>
-  {
-    // async googleAuthRedirect(@Req() req, @Res() res) {
-    const { user } = req;
-    console.log(user);
+    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto>
+  ) {
     // res.redirect('http://localhost:3000/auth/test-guard2');
-    return res.send(user);
-    // return this.authService.googleLogin(req, res);
+    // return res.send(user);
+    return this.authService.googleLogin(req, res);
   }
 
   //-----------------------카카오 로그인-----------------------------//
@@ -65,14 +60,34 @@ export class AuthController {
   async kakaoAuthCallback(
     @Req() req: KakaoRequest,
     // @Res({ passthrough: true }) res: Response,
-    @Res() res: Response,
-  ) // : Promise<GoogleLoginAuthOutputDto>
-  {
+    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto>
+  ) {
     // async googleAuthRedirect(@Req() req, @Res() res) {
     const { user } = req;
     console.log(user);
-    // res.redirect('http://localhost:3000/auth/test-guard2');
     return res.send(user);
-    // return this.authService.googleLogin(req, res);
+    // return this.authService.kakaoLogin(req, res);
+  }
+
+  //-----------------------네이버 로그인-----------------------------//
+
+  @Get('/user/login/naver')
+  @UseGuards(AuthGuard('naver'))
+  async naverAuth(@Req() _req: Request) {
+    console.log(232332);
+  }
+
+  /* Get naver Auth Callback */
+  @Get('/auth/naver/callback')
+  @UseGuards(AuthGuard('naver'))
+  async naverAuthCallback(
+    @Req() req: NaverRequest,
+    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto>
+  ) {
+    // async googleAuthRedirect(@Req() req, @Res() res) {
+    const { user } = req;
+    console.log(user);
+    return res.send(user);
+    // return this.authService.naverLogin(req, res);
   }
 }

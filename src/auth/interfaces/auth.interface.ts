@@ -14,7 +14,9 @@ type GoogleUser = {
   email: string;
   firstName: string;
   lastName: string;
+  nickname?: string;
   photo: string;
+  type: string;
 };
 
 export type GoogleRequest = Request & { user: GoogleUser };
@@ -27,3 +29,11 @@ type KakaoUser = {
 };
 
 export type KakaoRequest = Request & { user: KakaoUser };
+
+type NaverUser = {
+  email: string;
+  nickname: string;
+  photo: string;
+};
+
+export type NaverRequest = Request & { user: NaverUser };

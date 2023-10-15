@@ -1,22 +1,18 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 
-export enum Provider {
-  Local,
-  Google,
-}
 @Entity({ name: 'user' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  @IsOptional()
-  @IsString()
-  public photo?: string;
+  // @Column({ nullable: true })
+  // @IsOptional()
+  // @IsString()
+  // public photo?: string;
 
-  @Column({ type: 'enum', enum: Provider, default: Provider.Local })
-  public provider: Provider;
+  // @Column({ type: 'enum', enum: Provider, default: Provider.Local })
+  // public provider: Provider;
 
   @Column()
   uuid: string;
@@ -33,8 +29,17 @@ export class UserEntity {
   @Column()
   type: string;
 
+  @Column('tinyint', {
+    name: 'archived',
+    default: () => 0,
+  })
+  archived: number;
+
   @Column()
-  eid: string;
+  eid_access_token: string;
+
+  @Column()
+  eid_refresh_token: string;
 
   @Column('datetime', {
     name: 'created_at',

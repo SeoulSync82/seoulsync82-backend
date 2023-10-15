@@ -6,9 +6,10 @@ import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
 import { ValidateAuthInputDto, ValidateAuthOutputDto } from './dto/validate-auth.dto';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { Provider } from 'src/entites/user.entity';
+// import { Provider } from 'src/entites/user.entity';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { GoogleRequest } from './interfaces/auth.interface';
+import { generateUUID } from 'src/commons/util/uuid';
 
 @Injectable()
 export class AuthService {
@@ -46,45 +47,53 @@ export class AuthService {
   async googleLogin(
     req: GoogleRequest,
     res: Response,
-    // googleLoginAuthInputDto,
-  ): Promise<GoogleLoginAuthOutputDto> {
+    // googleLoginAuthInputDto, // : Promise<GoogleLoginAuthOutputDto>
+  ) {
     try {
-      // const { email, firstName, lastName, photo } = googleLoginAuthInputDto;
-      const {
-        user: { email, firstName, lastName, photo },
-      } = req;
+      req.user.nickname = req.user.firstName + req.user.lastName;
+      const { user } = req;
+      delete user.lastName;
+      delete user.firstName;
+      user.type = 'google';
 
       // 유저 중복 검사
-      const findUser = await this.userQueryRepository.findOneOrCreate(
-        { email },
-        // { email, firstName, lastName, photo, provider: Provider.Google },
-      );
-      if (findUser && findUser.provider !== Provider.Google) {
-        return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
+      let findUser = await this.userQueryRepository.findUser(user);
+
+      if (!findUser) {
+        const uuid = generateUUID();
+        findUser = await this.userQueryRepository.createUser(user, uuid);
       }
+      console.log(findUser);
+      // if (findUser && findUser.provider !== Provider.Google) {
+      //   return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
+      // }
 
       // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = { id: findUser.id };
-      const accessToken = jwt.sign(
+      const eid_access_token = jwt.sign(
         findUserPayload,
         this.configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
         {
           expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
         },
       );
-      const refreshToken = jwt.sign({}, this.configService.get('JWT_REFRESH_TOKEN_SECRET_KEY'), {
-        expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
-        audience: String(findUser.id),
-      });
+      const eid_refresh_token = jwt.sign(
+        {},
+        this.configService.get('JWT_REFRESH_TOKEN_SECRET_KEY'),
+        {
+          expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+          audience: String(findUser.id),
+        },
+      );
 
       /* refreshToken 필드 업데이트 */
-      // findUser.refreshToken = refreshToken;
-      // await this.userRepository.save(findUser);
+      findUser.eid_refresh_token = eid_refresh_token;
+      await this.userQueryRepository.save(findUser);
 
       // 쿠키 설정
       const now = new Date();
       now.setDate(now.getDate() + +this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
-      res.cookie('refreshToken', refreshToken, {
+      res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,
@@ -92,7 +101,7 @@ export class AuthService {
       });
       return {
         ok: true,
-        accessToken,
+        eid_access_token,
       };
     } catch (error) {
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
