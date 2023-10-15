@@ -9,7 +9,7 @@ import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
 import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
 import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
 import { UserService } from 'src/user/user.service';
-import { UserEntity } from 'src/entites/user.entity';
+import { UserEntity } from 'src/entities/user.entity';
 // import { JwtAccessStrategy } from "src/commons/auth/jwt-access.strategy";
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigService } from 'src/config/config.service';

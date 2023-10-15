@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-naver';
+import { Profile, Strategy } from 'passport-naver';
 import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
@@ -13,15 +13,23 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
     });
   }
 
-  validate(accessToken: string, refreshToken: string, profile: any) {
-    // console.log(accessToken);
-    // console.log(refreshToken);
-    // console.log(profile);
-
-    return {
-      name: profile.displayName,
-      email: profile._json.email,
-      password: profile.id,
-    };
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+    done: (error: any, user?: any, info?: any) => void,
+  ) {
+    try {
+      console.log(profile);
+      const { _json } = profile;
+      const user = {
+        email: _json.email,
+        nickname: _json.nickname,
+        photo: _json.profile_image,
+      };
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
   }
 }

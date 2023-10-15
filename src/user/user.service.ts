@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from 'src/config/config.service';
-import { UserEntity } from 'src/entites/user.entity';
+import { UserEntity } from 'src/entities/user.entity';
 import { UserQueryRepository } from './user.query.repository';
 
 @Injectable()
