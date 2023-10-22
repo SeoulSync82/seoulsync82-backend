@@ -59,6 +59,7 @@ export class AuthService {
       // 유저 중복 검사
       let findUser = await this.userQueryRepository.findUser(user);
 
+      // 없는 유저면 DB에 유저정보 저장
       if (!findUser) {
         const uuid = generateUUID();
         findUser = await this.userQueryRepository.createUser(user, uuid);
