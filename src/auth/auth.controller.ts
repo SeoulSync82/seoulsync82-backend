@@ -30,9 +30,7 @@ export class AuthController {
 
   @Get('/user/login/google')
   @UseGuards(GoogleAuthGuard)
-  async googleAuth(@Req() _req: Request) {
-    console.log(232332);
-  }
+  async googleAuth(@Req() _req: Request) {}
 
   /* Get Google Auth Callback */
   @Get('/auth/google/callback')
@@ -50,9 +48,7 @@ export class AuthController {
 
   @Get('/user/login/kakao')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuth(@Req() _req: Request) {
-    console.log(232332);
-  }
+  async kakaoAuth(@Req() _req: Request) {}
 
   /* Get kakao Auth Callback */
   @Get('/auth/kakao/callback')
@@ -60,9 +56,8 @@ export class AuthController {
   async kakaoAuthCallback(
     @Req() req: KakaoRequest,
     // @Res({ passthrough: true }) res: Response,
-    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto>
+    @Res() res: Response, // : Promise<KakaoLoginAuthOutputDto>
   ) {
-    // async googleAuthRedirect(@Req() req, @Res() res) {
     const { user } = req;
     console.log(user);
     return res.send(user);
@@ -73,18 +68,15 @@ export class AuthController {
 
   @Get('/user/login/naver')
   @UseGuards(AuthGuard('naver'))
-  async naverAuth(@Req() _req: Request) {
-    console.log(232332);
-  }
+  async naverAuth(@Req() _req: Request) {}
 
   /* Get naver Auth Callback */
   @Get('/auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
   async naverAuthCallback(
     @Req() req: NaverRequest,
-    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto>
+    @Res() res: Response, // : Promise<NaverLoginAuthOutputDto>
   ) {
-    // async googleAuthRedirect(@Req() req, @Res() res) {
     const { user } = req;
     console.log(user);
     return res.send(user);

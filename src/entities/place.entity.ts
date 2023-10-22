@@ -18,7 +18,7 @@ export class PlaceEntity {
   thumbnail: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 7 })
-  latitue: number;
+  latitude: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 7 })
   longitude: number;
@@ -27,29 +27,26 @@ export class PlaceEntity {
   address: string;
 
   @Column()
-  phone_number: string;
+  tel: string;
 
   @Column()
   url: string;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', precision: 10, scale: 1 })
   score: number;
 
-  @Column()
-  kakao_rating: Boolean;
+  @Column('tinyint', {
+    name: 'kakao_rating',
+    default: () => 0,
+  })
+  kakao_rating: number;
 
   @Column()
   review_count: number;
 
-  @Column('datetime', {
-    name: 'created_at',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  created_at: Date;
+  @Column()
+  start_date: Date;
 
-  @Column('datetime', {
-    name: 'updated_at',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updated_at: Date;
+  @Column()
+  end_date: Date;
 }
