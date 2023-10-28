@@ -1,6 +1,6 @@
-import { Controller, Get, Query, UseFilters, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { ResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { Controller, Get, Param, Query, UseFilters, UseInterceptors } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
@@ -45,5 +45,25 @@ export class SearchController {
   })
   async searchPlace(@Query() dto: SearchDto): Promise<ResponseDataDto> {
     return await this.searchService.searchPlace(dto);
+  }
+
+  @Get('/place/:uuid')
+  @ApiOperation({
+    summary: '검색 상세',
+    description: '검색 상세',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '검색 상세',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '장소 uuid',
+  })
+  async searchDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
+    return await this.searchService.searchDetail(uuid);
   }
 }
