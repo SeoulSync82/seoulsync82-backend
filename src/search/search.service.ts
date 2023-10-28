@@ -45,4 +45,9 @@ export class SearchService {
 
     return DetailResponseDto.from(searchDetailDto);
   }
+
+  async searchPopular() {
+    const result = ['곱찹', '라멘', '감자탕', '돈까스', '스시'];
+    return ResponseDataDto.from(result, null, 0);
+  }
 }

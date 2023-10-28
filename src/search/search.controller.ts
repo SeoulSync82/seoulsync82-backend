@@ -66,4 +66,18 @@ export class SearchController {
   async searchDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.searchService.searchDetail(uuid);
   }
+
+  @Get('/popular')
+  @ApiOperation({
+    summary: '인기 검색어 목록',
+    description: '인기 검색어 목록',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '인기 검색어 목록',
+    type: ResponseDto,
+  })
+  async searchPopular(): Promise<ResponseDataDto> {
+    return await this.searchService.searchPopular();
+  }
 }
