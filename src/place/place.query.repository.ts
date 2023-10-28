@@ -1,7 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { now } from 'mongoose';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { SearchDto } from 'src/search/dto/search.dto';
+import { LessThan, MoreThan, Repository, Like } from 'typeorm';
 import { PlaceReadDto } from './dto/place.dto';
 
 export class PlaceQueryRepository {
@@ -56,6 +57,24 @@ export class PlaceQueryRepository {
     return await this.repository.find({
       where: whereConditions,
       order: { id: 'DESC' },
+      take: dto.size,
+    });
+  }
+
+  async search(dto: SearchDto): Promise<PlaceEntity[]> {
+    const whereConditions = {
+      place_name: Like(`%${dto.place_name}%`),
+    };
+
+    if (dto.last_id > 0) {
+      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
+    }
+
+    return await this.repository.find({
+      where: whereConditions,
+      order: {
+        review_count: 'DESC',
+      },
       take: dto.size,
     });
   }
