@@ -26,6 +26,7 @@ type KakaoUser = {
   email: string;
   nickname: string;
   photo: string;
+  type: string;
 };
 
 export type KakaoRequest = Request & { user: KakaoUser };
@@ -34,6 +35,7 @@ type NaverUser = {
   email: string;
   nickname: string;
   photo: string;
+  type: string;
 };
 
 export type NaverRequest = Request & { user: NaverUser };
