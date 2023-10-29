@@ -12,7 +12,8 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
       //자식의 constructor를 부모의 constructor에 넘기는 방법은 super를 사용하면 된다.
       clientID: configService.get('GOOGLE_ID'), //.env파일에 들어있음
       clientSecret: configService.get('GOOGLE_SECRET'), //.env파일에 들어있음
-      callbackURL: 'http://localhost:3456/auth/google/callback', //.env파일에 들어있음
+      // callbackURL: 'http://localhost:3456/auth/google/callback', //.env파일에 들어있음
+      callbackURL: 'http://staging.seoulsync82.com:3456/auth/google/callback', //.env파일에 들어있음
       scope: ['email', 'profile'],
     });
   }
