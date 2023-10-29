@@ -89,4 +89,8 @@ export class AuthService {
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
     }
   }
+
+  async logout() {
+    return 1;
+  }
 }
