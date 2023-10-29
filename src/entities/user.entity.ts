@@ -36,9 +36,6 @@ export class UserEntity {
   archived: number;
 
   @Column()
-  eid_access_token: string;
-
-  @Column()
   eid_refresh_token: string;
 
   @Column('datetime', {

@@ -19,20 +19,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
-
-  async OAuthLogin({}) {
-    // 1. 회원조회
-    // let user = await this.userService.findOne({ email: req.user.email }); //user를 찾아서
-
-    // // 2, 회원가입이 안되어있다면? 자동회원가입
-    // if (!user) user = await this.userService.create({ ...req.user }); //user가 없으면 하나 만들고, 있으면 이 if문에 들어오지 않을거기때문에 이러나 저러나 user는 존재하는게 됨.
-
-    // // 3. 회원가입이 되어있다면? 로그인(AT, RT를 생성해서 브라우저에 전송)한다
-    // this.setRefreshToken({ user, res });
-    // res.redirect("리다이렉트할 url주소");
-    return 1;
-  }
-
   async validateUser(validateAuthInputDto: ValidateAuthInputDto) {
     try {
       const { email } = validateAuthInputDto;
@@ -71,21 +57,15 @@ export class AuthService {
 
       // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = { id: findUser.id };
-      const eid_access_token = jwt.sign(
-        findUserPayload,
-        this.configService.get('JWT_ACCESS_TOKEN_SECRET_KEY'),
-        {
-          expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
-        },
-      );
-      const eid_refresh_token = jwt.sign(
-        {},
-        this.configService.get('JWT_REFRESH_TOKEN_SECRET_KEY'),
-        {
-          expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
-          audience: String(findUser.id),
-        },
-      );
+      const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
+        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+      });
+      const eid_refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
+        expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+        audience: String(findUser.id),
+      });
+      console.log('eid_access_token', eid_access_token);
+      console.log('eid_refresh_token', eid_refresh_token);
 
       /* refreshToken 필드 업데이트 */
       findUser.eid_refresh_token = eid_refresh_token;
@@ -94,6 +74,7 @@ export class AuthService {
       // 쿠키 설정
       const now = new Date();
       now.setDate(now.getDate() + +this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
+      console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
