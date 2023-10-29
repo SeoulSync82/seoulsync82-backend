@@ -46,10 +46,11 @@ export class AuthController {
     // @Res({ passthrough: true }) res: Response,
     @Res() res: Response, // : Promise<KakaoLoginAuthOutputDto>
   ) {
-    const { user } = req;
-    console.log(user);
-    return res.send(user);
-    // return this.authService.kakaoLogin(req, res);
+    // const { user } = req;
+    // console.log(user);
+    // return res.send(user);
+    const result = await this.authService.kakaoLogin(req, res);
+    return res.json(result);
   }
 
   //-----------------------네이버 로그인-----------------------------//
@@ -65,9 +66,11 @@ export class AuthController {
     @Req() req: NaverRequest,
     @Res() res: Response, // : Promise<NaverLoginAuthOutputDto>
   ) {
-    const { user } = req;
-    console.log(user);
-    return res.send(user);
+    // const { user } = req;
+    // console.log(user);
+    // return res.send(user);
     // return this.authService.naverLogin(req, res);
+    const result = await this.authService.naverLogin(req, res);
+    return res.json(result);
   }
 }
