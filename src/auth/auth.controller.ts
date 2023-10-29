@@ -13,19 +13,6 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
   ) {}
-
-  //-----------------------구글 로그인-----------------------------//
-  // @Get("/user/login/google")
-  // // @Get("/auth/google/callback")
-  // @UseGuards(AuthGuard("google"))
-  // async loginGoogle(
-  //   // @Req() req: Request & IOAuthUser,
-  //   // @Res() res: Response
-  // ) {
-  //   console.log(1)
-  //   return await this.authService.OAuthLogin({ });
-  // }
-
   //-----------------------구글 로그인-----------------------------//
 
   @Get('/user/login/google')
@@ -41,7 +28,8 @@ export class AuthController {
   ) {
     // res.redirect('http://localhost:3000/auth/test-guard2');
     // return res.send(user);
-    return this.authService.googleLogin(req, res);
+    const result = await this.authService.googleLogin(req, res);
+    return res.json(result);
   }
 
   //-----------------------카카오 로그인-----------------------------//
