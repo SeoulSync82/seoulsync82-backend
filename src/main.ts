@@ -2,9 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
-import * as dotenv from 'dotenv';
-// dotenv.config();
-// console.log(process.env);
+import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -13,6 +11,15 @@ async function bootstrap() {
         ? ['error', 'warn', 'log', 'debug']
         : ['error', 'warn', 'log', 'verbose', 'debug'],
   });
+
+  // CORS 설정 추가!
+  app.use(
+    cors({
+      origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    }),
+  );
 
   const configService = app.get(ConfigService);
 
@@ -32,4 +39,5 @@ async function bootstrap() {
 
   await app.listen(3456);
 }
+
 bootstrap();
