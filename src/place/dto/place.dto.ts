@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
 
 export class PlaceReadDto {
   @Expose()
@@ -17,6 +18,14 @@ export class PlaceReadDto {
     required: false,
   })
   size?: number;
+
+  @Expose()
+  @ApiProperty({
+    example: 'lastest',
+    description: '정렬',
+    required: false,
+  })
+  order: string;
 }
 
 export class CultureListDto {
@@ -94,10 +103,18 @@ export class CultureDto {
 
   @Expose()
   @ApiProperty({
-    example: 'https://www.popply.co.kr/popup/608',
-    description: 'URL',
+    example: '0',
+    description: '위도',
   })
-  url: string;
+  latitude: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '0',
+    description: '경도',
+  })
+  longitude: string;
+
   @Expose()
   @ApiProperty({
     example: '2023-10-21 00:00:00',
