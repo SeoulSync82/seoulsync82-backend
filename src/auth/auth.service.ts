@@ -58,6 +58,7 @@ export class AuthService {
       // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
         id: findUser.id,
+        uuid: findUser.uuid,
         nickname: findUser.name,
         profile_image: findUser.profile_image,
       };
@@ -116,6 +117,7 @@ export class AuthService {
       // 카카오 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
         id: findUser.id,
+        uuid: findUser.uuid,
         nickname: findUser.name,
         profile_image: findUser.profile_image,
       };
@@ -174,6 +176,7 @@ export class AuthService {
       // 네이버 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
         id: findUser.id,
+        uuid: findUser.uuid,
         nickname: findUser.name,
         profile_image: findUser.profile_image,
       };

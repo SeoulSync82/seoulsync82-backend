@@ -128,7 +128,6 @@ export class PlaceController {
     description: '한 번에 보여질 팝업 수',
   })
   async findPopupList(@Query() dto: PlaceReadDto, @CurrentUser() user): Promise<ResponseDataDto> {
-    console.log(user);
     return await this.placeService.findPopupList(dto, user);
   }
 }
