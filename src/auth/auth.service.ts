@@ -78,7 +78,10 @@ export class AuthService {
 
       // 쿠키 설정
       const now = new Date();
-      now.setDate(now.getDate() + +this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
+      now.setDate(
+        now.getDate() +
+          parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
+      );
       console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
@@ -138,7 +141,10 @@ export class AuthService {
 
       // 쿠키 설정
       const now = new Date();
-      now.setDate(now.getDate() + +this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
+      now.setDate(
+        now.getDate() +
+          parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
+      );
       console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
@@ -198,7 +204,10 @@ export class AuthService {
 
       // 쿠키 설정
       const now = new Date();
-      now.setDate(now.getDate() + +this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
+      now.setDate(
+        now.getDate() +
+          parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
+      );
       console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
