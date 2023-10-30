@@ -82,6 +82,14 @@ export class SearchDto {
     description: '장소 이름',
   })
   place_name: string;
+
+  @Expose()
+  @ApiProperty({
+    example: 'restaurant',
+    description: '장소 타입',
+    required: false,
+  })
+  place_type: string;
 }
 
 export class SearchDetailDto {
