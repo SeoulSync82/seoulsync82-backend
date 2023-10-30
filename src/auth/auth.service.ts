@@ -91,6 +91,7 @@ export class AuthService {
         eid_access_token,
       };
     } catch (error) {
+      console.log(error);
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
     }
   }
