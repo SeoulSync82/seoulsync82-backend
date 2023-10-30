@@ -1,5 +1,22 @@
-import { Controller, Get, Param, Query, UseFilters, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
@@ -86,6 +103,8 @@ export class PlaceController {
     return await this.placeService.findExhibitionList(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Get('/popup')
   @ApiOperation({
     summary: '팝업소개 목록',
@@ -108,7 +127,8 @@ export class PlaceController {
     required: false,
     description: '한 번에 보여질 팝업 수',
   })
-  async findPopupList(@Query() dto: PlaceReadDto): Promise<ResponseDataDto> {
-    return await this.placeService.findPopupList(dto);
+  async findPopupList(@Query() dto: PlaceReadDto, @CurrentUser() user): Promise<ResponseDataDto> {
+    console.log(user);
+    return await this.placeService.findPopupList(dto, user);
   }
 }

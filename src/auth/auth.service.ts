@@ -56,7 +56,11 @@ export class AuthService {
       // }
 
       // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
-      const findUserPayload = { id: findUser.id };
+      const findUserPayload = {
+        id: findUser.id,
+        nickname: findUser.name,
+        profile_image: findUser.profile_image,
+      };
       const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });
@@ -110,7 +114,11 @@ export class AuthService {
       // }
 
       // 카카오 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
-      const findUserPayload = { id: findUser.id };
+      const findUserPayload = {
+        id: findUser.id,
+        nickname: findUser.name,
+        profile_image: findUser.profile_image,
+      };
       const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });
@@ -164,7 +172,11 @@ export class AuthService {
       // }
 
       // 네이버 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
-      const findUserPayload = { id: findUser.id };
+      const findUserPayload = {
+        id: findUser.id,
+        nickname: findUser.name,
+        profile_image: findUser.profile_image,
+      };
       const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });

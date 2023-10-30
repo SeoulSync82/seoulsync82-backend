@@ -54,7 +54,8 @@ export class PlaceService {
     return ResponseDataDto.from(exhibitionDto, null, last_item_id);
   }
 
-  async findPopupList(dto: PlaceReadDto) {
+  async findPopupList(dto: PlaceReadDto, user) {
+    console.log(user);
     const popupList: PlaceEntity[] = await this.placeQueryRepository.findPopupList(dto);
     if (!popupList || popupList.length === 0) {
       return ResponseDataDto.from([], null, 0);
