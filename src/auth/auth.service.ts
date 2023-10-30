@@ -89,9 +89,9 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
+        eid_refresh_token,
       };
     } catch (error) {
-      console.log(error);
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
     }
   }
@@ -149,6 +149,7 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
+        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '카카오 로그인 인증을 실패 하였습니다.' };
@@ -208,6 +209,7 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
+        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '네이버 로그인 인증을 실패 하였습니다.' };
