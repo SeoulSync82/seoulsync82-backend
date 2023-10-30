@@ -34,14 +34,21 @@ export class PlaceQueryRepository {
   async findExhibitionList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
     const now = new Date();
     const whereConditions = { place_type: '전시', end_date: MoreThan(now) };
+    let orderType = {};
 
     if (dto.last_id > 0) {
       Object.assign(whereConditions, { id: LessThan(dto.last_id) });
     }
 
+    if (dto.order === 'lastest') {
+      orderType = { start_date: 'DESC' };
+    } else if (dto.order === 'deadline') {
+      orderType = { end_date: 'ASC' };
+    }
+
     return await this.repository.find({
       where: whereConditions,
-      order: { id: 'DESC' },
+      order: orderType,
       take: dto.size,
     });
   }
@@ -49,14 +56,21 @@ export class PlaceQueryRepository {
   async findPopupList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
     const now = new Date();
     const whereConditions = { place_type: '팝업', end_date: MoreThan(now) };
+    let orderType = {};
 
     if (dto.last_id > 0) {
       Object.assign(whereConditions, { id: LessThan(dto.last_id) });
     }
 
+    if (dto.order === 'lastest') {
+      orderType = { start_date: 'DESC' };
+    } else if (dto.order === 'deadline') {
+      orderType = { end_date: 'ASC' };
+    }
+
     return await this.repository.find({
       where: whereConditions,
-      order: { id: 'DESC' },
+      order: orderType,
       take: dto.size,
     });
   }
