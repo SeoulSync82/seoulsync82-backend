@@ -90,11 +90,7 @@ export class AuthService {
     }
   }
 
-  async kakaoLogin(
-    req: KakaoRequest,
-    res: Response,
-    // googleLoginAuthInputDto, // : Promise<GoogleLoginAuthOutputDto>
-  ) {
+  async kakaoLogin(req: KakaoRequest, res: Response) {
     try {
       req.user.nickname = req.user.nickname;
       const { user } = req;
@@ -113,7 +109,7 @@ export class AuthService {
       //   return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
       // }
 
-      // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
+      // 카카오 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = { id: findUser.id };
       const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
@@ -144,20 +140,14 @@ export class AuthService {
         eid_access_token,
       };
     } catch (error) {
-      return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
+      return { ok: false, error: '카카오 로그인 인증을 실패 하였습니다.' };
     }
   }
 
-  async naverLogin(
-    req: NaverRequest,
-    res: Response,
-    // googleLoginAuthInputDto, // : Promise<GoogleLoginAuthOutputDto>
-  ) {
+  async naverLogin(req: NaverRequest, res: Response) {
     try {
       req.user.nickname = req.user.nickname;
       const { user } = req;
-      // delete user.lastName;
-      // delete user.firstName;
       user.type = 'naver';
 
       // 유저 중복 검사
@@ -173,7 +163,7 @@ export class AuthService {
       //   return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
       // }
 
-      // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
+      // 네이버 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = { id: findUser.id };
       const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
@@ -204,7 +194,7 @@ export class AuthService {
         eid_access_token,
       };
     } catch (error) {
-      return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
+      return { ok: false, error: '네이버 로그인 인증을 실패 하였습니다.' };
     }
   }
   async logout() {
