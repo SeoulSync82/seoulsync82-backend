@@ -54,9 +54,6 @@ export class AuthService {
         findUser = await this.userQueryRepository.createUser(user, uuid);
       }
       console.log(findUser);
-      // if (findUser && findUser.provider !== Provider.Google) {
-      //   return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
-      // }
 
       // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
@@ -239,7 +236,7 @@ export class AuthService {
         (err: jwt.VerifyErrors | null, decoded: jwt.JwtPayload | undefined) => {
           if (err) {
             res.clearCookie('eid_refresh_token');
-            return { ok: false, err: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
+            return { ok: false, error: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
           }
           userId = decoded.aud;
         },
@@ -248,7 +245,7 @@ export class AuthService {
       // 로그아웃 후에는 Silent Refresh를 무시
       const loginUser = await this.userQueryRepository.findId(+userId);
       if (loginUser.eid_refresh_token !== getRefreshToken) {
-        return { ok: false };
+        return { ok: false, error: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
       }
 
       // accessToken 재발급
