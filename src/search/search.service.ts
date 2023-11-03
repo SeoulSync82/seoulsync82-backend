@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
@@ -17,7 +17,7 @@ export class SearchService {
 
   async searchPlace(dto: SearchDto) {
     if (!dto.place_name) {
-      throw Error(ERROR.NOT_EXIST_DATA);
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
     const searchList = await this.placeQueryRepository.search(dto);
     if (!searchList || searchList.length === 0) {
@@ -36,7 +36,7 @@ export class SearchService {
   async searchDetail(uuid) {
     const searchDetail: PlaceEntity = await this.placeQueryRepository.findOne(uuid);
     if (!searchDetail) {
-      throw Error(ERROR.NOT_EXIST_DATA);
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
     const searchDetailDto: SearchDetailDto = plainToInstance(SearchDetailDto, searchDetail, {
