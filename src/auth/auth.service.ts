@@ -10,6 +10,9 @@ import * as jwt from 'jsonwebtoken';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 import { generateUUID } from 'src/commons/util/uuid';
+import { SilentRefreshAuthOutputDto } from './dto/silent-refresh-auth.dto';
+import { isEmpty } from 'class-validator';
+import { LogoutAuthOutputDto } from './dto/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -92,7 +95,6 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
-        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
@@ -155,7 +157,6 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
-        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '카카오 로그인 인증을 실패 하였습니다.' };
@@ -218,13 +219,71 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
-        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '네이버 로그인 인증을 실패 하였습니다.' };
     }
   }
-  async logout() {
-    return 1;
+
+  async silentRefresh(req: Request, res: Response): Promise<SilentRefreshAuthOutputDto> {
+    try {
+      // refreshToken 유효성 검사
+      const getRefreshToken = req.cookies['eid_refresh_token'];
+      if (isEmpty(getRefreshToken)) {
+        return { ok: false };
+      }
+      let userId: string | string[] | null;
+      jwt.verify(
+        getRefreshToken,
+        this.configService.get('JWT_REFRESH_KEY'),
+        (err: jwt.VerifyErrors | null, decoded: jwt.JwtPayload | undefined) => {
+          if (err) {
+            res.clearCookie('eid_refresh_token');
+            return { ok: false, err: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
+          }
+          userId = decoded.aud;
+        },
+      );
+
+      // 로그아웃 후에는 Silent Refresh를 무시
+      const loginUser = await this.userQueryRepository.findId(+userId);
+      if (loginUser.eid_refresh_token !== getRefreshToken) {
+        return { ok: false };
+      }
+
+      // accessToken 재발급
+      const payload = {
+        id: loginUser.id,
+        uuid: loginUser.uuid,
+        nickname: loginUser.name,
+        profile_image: loginUser.profile_image,
+      };
+      const eid_access_token = jwt.sign(payload, this.configService.get('JWT_SECRET'), {
+        expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+      });
+
+      return {
+        ok: true,
+        eid_access_token,
+      };
+    } catch (error) {
+      console.log(error);
+      return { ok: false, error: '로그인 연장에 실패하였습니다.' };
+    }
+  }
+
+  async logout(user, res): Promise<LogoutAuthOutputDto> {
+    try {
+      if (isEmpty(user.id)) return { ok: false, error: '접근 권한을 가지고 있지 않습니다' };
+
+      const loginUser = await this.userQueryRepository.findId(user.id);
+      loginUser.eid_refresh_token = null;
+      await this.userQueryRepository.save(loginUser);
+      res.clearCookie('refreshToken');
+      return { ok: true };
+    } catch (error) {
+      console.log(error);
+      return { ok: false, error: '로그아웃을 실패하였습니다' };
+    }
   }
 }

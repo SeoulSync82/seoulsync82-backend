@@ -7,7 +7,7 @@ import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor
 @ApiTags('사용자')
 @Controller('/api/user')
 @UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
+@UseInterceptors(SuccessInterceptor)
 export class UserController {
   @Put('/profile/:uuid')
   @ApiOperation({
@@ -15,15 +15,6 @@ export class UserController {
     description: '프로필 수정',
   })
   async profileUpdate() {
-    return 1;
-  }
-
-  @Post('user/logout')
-  @ApiOperation({
-    summary: '로그아웃',
-    description: '로그아웃',
-  })
-  async logout() {
     return 1;
   }
 }

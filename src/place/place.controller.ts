@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Query,
+  Req,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -27,7 +28,7 @@ import { PlaceService } from './place.service';
 @ApiTags('장소')
 @Controller('/api/place')
 @UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
+@UseInterceptors(SuccessInterceptor)
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
@@ -103,8 +104,6 @@ export class PlaceController {
     return await this.placeService.findExhibitionList(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Get('/popup')
   @ApiOperation({
     summary: '팝업소개 목록',
@@ -127,7 +126,7 @@ export class PlaceController {
     required: false,
     description: '한 번에 보여질 팝업 수',
   })
-  async findPopupList(@Query() dto: PlaceReadDto, @CurrentUser() user): Promise<ResponseDataDto> {
-    return await this.placeService.findPopupList(dto, user);
+  async findPopupList(@Query() dto: PlaceReadDto): Promise<ResponseDataDto> {
+    return await this.placeService.findPopupList(dto);
   }
 }
