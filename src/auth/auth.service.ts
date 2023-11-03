@@ -12,6 +12,7 @@ import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.int
 import { generateUUID } from 'src/commons/util/uuid';
 import { SilentRefreshAuthOutputDto } from './dto/silent-refresh-auth.dto';
 import { isEmpty } from 'class-validator';
+import { LogoutAuthOutputDto } from './dto/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -94,7 +95,6 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
-        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
@@ -157,7 +157,6 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
-        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '카카오 로그인 인증을 실패 하였습니다.' };
@@ -220,15 +219,10 @@ export class AuthService {
       return {
         ok: true,
         eid_access_token,
-        eid_refresh_token,
       };
     } catch (error) {
       return { ok: false, error: '네이버 로그인 인증을 실패 하였습니다.' };
     }
-  }
-
-  async logout() {
-    return 1;
   }
 
   async silentRefresh(req: Request, res: Response): Promise<SilentRefreshAuthOutputDto> {
@@ -275,6 +269,21 @@ export class AuthService {
     } catch (error) {
       console.log(error);
       return { ok: false, error: '로그인 연장에 실패하였습니다.' };
+    }
+  }
+
+  async logout(user, res): Promise<LogoutAuthOutputDto> {
+    try {
+      if (isEmpty(user.id)) return { ok: false, error: '접근 권한을 가지고 있지 않습니다' };
+
+      const loginUser = await this.userQueryRepository.findId(user.id);
+      loginUser.eid_refresh_token = null;
+      await this.userQueryRepository.save(loginUser);
+      res.clearCookie('refreshToken');
+      return { ok: true };
+    } catch (error) {
+      console.log(error);
+      return { ok: false, error: '로그아웃을 실패하였습니다' };
     }
   }
 }

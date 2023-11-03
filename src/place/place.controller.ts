@@ -104,8 +104,6 @@ export class PlaceController {
     return await this.placeService.findExhibitionList(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Get('/popup')
   @ApiOperation({
     summary: '팝업소개 목록',
@@ -128,12 +126,7 @@ export class PlaceController {
     required: false,
     description: '한 번에 보여질 팝업 수',
   })
-  async findPopupList(
-    @Query() dto: PlaceReadDto,
-    @CurrentUser() user,
-    @Req() req,
-  ): Promise<ResponseDataDto> {
-    console.log(req);
-    return await this.placeService.findPopupList(dto, user);
+  async findPopupList(@Query() dto: PlaceReadDto): Promise<ResponseDataDto> {
+    return await this.placeService.findPopupList(dto);
   }
 }

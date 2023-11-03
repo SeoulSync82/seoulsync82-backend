@@ -17,13 +17,4 @@ export class UserController {
   async profileUpdate() {
     return 1;
   }
-
-  @Post('user/logout')
-  @ApiOperation({
-    summary: '로그아웃',
-    description: '로그아웃',
-  })
-  async logout() {
-    return 1;
-  }
 }

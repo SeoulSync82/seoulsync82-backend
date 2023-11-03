@@ -9,15 +9,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { GoogleAuthGuard } from 'src/commons/auth/google-auth.guard';
+import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { RequestWithUser } from 'src/commons/interfaces/common.interface';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
+import { LogoutAuthOutputDto } from './dto/logout.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
 @ApiTags('계정')
@@ -32,7 +35,11 @@ export class AuthController {
   //-----------------------구글 로그인-----------------------------//
 
   @Get('/user/login/google')
-  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({
+    summary: '구글 로그인',
+    description: '구글 로그인',
+  })
+  @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() _req: Request) {}
 
   /* Get Google Auth Callback */
@@ -51,6 +58,10 @@ export class AuthController {
   //-----------------------카카오 로그인-----------------------------//
 
   @Get('/user/login/kakao')
+  @ApiOperation({
+    summary: '카카오 로그인',
+    description: '카카오 로그인',
+  })
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuth(@Req() _req: Request) {}
 
@@ -72,6 +83,10 @@ export class AuthController {
   //-----------------------네이버 로그인-----------------------------//
 
   @Get('/user/login/naver')
+  @ApiOperation({
+    summary: '네이버 로그인',
+    description: '네이버 로그인',
+  })
   @UseGuards(AuthGuard('naver'))
   async naverAuth(@Req() _req: Request) {}
 
@@ -98,6 +113,20 @@ export class AuthController {
     description: '로그인 연장',
   })
   async silentRefresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return this.authService.silentRefresh(req, res);
+    return await this.authService.silentRefresh(req, res);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Post('user/logout')
+  @ApiOperation({
+    summary: '로그아웃',
+    description: '로그아웃',
+  })
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user,
+  ): Promise<LogoutAuthOutputDto> {
+    return await this.authService.logout(user, res);
   }
 }
