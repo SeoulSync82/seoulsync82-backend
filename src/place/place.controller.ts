@@ -28,7 +28,7 @@ import { PlaceService } from './place.service';
 @ApiTags('장소')
 @Controller('/api/place')
 @UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
+@UseInterceptors(SuccessInterceptor)
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 

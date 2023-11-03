@@ -7,7 +7,7 @@ import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor
 @ApiTags('사용자')
 @Controller('/api/user')
 @UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
+@UseInterceptors(SuccessInterceptor)
 export class UserController {
   @Put('/profile/:uuid')
   @ApiOperation({

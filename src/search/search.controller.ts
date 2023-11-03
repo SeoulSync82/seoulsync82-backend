@@ -11,7 +11,7 @@ import { SearchService } from './search.service';
 @ApiTags('검색')
 @Controller('/api/search')
 @UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
+@UseInterceptors(SuccessInterceptor)
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 

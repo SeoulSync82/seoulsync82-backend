@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { CultureDto, CultureListDto, ExhibitionDto, PlaceReadDto, PopupDto } from './dto/place.dto';
@@ -28,7 +28,7 @@ export class PlaceService {
   async findCultureOne(uuid) {
     const culture: PlaceEntity = await this.placeQueryRepository.findOne(uuid);
     if (!culture) {
-      throw Error(ERROR.NOT_EXIST_DATA);
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
     const cultureDto: CultureDto = plainToInstance(CultureDto, culture, {

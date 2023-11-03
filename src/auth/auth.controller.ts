@@ -26,7 +26,7 @@ import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.int
 @ApiTags('계정')
 @Controller()
 @UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
+@UseInterceptors(SuccessInterceptor)
 export class AuthController {
   constructor(
     private readonly userService: UserService,
