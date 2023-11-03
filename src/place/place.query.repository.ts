@@ -2,7 +2,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { now } from 'mongoose';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchDto } from 'src/search/dto/search.dto';
-import { LessThan, MoreThan, Repository, Like, In } from 'typeorm';
+import {
+  LessThan,
+  MoreThan,
+  Repository,
+  Like,
+  In,
+  FindOptionsWhere,
+  FindOptionsOrder,
+} from 'typeorm';
 import { PlaceReadDto } from './dto/place.dto';
 
 export class PlaceQueryRepository {
@@ -55,17 +63,20 @@ export class PlaceQueryRepository {
 
   async findPopupList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
     const now = new Date();
-    const whereConditions = { place_type: '팝업', end_date: MoreThan(now) };
-    let orderType = {};
+    const whereConditions: FindOptionsWhere<PlaceEntity> = {
+      place_type: '팝업',
+      end_date: MoreThan(now),
+    };
+    const orderType: FindOptionsOrder<PlaceEntity> = {};
 
     if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
+      whereConditions.id = LessThan(dto.last_id);
     }
 
     if (dto.order === 'lastest') {
-      orderType = { start_date: 'DESC' };
+      orderType.start_date = 'DESC';
     } else if (dto.order === 'deadline') {
-      orderType = { end_date: 'ASC' };
+      orderType.end_date = 'ASC';
     }
 
     return await this.repository.find({

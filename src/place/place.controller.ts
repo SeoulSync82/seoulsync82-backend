@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Query,
+  Req,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -127,7 +128,12 @@ export class PlaceController {
     required: false,
     description: '한 번에 보여질 팝업 수',
   })
-  async findPopupList(@Query() dto: PlaceReadDto, @CurrentUser() user): Promise<ResponseDataDto> {
+  async findPopupList(
+    @Query() dto: PlaceReadDto,
+    @CurrentUser() user,
+    @Req() req,
+  ): Promise<ResponseDataDto> {
+    console.log(req);
     return await this.placeService.findPopupList(dto, user);
   }
 }
