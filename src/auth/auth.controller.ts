@@ -1,13 +1,29 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { GoogleAuthGuard } from 'src/commons/auth/google-auth.guard';
+import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
+import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
+import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
+@ApiTags('계정')
 @Controller()
+@UseFilters(SeoulSync82ExceptionFilter)
+@UseInterceptors(SuccessInterceptor, ErrorsInterceptor)
 export class AuthController {
   constructor(
     private readonly userService: UserService,
@@ -72,5 +88,16 @@ export class AuthController {
     // return this.authService.naverLogin(req, res);
     const result = await this.authService.naverLogin(req, res);
     return res.json(result);
+  }
+
+  //--------------------------------------------------------------//
+
+  @Post('/user/refresh')
+  @ApiOperation({
+    summary: '로그인 연장',
+    description: '로그인 연장',
+  })
+  async silentRefresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.authService.silentRefresh(req, res);
   }
 }

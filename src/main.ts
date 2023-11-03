@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
+import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 
 async function bootstrap() {
@@ -20,6 +21,8 @@ async function bootstrap() {
       credentials: true,
     }),
   );
+
+  app.use(cookieParser());
 
   const configService = app.get(ConfigService);
 
