@@ -33,4 +33,10 @@ export class UserQueryRepository {
       where: { id: id },
     });
   }
+
+  async findOne(uuid): Promise<UserEntity> {
+    return await this.repository.findOne({
+      where: { uuid: uuid },
+    });
+  }
 }
