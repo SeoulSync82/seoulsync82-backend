@@ -88,7 +88,7 @@ export class PlaceQueryRepository {
 
   async search(dto: SearchDto): Promise<PlaceEntity[]> {
     const whereConditions = {
-      place_name: Like(`%${dto.place_name}%`),
+      place_name: Like(`%${dto.search}%`),
     };
     let orderType = {};
 
