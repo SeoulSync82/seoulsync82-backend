@@ -1,5 +1,23 @@
-import { Controller, Get, Param, Query, UseFilters, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiParam,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { use } from 'passport';
+import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
@@ -15,7 +33,9 @@ import { SearchService } from './search.service';
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
-  @Get()
+  @Get('')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: '검색',
     description: '검색',
@@ -26,7 +46,7 @@ export class SearchController {
     type: ResponseDto,
   })
   @ApiQuery({
-    name: 'place_name',
+    name: 'search',
     type: 'string',
     required: false,
     description: '장소 이름',
@@ -43,8 +63,8 @@ export class SearchController {
     required: false,
     description: '한 번에 보여질 전시/팝업 수',
   })
-  async searchPlace(@Query() dto: SearchDto): Promise<ResponseDataDto> {
-    return await this.searchService.searchPlace(dto);
+  async searchPlace(@Query() dto: SearchDto, @CurrentUser() user): Promise<ResponseDataDto> {
+    return await this.searchService.searchPlace(dto, user);
   }
 
   @Get('/place/:uuid')
@@ -79,5 +99,21 @@ export class SearchController {
   })
   async searchPopular(): Promise<ResponseDataDto> {
     return await this.searchService.searchPopular();
+  }
+
+  @Get('/recent')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '최근 검색어 목록',
+    description: '최근 검색어 목록',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '최근 검색어 목록',
+    type: ResponseDto,
+  })
+  async searchRecent(@CurrentUser() user): Promise<ResponseDataDto> {
+    return await this.searchService.searchRecent(user);
   }
 }
