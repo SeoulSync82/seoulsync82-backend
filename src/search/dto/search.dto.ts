@@ -81,7 +81,7 @@ export class SearchDto {
     example: '쫄깃즈 키링 팝업스토어',
     description: '장소 이름',
   })
-  place_name: string;
+  search: string;
 
   @Expose()
   @ApiProperty({
