@@ -36,4 +36,11 @@ export class UserService {
 
     return DetailResponseDto.from(result);
   }
+
+  async profileUpdate(dto, user) {
+    if (dto.name || dto.profile_image) {
+      const updateUser = await this.userQueryRepository.updateUser(dto, user);
+    }
+    return DetailResponseDto.uuid(user.uuid);
+  }
 }

@@ -39,4 +39,16 @@ export class UserQueryRepository {
       where: { uuid: uuid },
     });
   }
+
+  async updateUser(dto, user) {
+    const whereConditions = {};
+    if (dto.name) {
+      Object.assign(whereConditions, { name: dto.name });
+    }
+    if (dto.profile_image) {
+      Object.assign(whereConditions, { profile_image: dto.profile_image });
+    }
+
+    return await this.repository.update({ id: user.id }, whereConditions);
+  }
 }
