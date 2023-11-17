@@ -39,7 +39,6 @@ export class UserController {
     type: DetailResponseDto,
   })
   async profileUpdate(@Body() dto: UpdateUserDto, @CurrentUser() user) {
-    console.log(user);
     return await this.userService.profileUpdate(dto, user);
   }
 
