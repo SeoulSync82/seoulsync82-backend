@@ -137,6 +137,20 @@ export class SearchDetailDto {
 
   @Expose()
   @ApiProperty({
+    example: '0',
+    description: '위도',
+  })
+  latitude: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '0',
+    description: '경도',
+  })
+  longitude: string;
+
+  @Expose()
+  @ApiProperty({
     example: 4.0,
     description: '평점',
   })
