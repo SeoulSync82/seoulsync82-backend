@@ -9,6 +9,12 @@ export class CourseEntity {
   uuid: string;
 
   @Column()
+  user_uuid: string;
+
+  @Column()
+  user_name: string;
+
+  @Column()
   count: number;
 
   @Column()
@@ -19,10 +25,4 @@ export class CourseEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
-
-  @Column('datetime', {
-    name: 'updated_at',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  updated_at: Date;
 }
