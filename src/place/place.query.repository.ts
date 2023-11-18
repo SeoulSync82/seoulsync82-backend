@@ -1,6 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { now } from 'mongoose';
+import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
+import { SubwayEntity } from 'src/entities/subway.entity';
 import { SearchDto } from 'src/search/dto/search.dto';
 import {
   LessThan,
@@ -17,6 +19,8 @@ export class PlaceQueryRepository {
   constructor(
     @InjectRepository(PlaceEntity)
     private repository: Repository<PlaceEntity>,
+    @InjectRepository(SubwayEntity)
+    private subwayRepository: Repository<SubwayEntity>,
   ) {}
 
   async findList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
@@ -109,5 +113,16 @@ export class PlaceQueryRepository {
       order: orderType,
       take: dto.size,
     });
+  }
+
+  async findPlacesOnSubwayLine(customs, dto: CourseRecommendReqDto): Promise<PlaceEntity[]> {
+    return await this.repository
+      .createQueryBuilder('p')
+      .innerJoinAndSelect('p.subways', 's')
+      .where('s.line = :line', { line: dto.line })
+      .andWhere('s.name = :name', { name: dto.subway })
+      .andWhere('s.place_type IN (:...types)', { types: customs })
+      .andWhere('s.kakao_rating = :rating', { rating: 1 })
+      .getMany();
   }
 }
