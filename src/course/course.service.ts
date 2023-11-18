@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
+import { CourseDetailEntity } from 'src/entities/course.detail.entity';
+import { CourseEntity } from 'src/entities/course.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
@@ -137,8 +139,30 @@ export class CourseService {
       place: placeSorting,
     });
 
-    // 나중에 가중치 삭감 반영
-    // 트랜잭션
+    const courseEntity = new CourseEntity();
+    courseEntity.uuid = courseRecommendResDto.uuid;
+    courseEntity.line = dto.line;
+    courseEntity.subway = dto.subway;
+    courseEntity.user_uuid = user.uuid;
+    courseEntity.user_name = user.nickname;
+    courseEntity.count = courseRecommendResDto.count;
+    courseEntity.customs = dto.customs.join(', ');
+
+    await this.courseQueryRepository.saveCourse(courseEntity);
+
+    const courseDetailEntity = courseRecommendResDto.place.map((place) => {
+      const courseDetail = new CourseDetailEntity();
+      courseDetail.course_uuid = courseRecommendResDto.uuid;
+      courseDetail.sort = place.sort;
+      courseDetail.place_uuid = place.uuid;
+      courseDetail.place_name = place.place_name;
+      courseDetail.place_type = place.place_type;
+      return courseDetail;
+    });
+
+    await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
+    // 나중에 로그 가중치 삭감 반영
+    // 트랜잭션 처리 필요
 
     return DetailResponseDto.from(courseRecommendResDto);
   }

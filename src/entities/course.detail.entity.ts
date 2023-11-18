@@ -1,33 +1,24 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'course' })
-export class CourseEntity {
+@Entity({ name: 'course_detail' })
+export class CourseDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  uuid: string;
+  course_uuid: string;
 
   @Column()
-  subway: string;
+  sort: number;
 
   @Column()
-  line: string;
+  place_uuid: string;
 
   @Column()
-  user_uuid: string;
+  place_name: string;
 
   @Column()
-  user_name: string;
-
-  @Column()
-  count: number;
-
-  @Column()
-  customs: string;
-
-  @Column()
-  image: string;
+  place_type: string;
 
   @Column('datetime', {
     name: 'created_at',
