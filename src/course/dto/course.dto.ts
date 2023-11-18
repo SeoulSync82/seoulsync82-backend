@@ -21,7 +21,7 @@ export class CourseRecommendReqDto {
     example: '가성비 좋은',
     description: '음식점 테마',
   })
-  theme_restuarant?: string;
+  theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
@@ -39,12 +39,6 @@ export class CourseRecommendReqDto {
 }
 
 export class CourseRecommendResDto {
-  @ApiProperty({
-    example: 535,
-    description: '장소 아이디',
-  })
-  id: number;
-
   @Expose()
   @ApiProperty({
     example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
@@ -64,7 +58,7 @@ export class CourseRecommendResDto {
     example: '가성비 좋은',
     description: '음식점 테마',
   })
-  theme_restuarant?: string;
+  theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
@@ -83,6 +77,12 @@ export class CourseRecommendResDto {
   @Expose()
   @ApiProperty()
   place: CoursePlaceDto[];
+
+  constructor(data?: Partial<CourseRecommendResDto>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
 }
 
 export class CoursePlaceDto {
@@ -91,7 +91,7 @@ export class CoursePlaceDto {
     example: '1',
     description: '장소 순서',
   })
-  sort: string;
+  sort: number;
 
   @Expose()
   @ApiProperty({

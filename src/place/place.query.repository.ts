@@ -115,7 +115,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findPlacesOnSubwayLine(customs, dto: CourseRecommendReqDto): Promise<PlaceEntity[]> {
+  async findSubwayPlaceList(customs, dto: CourseRecommendReqDto): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
@@ -123,6 +123,17 @@ export class PlaceQueryRepository {
       .andWhere('s.name = :name', { name: dto.subway })
       .andWhere('s.place_type IN (:...types)', { types: customs })
       .andWhere('s.kakao_rating = :rating', { rating: 1 })
+      .getMany();
+  }
+
+  async findSubwayCultureList(dto: CourseRecommendReqDto): Promise<PlaceEntity[]> {
+    return await this.repository
+      .createQueryBuilder('p')
+      .innerJoinAndSelect('p.subways', 's')
+      .where('s.line = :line', { line: dto.line })
+      .andWhere('s.name = :name', { name: dto.subway })
+      .andWhere('s.place_type IN (:...types)', { types: ['전시', '팝업'] })
+      .andWhere('p.end_date > :now', { now: new Date() })
       .getMany();
   }
 }
