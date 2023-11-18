@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { SubwayEntity } from './subway.entity';
 
 @Entity({ name: 'place' })
 export class PlaceEntity {
@@ -49,4 +50,22 @@ export class PlaceEntity {
 
   @Column()
   end_date: Date;
+
+  @Column()
+  cate_name_depth1: string;
+
+  @Column()
+  cate_name_depth2: string;
+
+  @Column()
+  cate_name_depth3: string;
+
+  @Column()
+  brandname: string;
+
+  @Column()
+  homepage: string;
+
+  @OneToMany(() => SubwayEntity, (subway) => subway.place)
+  subways: SubwayEntity[];
 }

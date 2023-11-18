@@ -1,103 +1,97 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class SearchListDto {
+export class CourseRecommendReqDto {
+  @Expose()
   @ApiProperty({
-    example: 535,
-    description: '장소 아이디',
+    example: '성수',
+    description: '지하철 역',
   })
-  id: number;
+  subway: string;
 
   @Expose()
   @ApiProperty({
+    example: '2호선',
+    description: '지하철 호선',
+  })
+  line: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '가성비 좋은',
+    description: '음식점 테마',
+  })
+  theme_restaurant?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '인스타 감성',
+    description: '카페 테마',
+  })
+  theme_cafe?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: ['음식점', '카페', '술집'],
+    description: '커스텀',
+  })
+  customs: string[];
+}
+
+export class CourseRecommendResDto {
+  @Expose()
+  @ApiProperty({
     example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
-    description: '장소 uuid',
+    description: '코스 uuid',
   })
   uuid: string;
 
   @Expose()
   @ApiProperty({
-    example: '쫄깃즈 키링 팝업스토어',
-    description: '장소 이름',
+    example: '성수역',
+    description: '지하철 역',
   })
-  place_name: string;
+  subway: string;
 
   @Expose()
   @ApiProperty({
-    example: '팝업',
-    description: '장소 종류',
+    example: '가성비 좋은',
+    description: '음식점 테마',
   })
-  place_type: string;
+  theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
-    example:
-      'https://cf-templates-1gyolugg9zn9q-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/store/b4d678db%2C701e%2C482e%2C8a18%2C4b4a4f7a352f',
-    description: '장소 썸네일',
+    example: '인스타 감성',
+    description: '카페 테마',
   })
-  thumbnail: string;
+  theme_cafe?: string;
 
   @Expose()
   @ApiProperty({
-    example: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
-    description: '주소',
+    example: '2',
+    description: '코스 장소 갯수',
   })
-  address: string;
+  count: number;
 
   @Expose()
-  @ApiProperty({
-    example: 4.0,
-    description: '평점',
-  })
-  score: number;
+  @ApiProperty()
+  place: CoursePlaceDto[];
 
-  @Expose()
-  @ApiProperty({
-    example: 30,
-    description: '리뷰수',
-  })
-  review_count: number;
+  constructor(data?: Partial<CourseRecommendResDto>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
 }
 
-export class SearchDto {
+export class CoursePlaceDto {
   @Expose()
   @ApiProperty({
-    example: 0,
-    description: '마지막 장소 아이디',
-    required: false,
+    example: '1',
+    description: '장소 순서',
   })
-  last_id?: number;
-
-  @Expose()
-  @ApiProperty({
-    example: 10,
-    description: '한 번에 보여줄 장소 개수',
-    required: false,
-  })
-  size?: number;
-
-  @Expose()
-  @ApiProperty({
-    example: '쫄깃즈 키링 팝업스토어',
-    description: '장소 이름',
-  })
-  search: string;
-
-  @Expose()
-  @ApiProperty({
-    example: 'restaurant',
-    description: '장소 타입',
-    required: false,
-  })
-  place_type: string;
-}
-
-export class SearchDetailDto {
-  @ApiProperty({
-    example: 535,
-    description: '장소 아이디',
-  })
-  id: number;
+  sort: number;
 
   @Expose()
   @ApiProperty({
@@ -151,6 +145,20 @@ export class SearchDetailDto {
 
   @Expose()
   @ApiProperty({
+    example: 'https://www.popply.co.kr/popup/608',
+    description: 'URL',
+  })
+  url: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '070-4141-5474',
+    description: '전화번호',
+  })
+  tel: string;
+
+  @Expose()
+  @ApiProperty({
     example: 4.0,
     description: '평점',
   })
@@ -165,17 +173,10 @@ export class SearchDetailDto {
 
   @Expose()
   @ApiProperty({
-    example: 'https://www.popply.co.kr/popup/608',
-    description: 'URL',
+    example: '도미노 피자',
+    description: '브랜드 네임',
   })
-  url: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '070-4141-5474',
-    description: '전화번호',
-  })
-  tel: string;
+  brandname: string;
 
   @Expose()
   @ApiProperty({

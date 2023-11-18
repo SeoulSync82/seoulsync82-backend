@@ -106,14 +106,14 @@ export class CultureDto {
     example: '0',
     description: '위도',
   })
-  latitude: string;
+  latitude: number;
 
   @Expose()
   @ApiProperty({
     example: '0',
     description: '경도',
   })
-  longitude: string;
+  longitude: number;
 
   @Expose()
   @ApiProperty({
