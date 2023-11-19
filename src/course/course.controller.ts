@@ -1,4 +1,13 @@
-import { Body, Controller, Post, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
@@ -32,5 +41,19 @@ export class CourseController {
     @Body() dto: CourseRecommendReqDto,
   ): Promise<DetailResponseDto> {
     return await this.courseService.courseRecommend(user, dto);
+  }
+
+  @Get('/recommend/non-login/')
+  @ApiOperation({
+    summary: 'AI 코스 추천 - 비회원',
+    description: 'AI 코스 추천 - 비회원',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'AI 코스 추천 - 비회원',
+    type: DetailResponseDto,
+  })
+  async courseRecommendNonLogin(@Query() dto: CourseRecommendReqDto): Promise<DetailResponseDto> {
+    return await this.courseService.courseRecommendNonLogin(dto);
   }
 }

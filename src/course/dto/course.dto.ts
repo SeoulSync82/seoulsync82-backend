@@ -20,6 +20,7 @@ export class CourseRecommendReqDto {
   @ApiProperty({
     example: '가성비 좋은',
     description: '음식점 테마',
+    required: false,
   })
   theme_restaurant?: string;
 
@@ -27,6 +28,7 @@ export class CourseRecommendReqDto {
   @ApiProperty({
     example: '인스타 감성',
     description: '카페 테마',
+    required: false,
   })
   theme_cafe?: string;
 
