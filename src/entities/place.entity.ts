@@ -63,9 +63,6 @@ export class PlaceEntity {
   @Column()
   brandname: string;
 
-  @Column()
-  homepage: string;
-
   @OneToMany(() => SubwayEntity, (subway) => subway.place)
   subways: SubwayEntity[];
 }
