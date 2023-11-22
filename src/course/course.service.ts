@@ -5,6 +5,7 @@ import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
+import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
@@ -332,5 +333,19 @@ export class CourseService {
     // 트랜잭션 처리 필요
 
     return DetailResponseDto.from(courseRecommendResDto);
+  }
+
+  async courseSave(user, uuid, dto) {
+    const myCourseEntity = new MyCourseEntity();
+    myCourseEntity.uuid = generateUUID();
+    myCourseEntity.course_uuid = uuid;
+    myCourseEntity.subway = dto.subway;
+    myCourseEntity.line = dto.line;
+    myCourseEntity.user_uuid = user.uuid;
+    myCourseEntity.user_name = user.nickname;
+
+    await this.courseQueryRepository.saveMyCourse(myCourseEntity);
+
+    return DetailResponseDto.uuid(uuid);
   }
 }

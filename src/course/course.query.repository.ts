@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { time } from 'console';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
+import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { Repository } from 'typeorm';
 
 export class CourseQueryRepository {
@@ -10,6 +11,8 @@ export class CourseQueryRepository {
     private repository: Repository<CourseEntity>,
     @InjectRepository(CourseDetailEntity)
     private detailRepository: Repository<CourseDetailEntity>,
+    @InjectRepository(MyCourseEntity)
+    private myCourseRepository: Repository<MyCourseEntity>,
   ) {}
 
   async saveCourse(courseEntity) {
@@ -38,5 +41,9 @@ export class CourseQueryRepository {
       .andWhere('course.created_at >= :sevenDaysAgo', { sevenDaysAgo })
       .select('courseDetail.place_uuid')
       .getMany();
+  }
+
+  async saveMyCourse(myCourseEntity) {
+    return await this, this.myCourseRepository.save(myCourseEntity);
   }
 }
