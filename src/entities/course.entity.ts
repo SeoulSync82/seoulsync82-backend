@@ -1,11 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CourseDetailEntity } from './course.detail.entity';
 
 @Entity({ name: 'course' })
 export class CourseEntity {
-  @PrimaryGeneratedColumn()
+  @Column({ type: 'integer' })
+  @Generated('increment')
   id: number;
 
-  @Column()
+  @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
   @Column()
@@ -34,4 +36,7 @@ export class CourseEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
+
+  @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.course_uuid)
+  courseDetails: CourseDetailEntity[];
 }
