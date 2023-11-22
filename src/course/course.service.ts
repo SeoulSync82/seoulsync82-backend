@@ -38,9 +38,32 @@ export class CourseService {
       // 추후 subway , place_theme , place 세개 테이블 Join
     }
 
+    const userHistoryCourse: CourseDetailEntity[] =
+      await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
+
     if (dto.customs.includes('문화')) {
       const subwayCultureList: PlaceEntity[] =
         await this.placeQueryRepository.findSubwayCultureList(dto);
+
+      function calculateWeight(customPlace) {
+        let weight = 10; // 문화는 리뷰, 평점 없어서 가중치 고정값
+        if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
+          console.log(111);
+          weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
+        }
+        return weight;
+      }
+
+      function getTopWeight(subwayCultureList, topN) {
+        const weightedPlace = subwayCultureList.map((item) => ({
+          ...item,
+          weight: calculateWeight(item),
+        }));
+
+        return weightedPlace.sort((a, b) => b.weight - a.weight).slice(0, topN);
+      }
+
+      const topWeightPlaces = getTopWeight(subwayCultureList, 10);
 
       function getRandomElements(topWeightPlaces, n) {
         let tempArray = [...topWeightPlaces];
@@ -54,57 +77,62 @@ export class CourseService {
         }
         return result;
       }
-      // 문화는 리뷰,평점 없어서 그냥 랜덤 N개
+      // 문화는 리뷰,평점 없어서 히스토리 가중치 감소만 반영 N개
       const ramdomCultures = getRandomElements(subwayCultureList, countCustoms['문화']);
       placeNonSorting.push(...ramdomCultures);
 
       customs = customs.filter((item) => item !== '문화');
     }
+    console.log(customs);
+    if (customs.length !== 0) {
+      const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(
+        customs,
+        dto,
+      );
 
-    const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(
-      customs,
-      dto,
-    );
+      for (const custom in countCustoms) {
+        if (custom !== '문화') {
+          const customPlace = subwayPlaceList.filter((item) => item.place_type === custom);
 
-    for (const custom in countCustoms) {
-      if (custom !== '문화') {
-        const customPlace = subwayPlaceList.filter((item) => item.place_type === custom);
-        // console.log(customPlace);
-        function calculateWeight(customPlace) {
-          return customPlace.score * Math.log(customPlace.review_count + 1);
-        }
-
-        function getTopWeight(customPlace, topN) {
-          const weightedPlace = customPlace.map((item) => ({
-            ...item,
-            weight: calculateWeight(item),
-          }));
-
-          return weightedPlace.sort((a, b) => b.weight - a.weight).slice(0, topN);
-        }
-
-        const topWeightPlaces = getTopWeight(customPlace, 10);
-        // 가중치 평균을 측정해 상위 N개 추출
-
-        function getRandomElements(topWeightPlaces, n) {
-          let tempArray = [...topWeightPlaces];
-          const result = [];
-
-          for (let i = 0; i < n && tempArray.length > 0; i++) {
-            const randomIndex = Math.floor(Math.random() * tempArray.length);
-            result.push(tempArray[randomIndex]);
-            tempArray.splice(randomIndex, 1);
-            // 선택된 요소 제거 - 코스에 같은 type 여러개 있는 case 고려
+          function calculateWeight(customPlace) {
+            let weight = customPlace.score * Math.log(customPlace.review_count + 1);
+            if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
+              weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
+            }
+            return weight;
           }
-          return result;
-        }
 
-        const randomplaces = getRandomElements(topWeightPlaces, countCustoms[custom]);
-        // 상위 N개중 랜덤한 값 추출
-        placeNonSorting.push(...randomplaces);
+          function getTopWeight(customPlace, topN) {
+            const weightedPlace = customPlace.map((item) => ({
+              ...item,
+              weight: calculateWeight(item),
+            }));
+
+            return weightedPlace.sort((a, b) => b.weight - a.weight).slice(0, topN);
+          }
+
+          const topWeightPlaces = getTopWeight(customPlace, 10);
+          // 가중치 평균을 측정해 상위 N개 추출
+
+          function getRandomElements(topWeightPlaces, n) {
+            let tempArray = [...topWeightPlaces];
+            const result = [];
+
+            for (let i = 0; i < n && tempArray.length > 0; i++) {
+              const randomIndex = Math.floor(Math.random() * tempArray.length);
+              result.push(tempArray[randomIndex]);
+              tempArray.splice(randomIndex, 1);
+              // 선택된 요소 제거 - 코스에 같은 type 여러개 있는 case 고려
+            }
+            return result;
+          }
+
+          const randomplaces = getRandomElements(topWeightPlaces, countCustoms[custom]);
+          // 상위 N개중 랜덤한 값 추출
+          placeNonSorting.push(...randomplaces);
+        }
       }
     }
-
     const placeSorting: CoursePlaceDto[] = [];
 
     for (const [index, place_type] of dto.customs.entries()) {
@@ -161,7 +189,6 @@ export class CourseService {
     });
 
     await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
-    // 나중에 로그 가중치 삭감 반영
     // 트랜잭션 처리 필요
 
     return DetailResponseDto.from(courseRecommendResDto);

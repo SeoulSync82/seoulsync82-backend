@@ -37,6 +37,6 @@ export class CourseEntity {
   })
   created_at: Date;
 
-  @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.course_uuid)
+  @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.course)
   courseDetails: CourseDetailEntity[];
 }

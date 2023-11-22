@@ -29,5 +29,5 @@ export class CourseDetailEntity {
 
   @ManyToOne(() => CourseEntity, (Course) => Course.courseDetails)
   @JoinColumn({ name: 'course_uuid', referencedColumnName: 'uuid' })
-  Course: CourseEntity;
+  course: CourseEntity;
 }

@@ -26,4 +26,17 @@ export class CourseQueryRepository {
         console.error('Error saving course details:', error);
       });
   }
+
+  async findUserHistoryCourse(uuid: string): Promise<CourseDetailEntity[]> {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return await this.detailRepository
+      .createQueryBuilder('courseDetail')
+      .innerJoin('courseDetail.course', 'course')
+      .where('course.user_uuid = :uuid', { uuid })
+      .andWhere('course.created_at >= :sevenDaysAgo', { sevenDaysAgo })
+      .select('courseDetail.place_uuid')
+      .getMany();
+  }
 }
