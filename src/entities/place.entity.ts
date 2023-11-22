@@ -1,12 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { SubwayEntity } from './subway.entity';
 
 @Entity({ name: 'place' })
 export class PlaceEntity {
-  @PrimaryGeneratedColumn()
+  @Column({ type: 'integer' })
+  @Generated('increment')
   id: number;
 
-  @Column()
+  @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
   @Column()
