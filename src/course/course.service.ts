@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
@@ -48,7 +49,6 @@ export class CourseService {
       function calculateWeight(customPlace) {
         let weight = 10; // 문화는 리뷰, 평점 없어서 가중치 고정값
         if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
-          console.log(111);
           weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
         }
         return weight;
@@ -83,7 +83,7 @@ export class CourseService {
 
       customs = customs.filter((item) => item !== '문화');
     }
-    console.log(customs);
+
     if (customs.length !== 0) {
       const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(
         customs,
@@ -147,6 +147,13 @@ export class CourseService {
       placeNonSorting = placeNonSorting.filter((item) => item !== customSortingPlace[0]);
       // sorting한 장소는 기존 placeNonSorting에서 제거
 
+      if (!customSortingPlace[0]) {
+        console.log(place_type);
+        throw new NotFoundException(
+          `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
+        );
+        // AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리
+      }
       const coursePlaceDto: CoursePlaceDto = plainToInstance(
         CoursePlaceDto,
         customSortingPlace[0],
@@ -294,6 +301,13 @@ export class CourseService {
       placeNonSorting = placeNonSorting.filter((item) => item !== customSortingPlace[0]);
       // sorting한 장소는 기존 placeNonSorting에서 제거
 
+      if (!customSortingPlace[0]) {
+        console.log(place_type);
+        throw new NotFoundException(
+          `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
+        );
+        // AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리
+      }
       const coursePlaceDto: CoursePlaceDto = plainToInstance(
         CoursePlaceDto,
         customSortingPlace[0],

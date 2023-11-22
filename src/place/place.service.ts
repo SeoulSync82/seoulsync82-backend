@@ -43,7 +43,6 @@ export class PlaceService {
     if (!exhibitionList || exhibitionList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
-    console.log(exhibitionList);
 
     const exhibitionDto: ExhibitionDto[] = plainToInstance(ExhibitionDto, exhibitionList, {
       excludeExtraneousValues: true,
