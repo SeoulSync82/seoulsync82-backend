@@ -52,7 +52,7 @@ export class AuthController {
     // res.redirect('http://localhost:3000/auth/test-guard2');
     // return res.send(user);
     const result = await this.authService.googleLogin(req, res);
-    return res.json(result);
+    return res.send(result);
   }
 
   //-----------------------카카오 로그인-----------------------------//
