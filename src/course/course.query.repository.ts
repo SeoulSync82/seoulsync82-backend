@@ -44,6 +44,20 @@ export class CourseQueryRepository {
   }
 
   async saveMyCourse(myCourseEntity) {
-    return await this, this.myCourseRepository.save(myCourseEntity);
+    return await this.myCourseRepository.save(myCourseEntity);
+  }
+
+  async findOne(user, uuid): Promise<MyCourseEntity> {
+    return await this.myCourseRepository.findOne({
+      where: { user_uuid: user.uuid, course_uuid: uuid },
+    });
+  }
+
+  async deleteMyCourse(id) {
+    return await this.myCourseRepository.update({ id: id }, { archived_at: new Date() });
+  }
+
+  async reSaveMyCourse(id) {
+    return await this.myCourseRepository.update({ id: id }, { archived_at: null });
   }
 }

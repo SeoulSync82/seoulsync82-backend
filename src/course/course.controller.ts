@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -82,5 +83,27 @@ export class CourseController {
     @Body() dto: CourseSaveReqDto,
   ): Promise<DetailResponseDto> {
     return await this.courseService.courseSave(user, uuid, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Delete('/:uuid/delete')
+  @ApiOperation({
+    summary: 'AI 코스 내 코스 삭제',
+    description: 'AI 코스 내 코스 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'AI 코스 내 코스 삭제',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '코스 uuid',
+  })
+  async courseDelete(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
+    return await this.courseService.courseDelete(user, uuid);
   }
 }

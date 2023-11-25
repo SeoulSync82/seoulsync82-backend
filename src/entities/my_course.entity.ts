@@ -33,6 +33,9 @@ export class MyCourseEntity {
   @Column()
   course_name: string;
 
+  @Column()
+  archived_at: Date;
+
   @Column('datetime', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',

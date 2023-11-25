@@ -209,7 +209,6 @@ export class CourseSaveReqDto {
     description: '지하철 호선',
   })
   line: string;
-
   // @Expose()
   // @ApiProperty({
   //   example: '',

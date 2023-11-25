@@ -344,7 +344,20 @@ export class CourseService {
     myCourseEntity.user_uuid = user.uuid;
     myCourseEntity.user_name = user.nickname;
 
-    await this.courseQueryRepository.saveMyCourse(myCourseEntity);
+    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
+    if (myCourse) {
+      await this.courseQueryRepository.reSaveMyCourse(myCourse.id);
+    } else {
+      await this.courseQueryRepository.saveMyCourse(myCourseEntity);
+    }
+    return DetailResponseDto.uuid(uuid);
+  }
+
+  async courseDelete(user, uuid) {
+    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
+    if (!myCourse) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    } else await this.courseQueryRepository.deleteMyCourse(myCourse.id);
 
     return DetailResponseDto.uuid(uuid);
   }
