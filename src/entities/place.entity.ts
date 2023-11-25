@@ -1,4 +1,5 @@
 import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CourseDetailEntity } from './course.detail.entity';
 import { SubwayEntity } from './subway.entity';
 
 @Entity({ name: 'place' })
@@ -66,4 +67,7 @@ export class PlaceEntity {
 
   @OneToMany(() => SubwayEntity, (subway) => subway.place)
   subways: SubwayEntity[];
+
+  @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.place)
+  courseDetails: CourseDetailEntity[];
 }
