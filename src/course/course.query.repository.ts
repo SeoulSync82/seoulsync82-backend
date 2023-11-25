@@ -60,4 +60,13 @@ export class CourseQueryRepository {
   async reSaveMyCourse(id) {
     return await this.myCourseRepository.update({ id: id }, { archived_at: null });
   }
+
+  async findPlace(courseUuid: string): Promise<any[]> {
+    return await this.detailRepository
+      .createQueryBuilder('courseDetail')
+      .innerJoinAndSelect('courseDetail.place', 'place')
+      .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
+      .select(['courseDetail', 'place'])
+      .getMany();
+  }
 }

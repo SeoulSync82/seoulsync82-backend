@@ -136,4 +136,12 @@ export class PlaceQueryRepository {
       .andWhere('p.end_date > :now', { now: new Date() })
       .getMany();
   }
+
+  // async findPlace(courseUuid: string): Promise<PlaceEntity[]> {
+  //   return await this.repository
+  //     .createQueryBuilder('place')
+  //     .innerJoin('place.courseDetails', 'courseDetail')
+  //     .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
+  //     .getMany();
+  // }
 }
