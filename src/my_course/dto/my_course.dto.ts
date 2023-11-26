@@ -37,7 +37,7 @@ export class MyCourseListResDto {
   @Expose()
   @ApiProperty({
     example: 'c152acef58875943b20b5cd511f25902',
-    description: '내코스 이름',
+    description: '내코스 uuid',
   })
   course_uuid: string;
 

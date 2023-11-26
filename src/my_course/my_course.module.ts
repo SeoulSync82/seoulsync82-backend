@@ -11,5 +11,6 @@ import { MyCourseService } from './my_course.service';
   imports: [PlaceModule, CourseModule, TypeOrmModule.forFeature([MyCourseEntity])],
   controllers: [MyCourseController],
   providers: [MyCourseService, MyCourseQueryRepository],
+  exports: [MyCourseQueryRepository],
 })
 export class MyCourseModule {}
