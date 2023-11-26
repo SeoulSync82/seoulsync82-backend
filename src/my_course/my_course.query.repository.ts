@@ -27,4 +27,10 @@ export class MyCourseQueryRepository {
       where: { uuid: uuid, archived_at: IsNull() },
     });
   }
+
+  async findList(uuid): Promise<MyCourseEntity[]> {
+    return await this.repository.find({
+      where: { uuid: uuid },
+    });
+  }
 }

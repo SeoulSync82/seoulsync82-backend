@@ -16,6 +16,7 @@ import Joi from 'joi';
 import { SearchModule } from './search/search.module';
 import { ThemeModule } from './theme/theme.module';
 import { MyCourseModule } from './my_course/my_course.module';
+import { CommunityModule } from './community/community.module';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { MyCourseModule } from './my_course/my_course.module';
       } as TypeOrmModuleAsyncOptions;
     },
   }),
-  UserModule, PlaceModule, CourseModule, ReactionModule, NotificationModule, AuthModule, SearchModule, ThemeModule, MyCourseModule],
+  UserModule, PlaceModule, CourseModule, ReactionModule, NotificationModule, AuthModule, SearchModule, ThemeModule, MyCourseModule, CommunityModule],
   controllers: [AppController],
   providers: [AppService],
 })

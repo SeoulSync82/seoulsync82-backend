@@ -1,7 +1,98 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
-export class CourseRecommendReqDto {
+export class CommunityPostReqDto {
+  @Expose()
+  @ApiProperty({
+    example: '6e6df92a8af35a16af80c358d73d54bb',
+    description: '내코스 uuid',
+  })
+  my_course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '4.0',
+    description: '평점',
+  })
+  score: number;
+
+  @Expose()
+  @ApiProperty({
+    example: '추천받은 코스가 정말 좋아요!',
+    description: '한줄리뷰',
+  })
+  review: string;
+}
+export class CommunityListReqDto {
+  @Expose()
+  @ApiProperty({
+    example: 0,
+    description: '마지막 커뮤니티 아이디',
+    required: false,
+  })
+  last_id?: number;
+
+  @Expose()
+  @ApiProperty({
+    example: 10,
+    description: '한 번에 보여줄 커뮤니티 개수',
+    required: false,
+  })
+  size?: number;
+
+  @Expose()
+  @ApiProperty({
+    example: false,
+    description: '내가 쓴 게시물',
+    required: false,
+  })
+  @Transform(({ value }) => value === 'true')
+  me: boolean;
+}
+
+export class CommunityListResDto {
+  @Expose()
+  @ApiProperty({
+    example: 1,
+    description: '커뮤니티 id',
+  })
+  id: number;
+
+  @Expose()
+  @ApiProperty({
+    example: '6e6df92a8af35a16af80c358d73d54bb',
+    description: '커뮤니티 uuid',
+  })
+  uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '6e6df92a8af35a16af80c358d73d54bb',
+    description: '내코스 uuid',
+  })
+  my_course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '개지리는 성수역 코스추천',
+    description: '내코스 이름',
+  })
+  my_course_name: string;
+
+  @Expose()
+  @ApiProperty({
+    example: 'c152acef58875943b20b5cd511f25902',
+    description: '내코스 uuid',
+  })
+  course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '',
+    description: '장소 이름',
+  })
+  course_image: string;
+
   @Expose()
   @ApiProperty({
     example: '성수',
@@ -18,35 +109,33 @@ export class CourseRecommendReqDto {
 
   @Expose()
   @ApiProperty({
-    example: '가성비 좋은',
-    description: '음식점 테마',
-    required: false,
+    example: '2023-10-21 00:00:00',
+    description: '생성일',
   })
-  theme_restaurant?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '인스타 감성',
-    description: '카페 테마',
-    required: false,
-  })
-  theme_cafe?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: ['음식점', '카페', '술집'],
-    description: '커스텀',
-  })
-  customs: string[];
+  created_at: Date;
 }
 
-export class CourseRecommendResDto {
+export class CommunityDetailResDto {
   @Expose()
   @ApiProperty({
     example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
     description: '코스 uuid',
   })
-  uuid: string;
+  course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '6e6df92a8af35a16af80c358d73d54bb',
+    description: '내 코스 uuid',
+  })
+  my_course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '개지리는 성수역 코스추천',
+    description: '내 코스 이름',
+  })
+  my_course_name: string;
 
   @Expose()
   @ApiProperty({
@@ -80,7 +169,7 @@ export class CourseRecommendResDto {
   @ApiProperty()
   place: CoursePlaceDto[];
 
-  constructor(data?: Partial<CourseRecommendResDto>) {
+  constructor(data?: Partial<CommunityDetailResDto>) {
     if (data) {
       Object.assign(this, data);
     }
@@ -193,107 +282,4 @@ export class CoursePlaceDto {
     description: '마감일',
   })
   end_date: Date;
-}
-
-export class MyCourseDetailResDto {
-  @Expose()
-  @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
-    description: '코스 uuid',
-  })
-  course_uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내 코스 uuid',
-  })
-  my_course_uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '개지리는 성수역 코스추천',
-    description: '내 코스 이름',
-  })
-  my_course_name: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '성수역',
-    description: '지하철 역',
-  })
-  subway: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '가성비 좋은',
-    description: '음식점 테마',
-  })
-  theme_restaurant?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '인스타 감성',
-    description: '카페 테마',
-  })
-  theme_cafe?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '2',
-    description: '코스 장소 갯수',
-  })
-  count: number;
-
-  @Expose()
-  @ApiProperty()
-  place: CoursePlaceDto[];
-
-  constructor(data?: Partial<MyCourseDetailResDto>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-}
-export class CourseSaveReqDto {
-  @Expose()
-  @ApiProperty({
-    example: '성수',
-    description: '지하철 역',
-  })
-  subway: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '2호선',
-    description: '지하철 호선',
-  })
-  line: string;
-  // @Expose()
-  // @ApiProperty({
-  //   example: '',
-  //   description: '장소 이미지',
-  // })
-  // place_image: string;
-}
-export class SubwayCustomsCheckReqDto {
-  @Expose()
-  @ApiProperty({
-    example: '성수',
-    description: '지하철 역',
-  })
-  subway: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '2호선',
-    description: '지하철 호선',
-  })
-  line: string;
-  // @Expose()
-  // @ApiProperty({
-  //   example: '',
-  //   description: '장소 이미지',
-  // })
-  // place_image: string;
 }
