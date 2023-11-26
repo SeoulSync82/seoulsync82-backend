@@ -7,10 +7,16 @@ import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
+import { SubwayCustomCheckResDto, CustomListDto } from 'src/place/dto/subway.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
-import { CoursePlaceDto, CourseRecommendReqDto, CourseRecommendResDto } from './dto/course.dto';
+import {
+  CoursePlaceDto,
+  CourseRecommendReqDto,
+  CourseRecommendResDto,
+  SubwayCustomsCheckReqDto,
+} from './dto/course.dto';
 
 @Injectable()
 export class CourseService {
@@ -360,5 +366,22 @@ export class CourseService {
     } else await this.courseQueryRepository.deleteMyCourse(myCourse.id);
 
     return DetailResponseDto.uuid(uuid);
+  }
+
+  async subwayCustomsCheck(dto: SubwayCustomsCheckReqDto) {
+    const subwayCustoms = await this.subwayQueryRepository.groupByCustom(dto);
+
+    const customsTypes = subwayCustoms.map((item) => item.subway_place_type);
+
+    const customsCheck = new CustomListDto({
+      음식점: customsTypes.includes('음식점'),
+      카페: customsTypes.includes('카페'),
+      술집: customsTypes.includes('술집'),
+      쇼핑: customsTypes.includes('쇼핑'),
+      문화: customsTypes.includes('전시') || customsTypes.includes('팝업'),
+      놀거리: customsTypes.includes('놀거리'),
+    });
+
+    return DetailResponseDto.from(new SubwayCustomCheckResDto({ customs: [customsCheck] }));
   }
 }

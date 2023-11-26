@@ -5,7 +5,11 @@ import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { CourseModule } from 'src/course/course.module';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
-import { CoursePlaceDto, CourseRecommendResDto } from 'src/course/dto/course.dto';
+import {
+  CoursePlaceDto,
+  CourseRecommendResDto,
+  MyCourseDetailResDto,
+} from 'src/course/dto/course.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { MyCourseListResDto } from './dto/my_course.dto';
 import { MyCourseQueryRepository } from './my_course.query.repository';
@@ -41,7 +45,7 @@ export class MyCourseService {
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
 
-    const myCourseDetailResDto = new CourseRecommendResDto({
+    const myCourseDetailResDto = new MyCourseDetailResDto({
       uuid: course.uuid,
       subway: course.subway,
       count: coursePlaces.length,

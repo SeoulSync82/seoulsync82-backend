@@ -16,15 +16,23 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto, ResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseService } from './course.service';
-import { CourseRecommendReqDto, CourseSaveReqDto } from './dto/course.dto';
+import {
+  CourseRecommendReqDto,
+  CourseSaveReqDto,
+  SubwayCustomsCheckReqDto,
+} from './dto/course.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
 @UseFilters(SeoulSync82ExceptionFilter)
 @UseInterceptors(SuccessInterceptor)
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly subwayQueryRepository: SubwayQueryRepository,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
@@ -105,5 +113,19 @@ export class CourseController {
   })
   async courseDelete(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.courseService.courseDelete(user, uuid);
+  }
+
+  @Get('/subway/customs-check')
+  @ApiOperation({
+    summary: '지하철 역 커스텀 체크',
+    description: '지하철 역 커스텀 체크',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '지하철 역 커스텀 체크',
+    type: DetailResponseDto,
+  })
+  async subwayCustomsCheck(@Query() dto: SubwayCustomsCheckReqDto): Promise<DetailResponseDto> {
+    return await this.courseService.subwayCustomsCheck(dto);
   }
 }
