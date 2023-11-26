@@ -25,4 +25,10 @@ export class CommunityQueryRepository {
       take: dto.size,
     });
   }
+
+  async findOne(uuid): Promise<CommunityEntity> {
+    return await this.repository.findOne({
+      where: { uuid: uuid, archived_at: IsNull() },
+    });
+  }
 }

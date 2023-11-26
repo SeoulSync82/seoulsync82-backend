@@ -2,13 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
@@ -60,5 +61,27 @@ export class CommunityController {
     @CurrentUser() user,
   ): Promise<ResponseDataDto> {
     return await this.communityService.communityList(dto, user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/:uuid')
+  @ApiOperation({
+    summary: '커뮤니티 상세',
+    description: '커뮤니티 상세',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 상세',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '커뮤니티 uuid',
+  })
+  async communityDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
+    return await this.communityService.communityDetail(uuid);
   }
 }

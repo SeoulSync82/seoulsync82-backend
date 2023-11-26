@@ -3,18 +3,25 @@ import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
+import { CourseQueryRepository } from 'src/course/course.query.repository';
+import { MyCourseDetailResDto, CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
 import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
-import { CommunityListResDto, CommunityPostReqDto } from './dto/community.dto';
+import {
+  CommunityDetailResDto,
+  CommunityListResDto,
+  CommunityPostReqDto,
+} from './dto/community.dto';
 
 @Injectable()
 export class CommunityService {
   constructor(
     private readonly communityQueryRepository: CommunityQueryRepository,
     private readonly myCourseQueryRepository: MyCourseQueryRepository,
+    private readonly courseQueryRepository: CourseQueryRepository,
   ) {}
 
   async communityPost(user, dto: CommunityPostReqDto) {
@@ -64,5 +71,40 @@ export class CommunityService {
     const last_item_id = communityList.length > 0 ? communityList[communityList.length - 1].id : 0;
 
     return ResponseDataDto.from(communityListResDto, null, last_item_id);
+  }
+
+  async communityDetail(uuid) {
+    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    if (!community) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const course = await this.myCourseQueryRepository.findOne(community.my_course_uuid);
+    if (!course) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
+
+    const communityDetailResDto = new CommunityDetailResDto({
+      course_uuid: course.course_uuid,
+      my_course_uuid: course.uuid,
+      my_course_name: course.course_name,
+      subway: course.subway,
+      count: coursePlaces.length,
+      place: plainToInstance(
+        CoursePlaceDto,
+        coursePlaces.map((coursePlace) => ({
+          ...coursePlace.place,
+          sort: coursePlace.sort,
+          uuid: coursePlace.place_uuid,
+        })),
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
+    });
+
+    return DetailResponseDto.from(communityDetailResDto);
   }
 }

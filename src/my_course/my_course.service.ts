@@ -46,7 +46,9 @@ export class MyCourseService {
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
 
     const myCourseDetailResDto = new MyCourseDetailResDto({
-      uuid: course.uuid,
+      course_uuid: course.course_uuid,
+      my_course_uuid: course.uuid,
+      my_course_name: course.course_name,
       subway: course.subway,
       count: coursePlaces.length,
       place: plainToInstance(

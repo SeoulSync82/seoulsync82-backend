@@ -201,7 +201,21 @@ export class MyCourseDetailResDto {
     example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
     description: '코스 uuid',
   })
-  uuid: string;
+  course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '6e6df92a8af35a16af80c358d73d54bb',
+    description: '내 코스 uuid',
+  })
+  my_course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '개지리는 성수역 코스추천',
+    description: '내 코스 이름',
+  })
+  my_course_name: string;
 
   @Expose()
   @ApiProperty({
