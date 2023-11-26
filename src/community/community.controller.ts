@@ -42,3 +42,23 @@ export class CommunityController {
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPost(user, dto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/')
+  @ApiOperation({
+    summary: '커뮤니티 목록',
+    description: '커뮤니티 목록',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 목록',
+    type: ResponseDataDto,
+  })
+  async communityList(
+    @Query() dto: CommunityListReqDto,
+    @CurrentUser() user,
+  ): Promise<ResponseDataDto> {
+    return await this.communityService.communityList(dto, user);
+  }
+}

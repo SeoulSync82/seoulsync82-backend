@@ -36,3 +36,33 @@ export class CommunityService {
 
     return DetailResponseDto.uuid(communityEntity.uuid);
   }
+
+  async communityList(dto, user) {
+    const communityList: CommunityEntity[] = await this.communityQueryRepository.find(dto, user);
+    if (communityList.length === 0) {
+      return ResponseDataDto.from([], null, 0);
+    }
+
+    const courseList: MyCourseEntity[] = await this.myCourseQueryRepository.findList(
+      communityList.map((item) => item.my_course_uuid),
+    );
+
+    const communityListResDto = plainToInstance(CommunityListResDto, communityList, {
+      excludeExtraneousValues: true,
+    }).map((community) => {
+      community.course_uuid = courseList.find(
+        (item) => item.uuid === community.my_course_uuid,
+      ).course_uuid;
+      community.line = courseList.find((item) => item.uuid === community.my_course_uuid).line;
+      community.subway = courseList.find((item) => item.uuid === community.my_course_uuid).subway;
+      community.course_image = courseList.find(
+        (item) => item.uuid === community.my_course_uuid,
+      ).course_image;
+      return community;
+    });
+
+    const last_item_id = communityList.length > 0 ? communityList[communityList.length - 1].id : 0;
+
+    return ResponseDataDto.from(communityListResDto, null, last_item_id);
+  }
+}
