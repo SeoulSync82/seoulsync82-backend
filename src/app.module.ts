@@ -15,6 +15,7 @@ import Joi from 'joi';
 // import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { SearchModule } from './search/search.module';
 import { ThemeModule } from './theme/theme.module';
+import { MyCourseModule } from './my_course/my_course.module';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { ThemeModule } from './theme/theme.module';
       } as TypeOrmModuleAsyncOptions;
     },
   }),
-  UserModule, PlaceModule, CourseModule, ReactionModule, NotificationModule, AuthModule, SearchModule, ThemeModule],
+  UserModule, PlaceModule, CourseModule, ReactionModule, NotificationModule, AuthModule, SearchModule, ThemeModule, MyCourseModule],
   controllers: [AppController],
   providers: [AppService],
 })

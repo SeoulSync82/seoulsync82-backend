@@ -70,7 +70,7 @@ export class SearchService {
   async searchRecent(user) {
     const searchLog = await this.searchQueryLogRepository.find(user);
     if (searchLog.length === 0) {
-      return ResponseDataDto.from(null, null, 0);
+      return ResponseDataDto.from([], null, 0);
     }
     const result = searchLog.map((item) => item.search).slice(0, 10);
 
