@@ -12,6 +12,7 @@ import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
 import {
   CommunityDetailResDto,
+  CommunityListReqDto,
   CommunityListResDto,
   CommunityPostReqDto,
 } from './dto/community.dto';
@@ -44,8 +45,19 @@ export class CommunityService {
     return DetailResponseDto.uuid(communityEntity.uuid);
   }
 
-  async communityList(dto, user) {
-    const communityList: CommunityEntity[] = await this.communityQueryRepository.find(dto, user);
+  async communityList(dto: CommunityListReqDto, user) {
+    let communityList: CommunityEntity[];
+    console.log('DTO:', dto);
+    console.log(typeof dto.me);
+    console.log(dto.me);
+    if (dto.me === true) {
+      console.log(111);
+      communityList = await this.communityQueryRepository.findMyCommunity(dto, user);
+    } else {
+      console.log(222);
+      communityList = await this.communityQueryRepository.find(dto);
+    }
+
     if (communityList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class CommunityPostReqDto {
   @Expose()
@@ -39,6 +39,15 @@ export class CommunityListReqDto {
     required: false,
   })
   size?: number;
+
+  @Expose()
+  @ApiProperty({
+    example: false,
+    description: '내가 쓴 게시물',
+    required: false,
+  })
+  @Transform(({ value }) => value === 'true')
+  me: boolean;
 }
 
 export class CommunityListResDto {

@@ -12,7 +12,21 @@ export class CommunityQueryRepository {
     return await this.repository.save(communityEntity);
   }
 
-  async find(dto, user): Promise<CommunityEntity[]> {
+  async find(dto): Promise<CommunityEntity[]> {
+    const whereConditions = { archived_at: IsNull() };
+
+    if (dto.last_id > 0) {
+      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
+    }
+
+    return await this.repository.find({
+      where: whereConditions,
+      order: { created_at: 'DESC' },
+      take: dto.size,
+    });
+  }
+
+  async findMyCommunity(dto, user): Promise<CommunityEntity[]> {
     const whereConditions = { user_uuid: user.uuid, archived_at: IsNull() };
 
     if (dto.last_id > 0) {
