@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseFilters,
   UseGuards,
@@ -16,7 +18,7 @@ import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { CommunityService } from './community.service';
-import { CommunityListReqDto, CommunityPostReqDto } from './dto/community.dto';
+import { CommunityListReqDto, CommunityPostReqDto, CommunityPutReqDto } from './dto/community.dto';
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
@@ -84,6 +86,7 @@ export class CommunityController {
   async communityDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.communityService.communityDetail(uuid);
   }
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @Put('/:uuid')
@@ -108,5 +111,30 @@ export class CommunityController {
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPut(user, dto, uuid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Delete('/:uuid')
+  @ApiOperation({
+    summary: '커뮤니티 삭제',
+    description: '커뮤니티 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 삭제',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '커뮤니티 uuid',
+  })
+  async communityDelete(
+    @CurrentUser() user,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return await this.communityService.communityDelete(user, uuid);
   }
 }
