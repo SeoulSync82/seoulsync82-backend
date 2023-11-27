@@ -23,6 +23,22 @@ export class CommunityPostReqDto {
   })
   review: string;
 }
+
+export class CommunityPutReqDto {
+  @Expose()
+  @ApiProperty({
+    example: '4.0',
+    description: '평점',
+  })
+  score: number;
+
+  @Expose()
+  @ApiProperty({
+    example: '추천받은 코스가 정말 좋아요!',
+    description: '한줄리뷰',
+  })
+  review: string;
+}
 export class CommunityListReqDto {
   @Expose()
   @ApiProperty({

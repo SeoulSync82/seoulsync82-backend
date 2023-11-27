@@ -15,6 +15,7 @@ import {
   CommunityListReqDto,
   CommunityListResDto,
   CommunityPostReqDto,
+  CommunityPutReqDto,
 } from './dto/community.dto';
 
 @Injectable()
@@ -47,14 +48,9 @@ export class CommunityService {
 
   async communityList(dto: CommunityListReqDto, user) {
     let communityList: CommunityEntity[];
-    console.log('DTO:', dto);
-    console.log(typeof dto.me);
-    console.log(dto.me);
     if (dto.me === true) {
-      console.log(111);
       communityList = await this.communityQueryRepository.findMyCommunity(dto, user);
     } else {
-      console.log(222);
       communityList = await this.communityQueryRepository.find(dto);
     }
 
@@ -118,5 +114,32 @@ export class CommunityService {
     });
 
     return DetailResponseDto.from(communityDetailResDto);
+  }
+
+  async communityPut(user, dto: CommunityPutReqDto, uuid) {
+    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    if (!community || community.user_uuid !== user.uuid) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    community.review = dto.review;
+    community.score = dto.score;
+
+    await this.communityQueryRepository.save(community);
+
+    return DetailResponseDto.uuid(uuid);
+  }
+
+  async communityDelete(user, uuid) {
+    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    if (!community || community.user_uuid !== user.uuid) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    community.archived_at = new Date();
+
+    await this.communityQueryRepository.save(community);
+
+    return DetailResponseDto.uuid(uuid);
   }
 }
