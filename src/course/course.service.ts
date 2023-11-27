@@ -341,33 +341,6 @@ export class CourseService {
     return DetailResponseDto.from(courseRecommendResDto);
   }
 
-  async courseSave(user, uuid, dto) {
-    const myCourseEntity = new MyCourseEntity();
-    myCourseEntity.uuid = generateUUID();
-    myCourseEntity.course_uuid = uuid;
-    myCourseEntity.subway = dto.subway;
-    myCourseEntity.line = dto.line;
-    myCourseEntity.user_uuid = user.uuid;
-    myCourseEntity.user_name = user.nickname;
-
-    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
-    if (myCourse) {
-      await this.courseQueryRepository.reSaveMyCourse(myCourse.id);
-    } else {
-      await this.courseQueryRepository.saveMyCourse(myCourseEntity);
-    }
-    return DetailResponseDto.uuid(uuid);
-  }
-
-  async courseDelete(user, uuid) {
-    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
-    if (!myCourse) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    } else await this.courseQueryRepository.deleteMyCourse(myCourse.id);
-
-    return DetailResponseDto.uuid(uuid);
-  }
-
   async subwayCustomsCheck(dto: SubwayCustomsCheckReqDto) {
     const subwayCustoms = await this.subwayQueryRepository.groupByCustom(dto);
 

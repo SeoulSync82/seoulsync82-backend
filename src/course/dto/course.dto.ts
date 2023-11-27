@@ -255,27 +255,27 @@ export class MyCourseDetailResDto {
     }
   }
 }
-export class CourseSaveReqDto {
-  @Expose()
-  @ApiProperty({
-    example: '성수',
-    description: '지하철 역',
-  })
-  subway: string;
+// export class CourseSaveReqDto {
+//   @Expose()
+//   @ApiProperty({
+//     example: '성수',
+//     description: '지하철 역',
+//   })
+//   subway: string;
 
-  @Expose()
-  @ApiProperty({
-    example: '2호선',
-    description: '지하철 호선',
-  })
-  line: string;
-  // @Expose()
-  // @ApiProperty({
-  //   example: '',
-  //   description: '장소 이미지',
-  // })
-  // place_image: string;
-}
+//   @Expose()
+//   @ApiProperty({
+//     example: '2호선',
+//     description: '지하철 호선',
+//   })
+//   line: string;
+//   // @Expose()
+//   // @ApiProperty({
+//   //   example: '',
+//   //   description: '장소 이미지',
+//   // })
+//   // place_image: string;
+// }
 export class SubwayCustomsCheckReqDto {
   @Expose()
   @ApiProperty({
