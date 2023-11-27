@@ -119,4 +119,17 @@ export class CommunityService {
 
     return DetailResponseDto.from(communityDetailResDto);
   }
+  async communityPut(user, dto: CommunityPutReqDto, uuid) {
+    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    if (!community || community.user_uuid !== user.uuid) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    community.review = dto.review;
+    community.score = dto.score;
+
+    await this.communityQueryRepository.save(community);
+
+    return DetailResponseDto.uuid(uuid);
+  }
 }

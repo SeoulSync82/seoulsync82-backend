@@ -84,4 +84,29 @@ export class CommunityController {
   async communityDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.communityService.communityDetail(uuid);
   }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Put('/:uuid')
+  @ApiOperation({
+    summary: '커뮤니티 수정',
+    description: '커뮤니티 수정',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 수정',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '커뮤니티 uuid',
+  })
+  async communityPut(
+    @CurrentUser() user,
+    @Body() dto: CommunityPutReqDto,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return await this.communityService.communityPut(user, dto, uuid);
+  }
 }
