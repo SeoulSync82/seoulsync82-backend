@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { retry } from 'rxjs';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { generateUUID } from 'src/commons/util/uuid';
 import { CourseModule } from 'src/course/course.module';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import {
@@ -10,6 +11,7 @@ import {
   CourseRecommendResDto,
   MyCourseDetailResDto,
 } from 'src/course/dto/course.dto';
+import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { MyCourseListResDto } from './dto/my_course.dto';
 import { MyCourseQueryRepository } from './my_course.query.repository';
@@ -65,5 +67,32 @@ export class MyCourseService {
     });
 
     return DetailResponseDto.from(myCourseDetailResDto);
+  }
+
+  async courseSave(user, uuid, dto) {
+    const myCourseEntity = new MyCourseEntity();
+    myCourseEntity.uuid = generateUUID();
+    myCourseEntity.course_uuid = uuid;
+    myCourseEntity.subway = dto.subway;
+    myCourseEntity.line = dto.line;
+    myCourseEntity.user_uuid = user.uuid;
+    myCourseEntity.user_name = user.nickname;
+
+    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
+    if (myCourse) {
+      await this.courseQueryRepository.reSaveMyCourse(myCourse.id);
+    } else {
+      await this.courseQueryRepository.saveMyCourse(myCourseEntity);
+    }
+    return DetailResponseDto.uuid(uuid);
+  }
+
+  async courseDelete(user, uuid) {
+    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
+    if (!myCourse) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    } else await this.courseQueryRepository.deleteMyCourse(myCourse.id);
+
+    return DetailResponseDto.uuid(uuid);
   }
 }
