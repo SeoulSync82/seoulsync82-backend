@@ -18,7 +18,11 @@ export class ReactionEntity {
   user_name: string;
 
   @Column()
-  linked: number;
+  @Column('tinyint', {
+    name: 'like',
+    default: () => 1,
+  })
+  like: number;
 
   @Column('datetime', {
     name: 'created_at',

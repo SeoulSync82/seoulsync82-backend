@@ -137,4 +137,54 @@ export class CommunityController {
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityDelete(user, uuid);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Delete('/:uuid')
+  @ApiOperation({
+    summary: '커뮤니티 코스 좋아요',
+    description: '커뮤니티 코스 좋아요',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 코스 좋아요',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '커뮤니티 uuid',
+  })
+  async communityReaction(
+    @CurrentUser() user,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return await this.communityService.communityReaction(user, uuid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Delete('/:uuid')
+  @ApiOperation({
+    summary: '커뮤니티 코스 좋아요 취소',
+    description: '커뮤니티 코스 좋아요 취소',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 코스 좋아요 취소',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '커뮤니티 uuid',
+  })
+  async communityReactionDelete(
+    @CurrentUser() user,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return await this.communityService.communityDelete(user, uuid);
+  }
 }

@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import e from 'express';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
@@ -7,6 +8,7 @@ import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { MyCourseDetailResDto, CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { ReactionEntity } from 'src/entities/reaction.entity';
 import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
 import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
@@ -17,6 +19,7 @@ import {
   CommunityPostReqDto,
   CommunityPutReqDto,
 } from './dto/community.dto';
+import { ReactionQueryRepository } from './reaction.query.repository';
 
 @Injectable()
 export class CommunityService {
@@ -24,6 +27,7 @@ export class CommunityService {
     private readonly communityQueryRepository: CommunityQueryRepository,
     private readonly myCourseQueryRepository: MyCourseQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
+    private readonly reactionQueryRepository: ReactionQueryRepository,
   ) {}
 
   async communityPost(user, dto: CommunityPostReqDto) {
@@ -139,6 +143,29 @@ export class CommunityService {
     community.archived_at = new Date();
 
     await this.communityQueryRepository.save(community);
+
+    return DetailResponseDto.uuid(uuid);
+  }
+
+  async communityReaction(user, uuid) {
+    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    if (!community) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
+    if (!reaction) {
+      reaction.uuid = generateUUID();
+      reaction.target_uuid = uuid;
+      reaction.user_uuid = user.uuid;
+      reaction.user_name = user.name;
+      reaction.like = 1;
+
+      await this.reactionQueryRepository.courseLike(reaction);
+    } else if (reaction.like === 0) {
+      await this.reactionQueryRepository.updateCourseLike(reaction);
+    } else if (reaction.like === 1) {
+      throw new ConflictException(ERROR.DUPLICATION);
+    }
 
     return DetailResponseDto.uuid(uuid);
   }
