@@ -22,4 +22,8 @@ export class ReactionQueryRepository {
   async updateCourseLike(reaction) {
     return await this.repository.update({ id: reaction.id }, { like: 1 });
   }
+
+  async updateCourseLikeDelete(reaction) {
+    return await this.repository.update({ id: reaction.id }, { like: 0 });
+  }
 }

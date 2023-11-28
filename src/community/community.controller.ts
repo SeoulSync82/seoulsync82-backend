@@ -140,7 +140,7 @@ export class CommunityController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:uuid')
+  @Post('/:uuid/reaction')
   @ApiOperation({
     summary: '커뮤니티 코스 좋아요',
     description: '커뮤니티 코스 좋아요',
@@ -165,7 +165,7 @@ export class CommunityController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:uuid')
+  @Delete('/:uuid/reaction')
   @ApiOperation({
     summary: '커뮤니티 코스 좋아요 취소',
     description: '커뮤니티 코스 좋아요 취소',
@@ -185,6 +185,6 @@ export class CommunityController {
     @CurrentUser() user,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
-    return await this.communityService.communityDelete(user, uuid);
+    return await this.communityService.communityReactionDelete(user, uuid);
   }
 }

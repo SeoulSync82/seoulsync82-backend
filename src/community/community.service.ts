@@ -153,17 +153,36 @@ export class CommunityService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
-    if (!reaction) {
-      reaction.uuid = generateUUID();
-      reaction.target_uuid = uuid;
-      reaction.user_uuid = user.uuid;
-      reaction.user_name = user.name;
-      reaction.like = 1;
 
-      await this.reactionQueryRepository.courseLike(reaction);
+    const reactionEntity = new ReactionEntity();
+    if (!reaction) {
+      reactionEntity.uuid = generateUUID();
+      reactionEntity.target_uuid = uuid;
+      reactionEntity.user_uuid = user.uuid;
+      reactionEntity.user_name = user.nickname;
+      reactionEntity.like = 1;
+      await this.reactionQueryRepository.courseLike(reactionEntity);
     } else if (reaction.like === 0) {
       await this.reactionQueryRepository.updateCourseLike(reaction);
     } else if (reaction.like === 1) {
+      throw new ConflictException(ERROR.DUPLICATION);
+    }
+
+    return DetailResponseDto.uuid(uuid);
+  }
+
+  async communityReactionDelete(user, uuid) {
+    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    if (!community) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
+
+    if (!reaction) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    } else if (reaction.like === 1) {
+      await this.reactionQueryRepository.updateCourseLikeDelete(reaction);
+    } else if (reaction.like === 0) {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
