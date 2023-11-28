@@ -47,14 +47,21 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(
     @Req() req: GoogleRequest,
-    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto>
-  ) {
-    // res.redirect('http://localhost:3000/auth/test-guard2');
-    // return res.send(user);
-    const result = await this.authService.googleLogin(req, res);
-    return res.json(result);
+    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto> // { //   // res.redirect('http://localhost:3000/auth/test-guard2'); //   // return res.send(user); //   const result = await this.authService.googleLogin(req, res);
+  ) //   return res.json(result);
+  // }
+  {
+    try {
+      const result = await this.authService.googleLogin(req, res);
+      // 성공적 로그인 후 프론트엔드의 특정 페이지로 리다이렉트
+      console.log(result.eid_access_token);
+      console.log(1111);
+      res.redirect(`/?token=${result.eid_access_token}`);
+    } catch (error) {
+      // 오류 처리
+      res.redirect('/error'); // 에러페이지 필요
+    }
   }
-
   //-----------------------카카오 로그인-----------------------------//
 
   @Get('/user/login/kakao')

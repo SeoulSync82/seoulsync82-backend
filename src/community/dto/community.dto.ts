@@ -125,6 +125,20 @@ export class CommunityListResDto {
 
   @Expose()
   @ApiProperty({
+    example: '4.0',
+    description: '평점',
+  })
+  score: number;
+
+  @Expose()
+  @ApiProperty({
+    example: '추천받은 코스가 정말 좋아요!',
+    description: '한줄리뷰',
+  })
+  review: string;
+
+  @Expose()
+  @ApiProperty({
     example: '2023-10-21 00:00:00',
     description: '생성일',
   })
