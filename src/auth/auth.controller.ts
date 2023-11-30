@@ -45,22 +45,16 @@ export class AuthController {
   /* Get Google Auth Callback */
   @Get('/auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(
-    @Req() req: GoogleRequest,
-    @Res() res: Response, // : Promise<GoogleLoginAuthOutputDto> // { //   // res.redirect('http://localhost:3000/auth/test-guard2'); //   // return res.send(user); //   const result = await this.authService.googleLogin(req, res); //   return res.json(result); // }
-  ) {
+  async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
       // 성공적 로그인 후 프론트엔드의 특정 페이지로 리다이렉트
-      console.log(result.eid_access_token);
-      console.log(1111);
       // const frontendUrl = process.env.FRONTEND_URL;
-      const frontendUrl = `http://localhost:3456`;
+      const frontendUrl = `http://localhost:3456/main`;
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
-      // 오류 처리
-      res.redirect('/error'); // 에러페이지 필요
+      res.redirect('/error');
     }
   }
   //-----------------------카카오 로그인-----------------------------//
@@ -76,16 +70,15 @@ export class AuthController {
   /* Get kakao Auth Callback */
   @Get('/auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(
-    @Req() req: KakaoRequest,
-    // @Res({ passthrough: true }) res: Response,
-    @Res() res: Response, // : Promise<KakaoLoginAuthOutputDto>
-  ) {
-    // const { user } = req;
-    // console.log(user);
-    // return res.send(user);
-    const result = await this.authService.kakaoLogin(req, res);
-    return res.json(result);
+  async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
+    try {
+      const result = await this.authService.kakaoLogin(req, res);
+      const frontendUrl = `http://localhost:3456/main`;
+
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+    } catch (error) {
+      res.redirect('/error');
+    }
   }
 
   //-----------------------네이버 로그인-----------------------------//
@@ -101,16 +94,15 @@ export class AuthController {
   /* Get naver Auth Callback */
   @Get('/auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(
-    @Req() req: NaverRequest,
-    @Res() res: Response, // : Promise<NaverLoginAuthOutputDto>
-  ) {
-    // const { user } = req;
-    // console.log(user);
-    // return res.send(user);
-    // return this.authService.naverLogin(req, res);
-    const result = await this.authService.naverLogin(req, res);
-    return res.json(result);
+  async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
+    try {
+      const result = await this.authService.naverLogin(req, res);
+      const frontendUrl = `http://localhost:3456/main`;
+
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+    } catch (error) {
+      res.redirect('/error');
+    }
   }
 
   //--------------------------------------------------------------//
