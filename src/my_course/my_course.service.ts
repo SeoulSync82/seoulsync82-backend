@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { retry } from 'rxjs';
 import { ERROR } from 'src/auth/constants/error';
@@ -13,7 +13,7 @@ import {
 } from 'src/course/dto/course.dto';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { MyCourseListResDto } from './dto/my_course.dto';
+import { CourseSaveReqDto, MyCourseListResDto } from './dto/my_course.dto';
 import { MyCourseQueryRepository } from './my_course.query.repository';
 
 @Injectable()
@@ -69,21 +69,43 @@ export class MyCourseService {
     return DetailResponseDto.from(myCourseDetailResDto);
   }
 
-  async courseSave(user, uuid, dto) {
+  async courseSave(user, uuid, dto: CourseSaveReqDto) {
+    const course = await this.courseQueryRepository.findCourse(uuid);
+    if (!course) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
     const myCourseEntity = new MyCourseEntity();
     myCourseEntity.uuid = generateUUID();
     myCourseEntity.course_uuid = uuid;
-    myCourseEntity.subway = dto.subway;
-    myCourseEntity.line = dto.line;
+    myCourseEntity.subway = course.subway;
+    myCourseEntity.line = course.line;
     myCourseEntity.user_uuid = user.uuid;
     myCourseEntity.user_name = user.nickname;
 
+    const themes = [];
+    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
+    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+
+    if (themes.length === 0) {
+      myCourseEntity.course_name = `${course.subway}역 주변 코스 일정🏖`;
+    } else {
+      // 무작위 테마 선택
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      // 테마에서 이모지 분리
+      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
+      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
+      console.log(`${course.subway}역 ${themeText} 코스 일정${themeEmoji}`);
+      myCourseEntity.course_name = `${course.subway}역 ${themeText} 코스 일정${themeEmoji}`;
+    }
+
     const myCourse = await this.courseQueryRepository.findOne(user, uuid);
     if (myCourse) {
-      await this.courseQueryRepository.reSaveMyCourse(myCourse.id);
-    } else {
-      await this.courseQueryRepository.saveMyCourse(myCourseEntity);
+      throw new ConflictException(ERROR.DUPLICATION);
     }
+    await this.courseQueryRepository.saveMyCourse(myCourseEntity);
+
     return DetailResponseDto.uuid(uuid);
   }
 

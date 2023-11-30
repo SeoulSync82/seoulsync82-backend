@@ -21,25 +21,36 @@ import { CommunityModule } from './community/community.module';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => {
-      return {
-        type: configService.get('DB_TYPE'),
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
-        entities: [__dirname + '/entities/**.entity{.ts,.js}'],
-        logging: true,
-        synchronize: false,
-        keepConnectionAlive: true,
-        timezone: 'z',
-      } as TypeOrmModuleAsyncOptions;
-    },
-  }),
-  UserModule, PlaceModule, CourseModule, ReactionModule, NotificationModule, AuthModule, SearchModule, ThemeModule, MyCourseModule, CommunityModule],
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          type: configService.get('DB_TYPE'),
+          host: configService.get('DB_HOST'),
+          port: configService.get('DB_PORT'),
+          username: configService.get('DB_USERNAME'),
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_DATABASE'),
+          entities: [__dirname + '/entities/**.entity{.ts,.js}'],
+          logging: true,
+          synchronize: false,
+          keepConnectionAlive: true,
+          charset: 'utf8mb4_unicode_ci',
+          timezone: 'z',
+        } as TypeOrmModuleAsyncOptions;
+      },
+    }),
+    UserModule,
+    PlaceModule,
+    CourseModule,
+    ReactionModule,
+    NotificationModule,
+    AuthModule,
+    SearchModule,
+    ThemeModule,
+    MyCourseModule,
+    CommunityModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
