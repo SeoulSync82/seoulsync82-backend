@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
-import { IsNull, LessThan, Repository } from 'typeorm';
+import { IsNull, LessThan, Repository, In } from 'typeorm';
 
 export class ReactionQueryRepository {
   constructor(
@@ -26,4 +26,9 @@ export class ReactionQueryRepository {
   async updateCourseLikeDelete(reaction) {
     return await this.repository.update({ id: reaction.id }, { like: 0 });
   }
+
+  // async findCommunityReaction(uuids) {
+  //   return await this.repository.find({ where: { target_uuid: In(uuids) } });
+  //   return 1;
+  // }
 }

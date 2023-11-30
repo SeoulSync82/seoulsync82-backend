@@ -139,6 +139,13 @@ export class CommunityListResDto {
 
   @Expose()
   @ApiProperty({
+    example: '1',
+    description: '좋아요 개수',
+  })
+  like: number;
+
+  @Expose()
+  @ApiProperty({
     example: '2023-10-21 00:00:00',
     description: '생성일',
   })
