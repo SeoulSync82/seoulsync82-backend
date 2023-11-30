@@ -53,6 +53,12 @@ export class CourseQueryRepository {
     });
   }
 
+  async findCourse(uuid): Promise<CourseEntity> {
+    return await this.repository.findOne({
+      where: { uuid: uuid },
+    });
+  }
+
   async deleteMyCourse(id) {
     return await this.myCourseRepository.update({ id: id }, { archived_at: new Date() });
   }

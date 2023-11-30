@@ -79,17 +79,20 @@ export class MyCourseListResDto {
 export class CourseSaveReqDto {
   @Expose()
   @ApiProperty({
-    example: '성수',
-    description: '지하철 역',
+    example: '가성비 좋은',
+    description: '음식점 테마',
+    required: false,
   })
-  subway: string;
+  theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
-    example: '2호선',
-    description: '지하철 호선',
+    example: '인스타 감성',
+    description: '카페 테마',
+    required: false,
   })
-  line: string;
+  theme_cafe?: string;
+
   // @Expose()
   // @ApiProperty({
   //   example: '',

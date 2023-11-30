@@ -18,7 +18,7 @@ export class CourseRecommendReqDto {
 
   @Expose()
   @ApiProperty({
-    example: '가성비 좋은',
+    example: '분위기 있는🌃',
     description: '음식점 테마',
     required: false,
   })
@@ -26,7 +26,7 @@ export class CourseRecommendReqDto {
 
   @Expose()
   @ApiProperty({
-    example: '인스타 감성',
+    example: '인스타 감성💫',
     description: '카페 테마',
     required: false,
   })
@@ -57,14 +57,14 @@ export class CourseRecommendResDto {
 
   @Expose()
   @ApiProperty({
-    example: '가성비 좋은',
+    example: '분위기 있는🌃',
     description: '음식점 테마',
   })
   theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
-    example: '인스타 감성',
+    example: '인스타 감성💫',
     description: '카페 테마',
   })
   theme_cafe?: string;
@@ -226,14 +226,14 @@ export class MyCourseDetailResDto {
 
   @Expose()
   @ApiProperty({
-    example: '가성비 좋은',
+    example: '분위기 있는🌃',
     description: '음식점 테마',
   })
   theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
-    example: '인스타 감성',
+    example: '인스타 감성💫',
     description: '카페 테마',
   })
   theme_cafe?: string;
