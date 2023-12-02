@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseFilters,
   UseGuards,
@@ -43,7 +44,7 @@ export class NotificationController {
     return await this.notificationService.notificationList(dto, user);
   }
 
-  @Post('/:uuid')
+  @Put('/:uuid')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
