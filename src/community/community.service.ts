@@ -94,7 +94,7 @@ export class CommunityService {
     return ResponseDataDto.from(communityListResDto, null, last_item_id);
   }
 
-  async communityDetail(uuid) {
+  async communityDetail(uuid, user) {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (!community) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -106,6 +106,7 @@ export class CommunityService {
     }
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
+    const reaction = await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
 
     const communityDetailResDto = new CommunityDetailResDto({
       course_uuid: course.course_uuid,
@@ -113,6 +114,8 @@ export class CommunityService {
       my_course_name: course.course_name,
       subway: course.subway,
       count: coursePlaces.length,
+      like: reaction.length,
+      isLiked: reaction.map((item) => item.user_uuid).includes(user.uuid),
       place: plainToInstance(
         CoursePlaceDto,
         coursePlaces.map((coursePlace) => ({

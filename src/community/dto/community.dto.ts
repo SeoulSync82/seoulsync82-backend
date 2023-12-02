@@ -210,6 +210,20 @@ export class CommunityDetailResDto {
   count: number;
 
   @Expose()
+  @ApiProperty({
+    example: '1',
+    description: '좋아요 개수',
+  })
+  like: number;
+
+  @Expose()
+  @ApiProperty({
+    example: 'true',
+    description: '내가 좋아요 눌렀는 지',
+  })
+  isLiked: Boolean;
+
+  @Expose()
   @ApiProperty()
   place: CoursePlaceDto[];
 

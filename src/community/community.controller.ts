@@ -83,8 +83,11 @@ export class CommunityController {
     required: false,
     description: '커뮤니티 uuid',
   })
-  async communityDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
-    return await this.communityService.communityDetail(uuid);
+  async communityDetail(
+    @Param('uuid') uuid: string,
+    @CurrentUser() user,
+  ): Promise<DetailResponseDto> {
+    return await this.communityService.communityDetail(uuid, user);
   }
 
   @UseGuards(JwtAuthGuard)
