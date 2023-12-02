@@ -4,6 +4,7 @@ import { retry } from 'rxjs';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
+import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { CourseModule } from 'src/course/course.module';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import {
