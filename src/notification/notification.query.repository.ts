@@ -26,4 +26,19 @@ export class NotificationQueryRepository {
       take: dto.size,
     });
   }
+
+  async findNotification(uuid): Promise<NotificationEntity> {
+    return await this.repository.findOne({
+      where: { uuid: uuid },
+    });
+  }
+
+  async updateRead(uuid) {
+    return await this.repository.update(
+      {
+        uuid: uuid,
+      },
+      { read_at: new Date() },
+    );
+  }
 }
