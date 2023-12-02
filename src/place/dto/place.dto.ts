@@ -56,6 +56,13 @@ export class CultureListDto {
     description: '장소 이름',
   })
   place_name: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
+    description: '주소',
+  })
+  address: string;
 }
 
 export class CultureDto {
