@@ -83,8 +83,8 @@ export class DetailResponseDto {
     return new DetailResponseDto({ uuid: data.uuid == undefined ? data : data.uuid }).data;
   }
 
-  static notification(data: any, notification?: any, mockup?: boolean) {
-    return new DetailResponseDto({ data, notification, mockup }).data;
+  static notification(data: any, notification?: any) {
+    return new DetailResponseDto({ data, notification }).data;
   }
 }
 

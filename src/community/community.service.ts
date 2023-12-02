@@ -66,9 +66,9 @@ export class CommunityService {
       communityList.map((item) => item.my_course_uuid),
     );
 
-    // const reaction = await this.reactionQueryRepository.findCommunityReaction(
-    //   communityList.map((item) => item.uuid),
-    // );
+    const reaction = await this.reactionQueryRepository.findCommunityReaction(
+      communityList.map((item) => item.uuid),
+    );
 
     const communityListResDto = plainToInstance(CommunityListResDto, communityList, {
       excludeExtraneousValues: true,
@@ -81,7 +81,11 @@ export class CommunityService {
       community.course_image = courseList.find(
         (item) => item.uuid === community.my_course_uuid,
       ).course_image;
-      community.like = 1;
+      community.like = reaction.filter((item) => item.target_uuid === community.uuid).length;
+      community.isLiked = reaction
+        .filter((item) => item.target_uuid === community.uuid)
+        .map((user) => user.user_uuid)
+        .includes(user.uuid);
       return community;
     });
 
@@ -90,7 +94,7 @@ export class CommunityService {
     return ResponseDataDto.from(communityListResDto, null, last_item_id);
   }
 
-  async communityDetail(uuid) {
+  async communityDetail(uuid, user) {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (!community) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -102,6 +106,7 @@ export class CommunityService {
     }
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
+    const reaction = await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
 
     const communityDetailResDto = new CommunityDetailResDto({
       course_uuid: course.course_uuid,
@@ -109,6 +114,8 @@ export class CommunityService {
       my_course_name: course.course_name,
       subway: course.subway,
       count: coursePlaces.length,
+      like: reaction.length,
+      isLiked: reaction.map((item) => item.user_uuid).includes(user.uuid),
       place: plainToInstance(
         CoursePlaceDto,
         coursePlaces.map((coursePlace) => ({
@@ -159,6 +166,8 @@ export class CommunityService {
     }
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
 
+    let notification = {};
+
     const reactionEntity = new ReactionEntity();
     if (!reaction) {
       reactionEntity.uuid = generateUUID();
@@ -167,13 +176,21 @@ export class CommunityService {
       reactionEntity.user_name = user.nickname;
       reactionEntity.like = 1;
       await this.reactionQueryRepository.courseLike(reactionEntity);
+
+      notification = {
+        uuid: generateUUID(),
+        user_uuid: user.uuid,
+        target_uuid: community.uuid,
+        target_user_uuid: community.user_uuid,
+        content: `회원님의 게시물을 ${user.nickname}님이 좋아합니다.`,
+      };
     } else if (reaction.like === 0) {
       await this.reactionQueryRepository.updateCourseLike(reaction);
     } else if (reaction.like === 1) {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
-    return DetailResponseDto.uuid(uuid);
+    return DetailResponseDto.notification({ uuid }, notification);
   }
 
   async communityReactionDelete(user, uuid) {
