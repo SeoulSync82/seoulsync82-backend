@@ -146,6 +146,13 @@ export class CommunityListResDto {
 
   @Expose()
   @ApiProperty({
+    example: 'true',
+    description: '내가 좋아요 눌렀는 지',
+  })
+  isLiked: Boolean;
+
+  @Expose()
+  @ApiProperty({
     example: '2023-10-21 00:00:00',
     description: '생성일',
   })

@@ -66,9 +66,9 @@ export class CommunityService {
       communityList.map((item) => item.my_course_uuid),
     );
 
-    // const reaction = await this.reactionQueryRepository.findCommunityReaction(
-    //   communityList.map((item) => item.uuid),
-    // );
+    const reaction = await this.reactionQueryRepository.findCommunityReaction(
+      communityList.map((item) => item.uuid),
+    );
 
     const communityListResDto = plainToInstance(CommunityListResDto, communityList, {
       excludeExtraneousValues: true,
@@ -81,7 +81,11 @@ export class CommunityService {
       community.course_image = courseList.find(
         (item) => item.uuid === community.my_course_uuid,
       ).course_image;
-      community.like = 1;
+      community.like = reaction.filter((item) => item.target_uuid === community.uuid).length;
+      community.isLiked = reaction
+        .filter((item) => item.target_uuid === community.uuid)
+        .map((user) => user.user_uuid)
+        .includes(user.uuid);
       return community;
     });
 

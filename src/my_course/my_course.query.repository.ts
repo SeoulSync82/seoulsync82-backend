@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
-import { IsNull, LessThan, Repository } from 'typeorm';
+import { IsNull, LessThan, Repository, In } from 'typeorm';
 
 export class MyCourseQueryRepository {
   constructor(
@@ -28,9 +28,9 @@ export class MyCourseQueryRepository {
     });
   }
 
-  async findList(uuid): Promise<MyCourseEntity[]> {
+  async findList(uuids): Promise<MyCourseEntity[]> {
     return await this.repository.find({
-      where: { uuid: uuid },
+      where: { uuid: In(uuids) },
     });
   }
 }

@@ -31,4 +31,7 @@ export class ReactionQueryRepository {
   //   return await this.repository.find({ where: { target_uuid: In(uuids) } });
   //   return 1;
   // }
+  async findCommunityReaction(uuids): Promise<ReactionEntity[]> {
+    return await this.repository.find({ where: { target_uuid: In(uuids), like: 1 } });
+  }
 }
