@@ -16,7 +16,6 @@ export class NotificationInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(async () => {
         const notification = request.notification;
-
         if (!notification || notification.user_uuid === notification.target_user_uuid) {
           return;
         }
@@ -28,7 +27,6 @@ export class NotificationInterceptor implements NestInterceptor {
           target_user_uuid: notification.target_user_uuid,
           content: notification.content,
         });
-        console.log(NotificationPushDto);
         // 직접 알림 서비스를 호출하여 알림을 발송.
         await this.notificationQueryRepository.sendNotification(notificationData);
       }),

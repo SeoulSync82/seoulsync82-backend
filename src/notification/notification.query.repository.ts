@@ -12,4 +12,18 @@ export class NotificationQueryRepository {
   async sendNotification(notificationData): Promise<NotificationEntity> {
     return await this.repository.save(notificationData);
   }
+
+  async findList(dto, user): Promise<NotificationEntity[]> {
+    const whereConditions = { target_user_uuid: user.uuid };
+
+    if (dto.last_id > 0) {
+      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
+    }
+
+    return await this.repository.find({
+      where: whereConditions,
+      order: { created_at: 'DESC' },
+      take: dto.size,
+    });
+  }
 }
