@@ -10,12 +10,14 @@ import {
   UseFilters,
   UseGuards,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
+import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { CommunityService } from './community.service';
 import { CommunityListReqDto, CommunityPostReqDto, CommunityPutReqDto } from './dto/community.dto';
@@ -159,11 +161,15 @@ export class CommunityController {
     required: false,
     description: '커뮤니티 uuid',
   })
+  @UseInterceptors(NotificationInterceptor)
   async communityReaction(
     @CurrentUser() user,
     @Param('uuid') uuid: string,
+    @Req() req,
   ): Promise<DetailResponseDto> {
-    return await this.communityService.communityReaction(user, uuid);
+    const res = await this.communityService.communityReaction(user, uuid);
+    req.notification = res.notification;
+    return res.data;
   }
 
   @UseGuards(JwtAuthGuard)

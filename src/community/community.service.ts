@@ -166,6 +166,8 @@ export class CommunityService {
     }
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
 
+    let notification = {};
+
     const reactionEntity = new ReactionEntity();
     if (!reaction) {
       reactionEntity.uuid = generateUUID();
@@ -174,13 +176,21 @@ export class CommunityService {
       reactionEntity.user_name = user.nickname;
       reactionEntity.like = 1;
       await this.reactionQueryRepository.courseLike(reactionEntity);
+
+      notification = {
+        uuid: generateUUID(),
+        user_uuid: user.uuid,
+        target_uuid: community.uuid,
+        target_user_uuid: community.user_uuid,
+        content: `회원님의 게시물을 ${user.nickname}님이 좋아합니다.`,
+      };
     } else if (reaction.like === 0) {
       await this.reactionQueryRepository.updateCourseLike(reaction);
     } else if (reaction.like === 1) {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
-    return DetailResponseDto.uuid(uuid);
+    return DetailResponseDto.notification({ uuid }, notification);
   }
 
   async communityReactionDelete(user, uuid) {

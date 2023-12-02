@@ -8,4 +8,8 @@ export class NotificationQueryRepository {
     @InjectRepository(NotificationEntity)
     private repository: Repository<NotificationEntity>,
   ) {}
+
+  async sendNotification(notificationData): Promise<NotificationEntity> {
+    return await this.repository.save(notificationData);
+  }
 }
