@@ -63,6 +63,20 @@ export class CultureListDto {
     description: '주소',
   })
   address: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '2023-10-21 00:00:00',
+    description: '시작일',
+  })
+  start_date: Date;
+
+  @Expose()
+  @ApiProperty({
+    example: '2023-12-31 00:00:00',
+    description: '마감일',
+  })
+  end_date: Date;
 }
 
 export class CultureDto {
