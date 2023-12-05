@@ -4,7 +4,8 @@ import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
+import { ERROR } from './auth/constants/error';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -22,6 +23,17 @@ async function bootstrap() {
       // transformOptions: {
       //   enableImplicitConversion: true, // 타입 변환을 자동으로 수행
       // },
+      exceptionFactory: (error: ValidationError[] = []) => {
+        return new BadRequestException(
+          error.some((error) =>
+            Object.keys(error.constraints).some((key) => key === 'isNotBadword'),
+          )
+            ? ERROR.SWEAR_WORD
+            : error
+                .map((error) => Object.keys(error.constraints).map((key) => error.constraints[key]))
+                .join('\n'),
+        );
+      },
     }),
   );
 
