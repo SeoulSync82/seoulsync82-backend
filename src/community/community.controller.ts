@@ -21,7 +21,12 @@ import { NotificationInterceptor } from 'src/commons/interceptors/notification.i
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { CommunityService } from './community.service';
-import { CommunityListReqDto, CommunityPostReqDto, CommunityPutReqDto } from './dto/community.dto';
+import {
+  CommunityListReqDto,
+  CommunityMyCourseListReqDto,
+  CommunityPostReqDto,
+  CommunityPutReqDto,
+} from './dto/community.dto';
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
@@ -47,6 +52,25 @@ export class CommunityController {
     @Body(BadWordsPipe) dto: CommunityPostReqDto,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPost(user, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/my/course')
+  @ApiOperation({
+    summary: '커뮤니티 글쓰기 - 내 코스 목록',
+    description: '커뮤니티 글쓰기 - 내 코스 목록',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '커뮤니티 글쓰기 - 내 코스 목록',
+    type: ResponseDataDto,
+  })
+  async communityMyCourseList(
+    @Query() dto: CommunityMyCourseListReqDto,
+    @CurrentUser() user,
+  ): Promise<ResponseDataDto> {
+    return await this.communityService.communityMyCourseList(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)

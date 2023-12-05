@@ -45,4 +45,11 @@ export class CommunityQueryRepository {
       where: { uuid: uuid, archived_at: IsNull() },
     });
   }
+
+  async myCommunity(user): Promise<CommunityEntity[]> {
+    return await this.repository.find({
+      where: { user_uuid: user.uuid, archived_at: IsNull() },
+      order: { created_at: 'DESC' },
+    });
+  }
 }

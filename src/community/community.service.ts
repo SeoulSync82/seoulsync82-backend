@@ -16,6 +16,7 @@ import {
   CommunityDetailResDto,
   CommunityListReqDto,
   CommunityListResDto,
+  CommunityMyCourseListResDto,
   CommunityPostReqDto,
   CommunityPutReqDto,
 } from './dto/community.dto';
@@ -48,6 +49,26 @@ export class CommunityService {
     await this.communityQueryRepository.save(communityEntity);
 
     return DetailResponseDto.uuid(communityEntity.uuid);
+  }
+
+  async communityMyCourseList(dto, user) {
+    const myCourseList = await this.myCourseQueryRepository.find(dto, user);
+    if (myCourseList.length === 0) {
+      return ResponseDataDto.from([], null, 0);
+    }
+
+    const myCommunity = await this.communityQueryRepository.myCommunity(user);
+
+    const communityMyCourseList = plainToInstance(CommunityMyCourseListResDto, myCourseList, {
+      excludeExtraneousValues: true,
+    }).map((my) => {
+      my.isPost = myCommunity.map((item) => item.my_course_uuid).includes(my.uuid);
+      return my;
+    });
+
+    const last_item_id = myCourseList.length > 0 ? myCourseList[myCourseList.length - 1].id : 0;
+
+    return ResponseDataDto.from(communityMyCourseList, null, last_item_id);
   }
 
   async communityList(dto: CommunityListReqDto, user) {
