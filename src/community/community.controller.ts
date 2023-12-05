@@ -19,6 +19,7 @@ import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { CommunityService } from './community.service';
 import { CommunityListReqDto, CommunityPostReqDto, CommunityPutReqDto } from './dto/community.dto';
 
@@ -43,7 +44,7 @@ export class CommunityController {
   })
   async communityPost(
     @CurrentUser() user,
-    @Body() dto: CommunityPostReqDto,
+    @Body(BadWordsPipe) dto: CommunityPostReqDto,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPost(user, dto);
   }
@@ -112,7 +113,7 @@ export class CommunityController {
   })
   async communityPut(
     @CurrentUser() user,
-    @Body() dto: CommunityPutReqDto,
+    @Body(BadWordsPipe) dto: CommunityPutReqDto,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPut(user, dto, uuid);

@@ -16,6 +16,7 @@ import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { UpdateUserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
@@ -35,10 +36,10 @@ export class UserController {
   })
   @ApiResponse({
     status: 200,
-    description: '전시/팝업 간편 목록',
+    description: '프로필 수정',
     type: DetailResponseDto,
   })
-  async profileUpdate(@Body() dto: UpdateUserDto, @CurrentUser() user) {
+  async profileUpdate(@Body(BadWordsPipe) dto: UpdateUserDto, @CurrentUser() user) {
     return await this.userService.profileUpdate(dto, user);
   }
 
@@ -57,7 +58,8 @@ export class UserController {
     type: 'string',
     required: false,
     description: 'uuid',
-    example: '승모 - 2871948cc25b589ea0a672a6f060fae3 / 윤진 - 84264400b65f57dcbc134231cd5e2611',
+    example:
+      '승모 - 2871948cc25b589ea0a672a6f060fae3 / 지영 - e89998f44b9450ec96664c295f3d701d / 윤진 - 84264400b65f57dcbc134231cd5e2611',
   })
   async getAccessToken(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.userService.getAccessToken(uuid);

@@ -22,6 +22,7 @@ import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { PlaceReadDto } from 'src/place/dto/place.dto';
 import { SearchDto } from './dto/search.dto';
 import { SearchService } from './search.service';
@@ -63,7 +64,10 @@ export class SearchController {
     required: false,
     description: '한 번에 보여질 전시/팝업 수',
   })
-  async searchPlace(@Query() dto: SearchDto, @CurrentUser() user): Promise<ResponseDataDto> {
+  async searchPlace(
+    @Query(BadWordsPipe) dto: SearchDto,
+    @CurrentUser() user,
+  ): Promise<ResponseDataDto> {
     return await this.searchService.searchPlace(dto, user);
   }
 
