@@ -12,6 +12,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import passport from 'passport';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
@@ -41,7 +42,11 @@ export class AuthController {
     description: '구글 로그인',
   })
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() _req: Request) {}
+  async googleAuth(@Req() _req: Request, @Query('state') state: string) {
+    // 여기서 state 저장하고
+    console.log('zzzzzzi', state);
+    passport.authenticate('google', { state })(_req);
+  }
 
   /* Get Google Auth Callback */
   @Get('/auth/google/callback')
@@ -52,6 +57,7 @@ export class AuthController {
     @Query('state') state: string,
   ) {
     try {
+      // 여기서 꺼내쓰는법
       const result = await this.authService.googleLogin(req, res);
       console.log(state);
       const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
