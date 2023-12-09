@@ -53,7 +53,7 @@ export class AuthController {
   ) {
     try {
       const result = await this.authService.googleLogin(req, res);
-
+      console.log(state);
       const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
       const frontendUrl =
         env === 'staging'
