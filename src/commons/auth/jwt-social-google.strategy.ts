@@ -16,10 +16,19 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  authorizationParams(): { [key: string]: string } {
+  // authorizationParams(): { [key: string]: string } {
+  //   return {
+  //     access_type: 'offline',
+  //     prompt: 'consent',
+  //   };
+  // }
+
+  authorizationParams(options: any): { [key: string]: string } {
+    const state = options.state || JSON.stringify({ env: process.env.NODE_ENV });
     return {
       access_type: 'offline',
       prompt: 'consent',
+      state,
     };
   }
 

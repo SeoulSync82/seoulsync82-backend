@@ -46,11 +46,24 @@ export class AuthController {
   /* Get Google Auth Callback */
   @Get('/auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
+  async googleAuthCallback(
+    @Req() req: GoogleRequest,
+    @Res() res: Response,
+    @Query('state') state: string,
+  ) {
     try {
       const result = await this.authService.googleLogin(req, res);
 
-      res.redirect(`http://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+      const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
+      const frontendUrl =
+        env === 'staging'
+          ? 'http://staging.seoulsync82.com:3457/main'
+          : 'http://localhost:3457/main';
+
+      console.log('frontendUrl', frontendUrl);
+      console.log('env', env);
+
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
