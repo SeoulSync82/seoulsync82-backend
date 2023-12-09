@@ -49,18 +49,20 @@ export class AuthController {
   async googleAuthCallback(
     @Req() req: GoogleRequest,
     @Res() res: Response,
-    @Query('env') env: string,
+    @Query('state') state: string,
   ) {
     try {
       const result = await this.authService.googleLogin(req, res);
 
-      // const frontendUrl = process.env.FRONTEND_URL;
+      const env = JSON.parse(decodeURIComponent(state)).env;
       const frontendUrl =
         env === 'staging'
           ? 'http://staging.seoulsync82.com:3457/main'
           : 'http://localhost:3457/main';
+
       console.log('frontendUrl', frontendUrl);
       console.log('env', env);
+
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       res.redirect('/error');
@@ -82,10 +84,12 @@ export class AuthController {
   async kakaoAuthCallback(
     @Req() req: KakaoRequest,
     @Res() res: Response,
-    @Query('env') env: string,
+    @Query('state') state: string,
   ) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
+
+      const env = JSON.parse(decodeURIComponent(state)).env;
       const frontendUrl =
         env === 'staging'
           ? 'http://staging.seoulsync82.com:3457/main'
@@ -113,10 +117,12 @@ export class AuthController {
   async naverAuthCallback(
     @Req() req: NaverRequest,
     @Res() res: Response,
-    @Query('env') env: string,
+    @Query('state') state: string,
   ) {
     try {
       const result = await this.authService.naverLogin(req, res);
+
+      const env = JSON.parse(decodeURIComponent(state)).env;
       const frontendUrl =
         env === 'staging'
           ? 'http://staging.seoulsync82.com:3457/main'
