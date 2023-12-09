@@ -59,7 +59,8 @@ export class AuthController {
         env === 'staging'
           ? 'http://staging.seoulsync82.com:3457/main'
           : 'http://localhost:3457/main';
-
+      console.log('frontendUrl', frontendUrl);
+      console.log('env', env);
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       res.redirect('/error');
