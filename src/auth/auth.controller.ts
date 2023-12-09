@@ -54,7 +54,7 @@ export class AuthController {
     try {
       const result = await this.authService.googleLogin(req, res);
 
-      const env = JSON.parse(decodeURIComponent(state)).env;
+      const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
       const frontendUrl =
         env === 'staging'
           ? 'http://staging.seoulsync82.com:3457/main'
@@ -65,6 +65,7 @@ export class AuthController {
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
+      console.error('Error parsing state:', error);
       res.redirect('/error');
     }
   }
@@ -97,6 +98,7 @@ export class AuthController {
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
+      console.error('Error parsing state:', error);
       res.redirect('/error');
     }
   }
@@ -130,6 +132,7 @@ export class AuthController {
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
+      console.error('Error parsing state:', error);
       res.redirect('/error');
     }
   }
