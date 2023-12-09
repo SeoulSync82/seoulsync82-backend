@@ -24,7 +24,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   // }
 
   authorizationParams(options: any): { [key: string]: string } {
-    const state = options.state || JSON.stringify({ env: process.env.NODE_ENV });
+    const state = options.state;
     return {
       access_type: 'offline',
       prompt: 'consent',
