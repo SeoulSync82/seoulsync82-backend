@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   Res,
   UseFilters,
@@ -45,12 +46,19 @@ export class AuthController {
   /* Get Google Auth Callback */
   @Get('/auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
+  async googleAuthCallback(
+    @Req() req: GoogleRequest,
+    @Res() res: Response,
+    @Query('env') env: string,
+  ) {
     try {
       const result = await this.authService.googleLogin(req, res);
-      // 성공적 로그인 후 프론트엔드의 특정 페이지로 리다이렉트
+
       // const frontendUrl = process.env.FRONTEND_URL;
-      const frontendUrl = `http://localhost:3456/main`;
+      const frontendUrl =
+        env === 'staging'
+          ? 'http://staging.seoulsync82.com:3457/main'
+          : 'http://localhost:3457/main';
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
@@ -70,10 +78,17 @@ export class AuthController {
   /* Get kakao Auth Callback */
   @Get('/auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
+  async kakaoAuthCallback(
+    @Req() req: KakaoRequest,
+    @Res() res: Response,
+    @Query('env') env: string,
+  ) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
-      const frontendUrl = `http://localhost:3456/main`;
+      const frontendUrl =
+        env === 'staging'
+          ? 'http://staging.seoulsync82.com:3457/main'
+          : 'http://localhost:3457/main';
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
@@ -94,10 +109,17 @@ export class AuthController {
   /* Get naver Auth Callback */
   @Get('/auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
+  async naverAuthCallback(
+    @Req() req: NaverRequest,
+    @Res() res: Response,
+    @Query('env') env: string,
+  ) {
     try {
       const result = await this.authService.naverLogin(req, res);
-      const frontendUrl = `http://localhost:3456/main`;
+      const frontendUrl =
+        env === 'staging'
+          ? 'http://staging.seoulsync82.com:3457/main'
+          : 'http://localhost:3457/main';
 
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
