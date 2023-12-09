@@ -50,7 +50,7 @@ export class AuthController {
     try {
       const result = await this.authService.googleLogin(req, res);
 
-      res.redirect(`/?token=${result.eid_access_token}`);
+      res.redirect(`http://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -73,7 +73,7 @@ export class AuthController {
     try {
       const result = await this.authService.kakaoLogin(req, res);
 
-      res.redirect(`/?token=${result.eid_access_token}`);
+      res.redirect(`http://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -97,7 +97,7 @@ export class AuthController {
     try {
       const result = await this.authService.naverLogin(req, res);
 
-      res.redirect(`/?token=${result.eid_access_token}`);
+      res.redirect(`http://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
