@@ -46,24 +46,11 @@ export class AuthController {
   /* Get Google Auth Callback */
   @Get('/auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(
-    @Req() req: GoogleRequest,
-    @Res() res: Response,
-    @Query('state') state: string,
-  ) {
+  async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
 
-      const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
-      const frontendUrl =
-        env === 'staging'
-          ? 'http://staging.seoulsync82.com:3457/main'
-          : 'http://localhost:3457/main';
-
-      console.log('frontendUrl', frontendUrl);
-      console.log('env', env);
-
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -82,21 +69,11 @@ export class AuthController {
   /* Get kakao Auth Callback */
   @Get('/auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(
-    @Req() req: KakaoRequest,
-    @Res() res: Response,
-    @Query('state') state: string,
-  ) {
+  async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
 
-      const env = JSON.parse(decodeURIComponent(state)).env;
-      const frontendUrl =
-        env === 'staging'
-          ? 'http://staging.seoulsync82.com:3457/main'
-          : 'http://localhost:3457/main';
-
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -116,21 +93,11 @@ export class AuthController {
   /* Get naver Auth Callback */
   @Get('/auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(
-    @Req() req: NaverRequest,
-    @Res() res: Response,
-    @Query('state') state: string,
-  ) {
+  async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
 
-      const env = JSON.parse(decodeURIComponent(state)).env;
-      const frontendUrl =
-        env === 'staging'
-          ? 'http://staging.seoulsync82.com:3457/main'
-          : 'http://localhost:3457/main';
-
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
