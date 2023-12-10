@@ -37,6 +37,7 @@ import { CommunityModule } from './community/community.module';
           keepConnectionAlive: true,
           charset: 'utf8mb4_unicode_ci',
           timezone: 'z',
+          // timezone: 'Etc/UTC',
         } as TypeOrmModuleAsyncOptions;
       },
     }),
