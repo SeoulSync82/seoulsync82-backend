@@ -21,7 +21,7 @@ export class PlaceReadDto {
 
   @Expose()
   @ApiProperty({
-    example: 'lastest',
+    example: 'latest',
     description: '정렬',
     required: false,
   })

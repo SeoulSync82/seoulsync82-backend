@@ -52,7 +52,7 @@ export class PlaceQueryRepository {
       Object.assign(whereConditions, { id: LessThan(dto.last_id) });
     }
 
-    if (dto.order === 'lastest') {
+    if (dto.order === 'latest') {
       orderType = { start_date: 'DESC' };
     } else if (dto.order === 'deadline') {
       orderType = { end_date: 'ASC' };
@@ -77,7 +77,7 @@ export class PlaceQueryRepository {
       whereConditions.id = LessThan(dto.last_id);
     }
 
-    if (dto.order === 'lastest') {
+    if (dto.order === 'latest') {
       orderType.start_date = 'DESC';
     } else if (dto.order === 'deadline') {
       orderType.end_date = 'ASC';
