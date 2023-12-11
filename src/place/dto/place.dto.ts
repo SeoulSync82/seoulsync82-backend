@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
 
 export class PlaceReadDto {
@@ -15,7 +15,6 @@ export class PlaceReadDto {
   @ApiProperty({
     example: 10,
     description: '한 번에 보여줄 장소 개수',
-    required: false,
   })
   size?: number;
 
@@ -52,6 +51,13 @@ export class CultureListDto {
 
   @Expose()
   @ApiProperty({
+    example: '전시',
+    description: '장소 타입',
+  })
+  place_type: string;
+
+  @Expose()
+  @ApiProperty({
     example: '쫄깃즈 키링 팝업스토어',
     description: '장소 이름',
   })
@@ -77,6 +83,53 @@ export class CultureListDto {
     description: '마감일',
   })
   end_date: Date;
+
+  @Expose()
+  @ApiProperty({
+    example: ' 월~금요일 10:00~18:00· 토요일 12:00~19:00',
+    description: '전시 영업 시간',
+  })
+  @Transform(({ value }) => value ?? undefined)
+  operation_time?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: ' 일요일 휴관',
+    description: '전시 휴무일',
+  })
+  @Transform(({ value }) => value ?? undefined)
+  closed_days?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: ' 무료',
+    description: '전시 입장료',
+  })
+  @Transform(({ value }) => value ?? undefined)
+  entrance_fee?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: 'KANU(카누)',
+    description: '팝업 main 이름',
+  })
+  @Transform(({ value }) => value ?? undefined)
+  brandname?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '카누,커피,크리스마스,팝업스토어,미디어아트,시음,레이어57',
+    description: '팝업 해시태그',
+  })
+  @Transform(({ value }) => value ?? undefined)
+  hashtag?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '서울특별시 성동구',
+    description: '전시/팝업 장소',
+  })
+  top_level_address: string;
 }
 
 export class CultureDto {
