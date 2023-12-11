@@ -18,6 +18,15 @@ export class PlaceEntity {
   place_type: string;
 
   @Column()
+  operation_time: string;
+
+  @Column()
+  closed_days: string;
+
+  @Column()
+  entrance_fee: string;
+
+  @Column()
   thumbnail: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 7 })
@@ -64,6 +73,12 @@ export class PlaceEntity {
 
   @Column()
   brandname: string;
+
+  @Column()
+  hashtag: string;
+
+  @Column()
+  top_level_address: string;
 
   @OneToMany(() => SubwayEntity, (subway) => subway.place)
   subways: SubwayEntity[];

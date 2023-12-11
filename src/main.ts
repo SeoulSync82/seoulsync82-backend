@@ -6,6 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { ERROR } from './auth/constants/error';
+import { SwaggerModels } from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -50,19 +51,29 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  const config = new DocumentBuilder()
-    .setTitle('SeoulSync82')
-    .setDescription('The SeoulSync82 API description')
-    .setVersion('1.0.0')
-    .addTag('swagger')
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token',
-    )
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup(
+    'docs',
+    app,
+    SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle('SeoulSync82')
+        .setDescription('The SeoulSync82 API description')
+        .setVersion('1.0.0')
+        .addTag('swagger')
+        .addBearerAuth(
+          { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+          'access-token',
+        )
+        .build(),
+      {
+        extraModels: SwaggerModels,
+      },
+    ),
+    {
+      swaggerOptions: { defaultModelsExpandDepth: -1 },
+    },
+  );
 
   await app.listen(3456);
 }

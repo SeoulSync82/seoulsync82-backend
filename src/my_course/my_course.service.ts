@@ -16,6 +16,7 @@ import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { CourseSaveReqDto, MyCourseListResDto } from './dto/my_course.dto';
 import { MyCourseQueryRepository } from './my_course.query.repository';
+import { Emojis } from 'src/auth/constants/emoji';
 
 @Injectable()
 export class MyCourseService {
@@ -89,7 +90,8 @@ export class MyCourseService {
     if (dto.theme_cafe) themes.push(dto.theme_cafe);
 
     if (themes.length === 0) {
-      myCourseEntity.course_name = `${course.subway}역 주변 코스 일정🏖`;
+      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
+      myCourseEntity.course_name = `${course.subway}역 주변 코스 일정${randomEmoji}`;
     } else {
       // 무작위 테마 선택
       const randomTheme = themes[Math.floor(Math.random() * themes.length)];

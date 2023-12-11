@@ -137,14 +137,14 @@ export class SearchDetailDto {
 
   @Expose()
   @ApiProperty({
-    example: '0',
+    example: 27.0319456,
     description: '위도',
   })
   latitude: number;
 
   @Expose()
   @ApiProperty({
-    example: '0',
+    example: 37.5070434,
     description: '경도',
   })
   longitude: number;

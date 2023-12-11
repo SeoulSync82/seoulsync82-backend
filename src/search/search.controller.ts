@@ -17,6 +17,8 @@ import {
 } from '@nestjs/swagger';
 import { use } from 'passport';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
@@ -24,7 +26,7 @@ import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { PlaceReadDto } from 'src/place/dto/place.dto';
-import { SearchDto } from './dto/search.dto';
+import { SearchDetailDto, SearchDto, SearchListDto } from './dto/search.dto';
 import { SearchService } from './search.service';
 
 @ApiTags('검색')
@@ -41,11 +43,7 @@ export class SearchController {
     summary: '검색',
     description: '검색',
   })
-  @ApiResponse({
-    status: 200,
-    description: '검색',
-    type: ResponseDto,
-  })
+  @ApiArraySuccessResponse(SearchListDto)
   @ApiQuery({
     name: 'search',
     type: 'string',
@@ -64,10 +62,7 @@ export class SearchController {
     required: false,
     description: '한 번에 보여질 전시/팝업 수',
   })
-  async searchPlace(
-    @Query(BadWordsPipe) dto: SearchDto,
-    @CurrentUser() user,
-  ): Promise<ResponseDataDto> {
+  async searchPlace(@Query(BadWordsPipe) dto: SearchDto, @CurrentUser() user) {
     return await this.searchService.searchPlace(dto, user);
   }
 
@@ -76,18 +71,14 @@ export class SearchController {
     summary: '검색 상세',
     description: '검색 상세',
   })
-  @ApiResponse({
-    status: 200,
-    description: '검색 상세',
-    type: DetailResponseDto,
-  })
+  @ApiSuccessResponse(SearchDetailDto)
   @ApiParam({
     name: 'uuid',
     type: 'string',
     required: false,
     description: '장소 uuid',
   })
-  async searchDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
+  async searchDetail(@Param('uuid') uuid: string) {
     return await this.searchService.searchDetail(uuid);
   }
 

@@ -205,7 +205,7 @@ export class CourseService {
     await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
     // 트랜잭션 처리 필요
 
-    return DetailResponseDto.from(courseRecommendResDto);
+    return courseRecommendResDto;
   }
 
   async courseRecommendNonLogin(dto: CourseRecommendReqDto) {
@@ -355,6 +355,6 @@ export class CourseService {
       놀거리: customsTypes.includes('놀거리'),
     });
 
-    return DetailResponseDto.from(new SubwayCustomCheckResDto({ customs: [customsCheck] }));
+    return new SubwayCustomCheckResDto({ customs: [customsCheck] });
   }
 }
