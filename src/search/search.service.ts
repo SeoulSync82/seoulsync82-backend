@@ -46,7 +46,7 @@ export class SearchService {
 
     const last_item_id = searchList.length > 0 ? searchList[searchList.length - 1].id : 0;
 
-    return ResponseDataDto.from(searchListDto, null, last_item_id);
+    return { items: searchListDto, last_item_id };
   }
 
   async searchDetail(uuid) {
@@ -59,7 +59,7 @@ export class SearchService {
       excludeExtraneousValues: true,
     });
 
-    return DetailResponseDto.from(searchDetailDto);
+    return searchDetailDto;
   }
 
   async searchPopular() {

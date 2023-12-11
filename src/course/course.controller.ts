@@ -12,14 +12,20 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto, ResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { CourseSaveReqDto } from 'src/my_course/dto/my_course.dto';
+import { SubwayCustomCheckResDto } from 'src/place/dto/subway.dto';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseService } from './course.service';
-import { CourseRecommendReqDto, SubwayCustomsCheckReqDto } from './dto/course.dto';
+import {
+  CourseRecommendReqDto,
+  CourseRecommendResDto,
+  SubwayCustomsCheckReqDto,
+} from './dto/course.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -38,15 +44,8 @@ export class CourseController {
     summary: 'AI 코스 추천',
     description: 'AI 코스 추천',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'AI 코스 추천',
-    type: DetailResponseDto,
-  })
-  async courseRecommend(
-    @CurrentUser() user,
-    @Body() dto: CourseRecommendReqDto,
-  ): Promise<DetailResponseDto> {
+  @ApiSuccessResponse(CourseRecommendResDto)
+  async courseRecommend(@CurrentUser() user, @Body() dto: CourseRecommendReqDto) {
     return await this.courseService.courseRecommend(user, dto);
   }
 
@@ -55,12 +54,8 @@ export class CourseController {
     summary: 'AI 코스 추천 - 비회원',
     description: 'AI 코스 추천 - 비회원',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'AI 코스 추천 - 비회원',
-    type: DetailResponseDto,
-  })
-  async courseRecommendNonLogin(@Query() dto: CourseRecommendReqDto): Promise<DetailResponseDto> {
+  @ApiSuccessResponse(CourseRecommendResDto)
+  async courseRecommendNonLogin(@Query() dto: CourseRecommendReqDto) {
     return await this.courseService.courseRecommendNonLogin(dto);
   }
 
@@ -117,12 +112,8 @@ export class CourseController {
     summary: '지하철 역 커스텀 체크',
     description: '지하철 역 커스텀 체크',
   })
-  @ApiResponse({
-    status: 200,
-    description: '지하철 역 커스텀 체크',
-    type: DetailResponseDto,
-  })
-  async subwayCustomsCheck(@Query() dto: SubwayCustomsCheckReqDto): Promise<DetailResponseDto> {
+  @ApiSuccessResponse(SubwayCustomCheckResDto)
+  async subwayCustomsCheck(@Query() dto: SubwayCustomsCheckReqDto) {
     return await this.courseService.subwayCustomsCheck(dto);
   }
 }

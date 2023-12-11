@@ -22,7 +22,7 @@ export class PlaceService {
 
     const last_item_id = cultureList.length > 0 ? cultureList[cultureList.length - 1].id : 0;
 
-    return ResponseDataDto.from(cultureListDto, null, last_item_id);
+    return { items: cultureListDto, last_item_id };
   }
 
   async findCultureOne(uuid) {
@@ -35,7 +35,7 @@ export class PlaceService {
       excludeExtraneousValues: true,
     });
 
-    return DetailResponseDto.from(cultureDto);
+    return cultureDto;
   }
 
   async findExhibitionList(dto: PlaceReadDto) {
@@ -51,7 +51,7 @@ export class PlaceService {
     const last_item_id =
       exhibitionList.length > 0 ? exhibitionList[exhibitionList.length - 1].id : 0;
 
-    return ResponseDataDto.from(exhibitionDto, null, last_item_id);
+    return { items: exhibitionDto, last_item_id };
   }
 
   async findPopupList(dto: PlaceReadDto) {
@@ -66,6 +66,6 @@ export class PlaceService {
 
     const last_item_id = popupList.length > 0 ? popupList[popupList.length - 1].id : 0;
 
-    return ResponseDataDto.from(popupDto, null, last_item_id);
+    return { items: popupDto, last_item_id };
   }
 }
