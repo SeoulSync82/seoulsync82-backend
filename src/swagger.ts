@@ -1,3 +1,8 @@
+import {
+  CommunityMyCourseListResDto,
+  CommunityListResDto,
+  CommunityDetailResDto,
+} from './community/dto/community.dto';
 import { CoursePlaceDto, CourseRecommendResDto } from './course/dto/course.dto';
 import { MyCourseDetailResDto, MyCourseListResDto } from './my_course/dto/my_course.dto';
 import { NotificationListResDto } from './notification/dto/notification.dto';
@@ -20,4 +25,7 @@ export const SwaggerModels = [
   ThemeListDto,
   MyCourseListResDto,
   MyCourseDetailResDto,
+  CommunityMyCourseListResDto,
+  CommunityListResDto,
+  CommunityDetailResDto,
 ];

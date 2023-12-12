@@ -68,7 +68,7 @@ export class CommunityService {
 
     const last_item_id = myCourseList.length > 0 ? myCourseList[myCourseList.length - 1].id : 0;
 
-    return ResponseDataDto.from(communityMyCourseList, null, last_item_id);
+    return { items: communityMyCourseList, last_item_id };
   }
 
   async communityList(dto: CommunityListReqDto, user) {
@@ -112,7 +112,7 @@ export class CommunityService {
 
     const last_item_id = communityList.length > 0 ? communityList[communityList.length - 1].id : 0;
 
-    return ResponseDataDto.from(communityListResDto, null, last_item_id);
+    return { items: communityListResDto, last_item_id };
   }
 
   async communityDetail(uuid, user) {
@@ -150,7 +150,7 @@ export class CommunityService {
       ),
     });
 
-    return DetailResponseDto.from(communityDetailResDto);
+    return communityDetailResDto;
   }
 
   async communityPut(user, dto: CommunityPutReqDto, uuid) {
