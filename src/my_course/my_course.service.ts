@@ -7,14 +7,10 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { CourseModule } from 'src/course/course.module';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
-import {
-  CoursePlaceDto,
-  CourseRecommendResDto,
-  MyCourseDetailResDto,
-} from 'src/course/dto/course.dto';
+import { CoursePlaceDto, CourseRecommendResDto } from 'src/course/dto/course.dto';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { CourseSaveReqDto, MyCourseListResDto } from './dto/my_course.dto';
+import { CourseSaveReqDto, MyCourseDetailResDto, MyCourseListResDto } from './dto/my_course.dto';
 import { MyCourseQueryRepository } from './my_course.query.repository';
 import { Emojis } from 'src/auth/constants/emoji';
 
@@ -38,7 +34,7 @@ export class MyCourseService {
 
     const last_item_id = courseList.length > 0 ? courseList[courseList.length - 1].id : 0;
 
-    return ResponseDataDto.from(myCourseListResDto, null, last_item_id);
+    return { items: myCourseListResDto, last_item_id };
   }
 
   async myCourseDetail(uuid) {
@@ -68,7 +64,7 @@ export class MyCourseService {
       ),
     });
 
-    return DetailResponseDto.from(myCourseDetailResDto);
+    return myCourseDetailResDto;
   }
 
   async courseSave(user, uuid, dto: CourseSaveReqDto) {
