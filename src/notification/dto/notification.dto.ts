@@ -95,6 +95,21 @@ export class NotificationListResDto {
 
   @Expose()
   @ApiProperty({
+    example: '6e6df92a8af35a16af80c358d73d54bb',
+    description: '좋아요한 유저 uuid',
+  })
+  user_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example:
+      'https://lh3.googleusercontent.com/a/ACg8ocKAb6iB4pEMNzQ-IjQJHMEvhxKC8tDHn5VL0FIlDK2v=s96-c',
+    description: '좋아요한 유저 썸네일',
+  })
+  user_thumbnail: string;
+
+  @Expose()
+  @ApiProperty({
     example: '2023-10-21 00:00:00',
     description: '읽은 날짜',
   })
