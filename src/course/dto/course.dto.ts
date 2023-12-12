@@ -234,67 +234,6 @@ export class CoursePlaceDto {
   })
   end_date: Date;
 }
-
-export class MyCourseDetailResDto {
-  @Expose()
-  @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
-    description: '코스 uuid',
-  })
-  course_uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내 코스 uuid',
-  })
-  my_course_uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '개지리는 성수역 코스추천',
-    description: '내 코스 이름',
-  })
-  my_course_name: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '성수역',
-    description: '지하철 역',
-  })
-  subway: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '분위기 있는🌃',
-    description: '음식점 테마',
-  })
-  theme_restaurant?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '인스타 감성💫',
-    description: '카페 테마',
-  })
-  theme_cafe?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '2',
-    description: '코스 장소 갯수',
-  })
-  count: number;
-
-  @Expose()
-  @ApiProperty()
-  place: CoursePlaceDto[];
-
-  constructor(data?: Partial<MyCourseDetailResDto>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-}
 // export class CourseSaveReqDto {
 //   @Expose()
 //   @ApiProperty({

@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 export class UserQueryRepository {
   constructor(
@@ -50,5 +50,11 @@ export class UserQueryRepository {
     }
 
     return await this.repository.update({ id: user.id }, whereConditions);
+  }
+
+  async findUserList(uuids) {
+    return await this.repository.find({
+      where: { uuid: In(uuids) },
+    });
   }
 }

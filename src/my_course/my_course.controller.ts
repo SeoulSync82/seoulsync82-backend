@@ -12,11 +12,18 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { CourseSaveReqDto, MyCourseListReqDto } from './dto/my_course.dto';
+import {
+  CourseSaveReqDto,
+  MyCourseDetailResDto,
+  MyCourseListReqDto,
+  MyCourseListResDto,
+} from './dto/my_course.dto';
 import { MyCourseService } from './my_course.service';
 
 @ApiTags('내코스')
@@ -33,15 +40,8 @@ export class MyCourseController {
     summary: '내 코스 목록',
     description: '내 코스 목록',
   })
-  @ApiResponse({
-    status: 200,
-    description: '내 코스 목록',
-    type: ResponseDataDto,
-  })
-  async myCourseList(
-    @Query() dto: MyCourseListReqDto,
-    @CurrentUser() user,
-  ): Promise<ResponseDataDto> {
+  @ApiArraySuccessResponse(MyCourseListResDto)
+  async myCourseList(@Query() dto: MyCourseListReqDto, @CurrentUser() user) {
     return await this.myCourseService.myCourseList(dto, user);
   }
 
@@ -52,18 +52,14 @@ export class MyCourseController {
     summary: '내 코스 상세',
     description: '내 코스 상세',
   })
-  @ApiResponse({
-    status: 200,
-    description: '내 코스 상세',
-    type: DetailResponseDto,
-  })
+  @ApiSuccessResponse(MyCourseDetailResDto)
   @ApiParam({
     name: 'uuid',
     type: 'string',
     required: false,
     description: '내코스 uuid',
   })
-  async myCourseDetail(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
+  async myCourseDetail(@Param('uuid') uuid: string) {
     return await this.myCourseService.myCourseDetail(uuid);
   }
 

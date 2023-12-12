@@ -11,11 +11,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { NotificationListReqDto } from './dto/notification.dto';
+import { NotificationListReqDto, NotificationListResDto } from './dto/notification.dto';
 import { NotificationService } from './notification.service';
 
 @ApiTags('알림')
@@ -32,15 +33,8 @@ export class NotificationController {
     summary: '알림 목록',
     description: '알림 목록',
   })
-  @ApiResponse({
-    status: 200,
-    description: '알림 목록',
-    type: ResponseDataDto,
-  })
-  async notificationList(
-    @Query() dto: NotificationListReqDto,
-    @CurrentUser() user,
-  ): Promise<ResponseDataDto> {
+  @ApiArraySuccessResponse(NotificationListResDto)
+  async notificationList(@Query() dto: NotificationListReqDto, @CurrentUser() user) {
     return await this.notificationService.notificationList(dto, user);
   }
 

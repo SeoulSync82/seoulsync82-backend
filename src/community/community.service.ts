@@ -5,7 +5,7 @@ import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
-import { MyCourseDetailResDto, CoursePlaceDto } from 'src/course/dto/course.dto';
+import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
@@ -68,7 +68,7 @@ export class CommunityService {
 
     const last_item_id = myCourseList.length > 0 ? myCourseList[myCourseList.length - 1].id : 0;
 
-    return ResponseDataDto.from(communityMyCourseList, null, last_item_id);
+    return { items: communityMyCourseList, last_item_id };
   }
 
   async communityList(dto: CommunityListReqDto, user) {
@@ -112,7 +112,7 @@ export class CommunityService {
 
     const last_item_id = communityList.length > 0 ? communityList[communityList.length - 1].id : 0;
 
-    return ResponseDataDto.from(communityListResDto, null, last_item_id);
+    return { items: communityListResDto, last_item_id };
   }
 
   async communityDetail(uuid, user) {
@@ -150,7 +150,7 @@ export class CommunityService {
       ),
     });
 
-    return DetailResponseDto.from(communityDetailResDto);
+    return communityDetailResDto;
   }
 
   async communityPut(user, dto: CommunityPutReqDto, uuid) {
