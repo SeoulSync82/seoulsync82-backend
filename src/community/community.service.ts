@@ -9,7 +9,9 @@ import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
+import { UserEntity } from 'src/entities/user.entity';
 import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
 import {
@@ -29,6 +31,7 @@ export class CommunityService {
     private readonly myCourseQueryRepository: MyCourseQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly reactionQueryRepository: ReactionQueryRepository,
+    private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async communityPost(user, dto: CommunityPostReqDto) {
@@ -91,6 +94,10 @@ export class CommunityService {
       communityList.map((item) => item.uuid),
     );
 
+    const userList = await this.userQueryRepository.findUserList(
+      communityList.map((item) => item.user_uuid),
+    );
+
     const communityListResDto = plainToInstance(CommunityListResDto, communityList, {
       excludeExtraneousValues: true,
     }).map((community) => {
@@ -107,6 +114,10 @@ export class CommunityService {
         .filter((item) => item.target_uuid === community.uuid)
         .map((user) => user.user_uuid)
         .includes(user.uuid);
+      community.user_name = userList.find((user) => user.uuid === community.user_uuid).name;
+      community.user_profile_image = userList.find(
+        (user) => user.uuid === community.user_uuid,
+      ).profile_image;
       return community;
     });
 
@@ -127,10 +138,15 @@ export class CommunityService {
     }
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
-    const reaction = await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
+    const reaction: ReactionEntity[] =
+      await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
+    const communityUser: UserEntity = await this.userQueryRepository.findOne(community.user_uuid);
 
     const communityDetailResDto = new CommunityDetailResDto({
       course_uuid: course.course_uuid,
+      user_uuid: communityUser.uuid,
+      user_name: communityUser.name,
+      user_profile_image: communityUser.profile_image,
       my_course_uuid: course.uuid,
       my_course_name: course.course_name,
       subway: course.subway,
