@@ -9,6 +9,7 @@ import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
+import { UserEntity } from 'src/entities/user.entity';
 import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { CommunityController } from './community.controller';
@@ -137,10 +138,15 @@ export class CommunityService {
     }
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
-    const reaction = await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
+    const reaction: ReactionEntity[] =
+      await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
+    const communityUser: UserEntity = await this.userQueryRepository.findOne(community.user_uuid);
 
     const communityDetailResDto = new CommunityDetailResDto({
       course_uuid: course.course_uuid,
+      user_uuid: communityUser.uuid,
+      user_name: communityUser.name,
+      user_profile_image: communityUser.profile_image,
       my_course_uuid: course.uuid,
       my_course_name: course.course_name,
       subway: course.subway,
