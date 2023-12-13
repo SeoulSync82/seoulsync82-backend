@@ -10,6 +10,7 @@ import { CommunityEntity } from 'src/entities/community.entity';
 import { MyCourseEntity } from 'src/entities/my_course.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
 import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
 import {
@@ -29,6 +30,7 @@ export class CommunityService {
     private readonly myCourseQueryRepository: MyCourseQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly reactionQueryRepository: ReactionQueryRepository,
+    private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async communityPost(user, dto: CommunityPostReqDto) {
@@ -91,6 +93,10 @@ export class CommunityService {
       communityList.map((item) => item.uuid),
     );
 
+    const userList = await this.userQueryRepository.findUserList(
+      communityList.map((item) => item.user_uuid),
+    );
+
     const communityListResDto = plainToInstance(CommunityListResDto, communityList, {
       excludeExtraneousValues: true,
     }).map((community) => {
@@ -107,6 +113,10 @@ export class CommunityService {
         .filter((item) => item.target_uuid === community.uuid)
         .map((user) => user.user_uuid)
         .includes(user.uuid);
+      community.user_name = userList.find((user) => user.uuid === community.user_uuid).name;
+      community.user_profile_image = userList.find(
+        (user) => user.uuid === community.user_uuid,
+      ).profile_image;
       return community;
     });
 
