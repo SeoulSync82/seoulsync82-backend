@@ -105,7 +105,7 @@ export class MyCourseService {
     }
     await this.courseQueryRepository.saveMyCourse(myCourseEntity);
 
-    return DetailResponseDto.uuid(uuid);
+    return DetailResponseDto.uuid(myCourseEntity.uuid);
   }
 
   async courseDelete(user, uuid) {
