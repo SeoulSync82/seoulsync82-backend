@@ -37,6 +37,30 @@ export class MyCourseListResDto {
 
   @Expose()
   @ApiProperty({
+    example: '2871948cc25b589ea0a672a6f060fae3',
+    description: '유저 uuid',
+  })
+  user_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '유승모',
+    description: '유저 이름',
+    required: false,
+  })
+  user_name: string;
+
+  @Expose()
+  @ApiProperty({
+    example:
+      'https://lh3.googleusercontent.com/a/ACg8ocKAb6iB4pEMNzQ-IjQJHMEvhxKC8tDHn5VL0FIlDK2v=s96-c',
+    description: '유저 이미지',
+    required: false,
+  })
+  user_profile_image: string;
+
+  @Expose()
+  @ApiProperty({
     example: 'c152acef58875943b20b5cd511f25902',
     description: '내코스 uuid',
   })
