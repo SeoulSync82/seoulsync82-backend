@@ -83,12 +83,19 @@ export class AuthService {
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
       console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
+      // res.cookie('eid_refresh_token', eid_refresh_token, {
+      //   expires: now,
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production' ? true : false,
+      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      // });
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: false, // HTTP 환경에서는 false로 설정
+        sameSite: 'lax', // 'none' 대신 'lax'를 사용
       });
+
       return {
         ok: true,
         eid_access_token,
