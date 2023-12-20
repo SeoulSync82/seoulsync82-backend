@@ -1,5 +1,6 @@
 import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CourseDetailEntity } from './course.detail.entity';
+import { MyCourseEntity } from './my_course.entity';
 
 @Entity({ name: 'course' })
 export class CourseEntity {
@@ -39,4 +40,7 @@ export class CourseEntity {
 
   @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.course)
   courseDetails: CourseDetailEntity[];
+
+  @OneToMany(() => MyCourseEntity, (myCourse) => myCourse.course)
+  myCourses: MyCourseEntity[];
 }

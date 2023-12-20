@@ -41,7 +41,7 @@ async function bootstrap() {
   // CORS 설정 추가!
   app.use(
     cors({
-      origin: '*',
+      origin: ['http://localhost:3457', 'http://staging.seoulsync82.com:3457'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     }),

@@ -13,6 +13,7 @@ import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { CourseSaveReqDto, MyCourseDetailResDto, MyCourseListResDto } from './dto/my_course.dto';
 import { MyCourseQueryRepository } from './my_course.query.repository';
 import { Emojis } from 'src/auth/constants/emoji';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 
 @Injectable()
 export class MyCourseService {
@@ -20,6 +21,7 @@ export class MyCourseService {
     private readonly myCourseQueryRepository: MyCourseQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
+    private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async myCourseList(dto, user) {
@@ -27,9 +29,19 @@ export class MyCourseService {
     if (courseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
+    console.log(courseList);
+
+    const userList = await this.userQueryRepository.findUserList(
+      courseList.map((item) => item.user_uuid),
+    );
 
     const myCourseListResDto = plainToInstance(MyCourseListResDto, courseList, {
       excludeExtraneousValues: true,
+    }).map((myCourse) => {
+      myCourse.user_profile_image = userList.find(
+        (user) => user.uuid === myCourse.user_uuid,
+      ).profile_image;
+      return myCourse;
     });
 
     const last_item_id = courseList.length > 0 ? courseList[courseList.length - 1].id : 0;

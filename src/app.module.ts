@@ -35,7 +35,7 @@ import { CommunityModule } from './community/community.module';
           logging: true,
           synchronize: false,
           keepConnectionAlive: true,
-          charset: 'utf8mb4_unicode_ci',
+          charset: 'utf8mb4',
           timezone: 'z',
           // timezone: 'Etc/UTC',
         } as TypeOrmModuleAsyncOptions;

@@ -1,4 +1,13 @@
-import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Generated,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CourseEntity } from './course.entity';
 
 @Entity({ name: 'my_course' })
 export class MyCourseEntity {
@@ -47,4 +56,8 @@ export class MyCourseEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
+
+  @ManyToOne(() => CourseEntity, (Course) => Course.myCourses)
+  @JoinColumn({ name: 'course_uuid', referencedColumnName: 'uuid' })
+  course: CourseEntity;
 }
