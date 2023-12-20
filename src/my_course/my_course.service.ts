@@ -44,7 +44,7 @@ export class MyCourseService {
       return myCourse;
     });
 
-    const last_item_id = courseList.length > 0 ? courseList[courseList.length - 1].id : 0;
+    const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
     return { items: myCourseListResDto, last_item_id };
   }

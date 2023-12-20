@@ -69,7 +69,8 @@ export class CommunityService {
       return my;
     });
 
-    const last_item_id = myCourseList.length > 0 ? myCourseList[myCourseList.length - 1].id : 0;
+    const last_item_id =
+      myCourseList.length === dto.size ? myCourseList[myCourseList.length - 1].id : 0;
 
     return { items: communityMyCourseList, last_item_id };
   }
@@ -121,7 +122,8 @@ export class CommunityService {
       return community;
     });
 
-    const last_item_id = communityList.length > 0 ? communityList[communityList.length - 1].id : 0;
+    const last_item_id =
+      communityList.length === dto.size ? communityList[communityList.length - 1].id : 0;
 
     return { items: communityListResDto, last_item_id };
   }

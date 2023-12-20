@@ -33,7 +33,7 @@ export class NotificationService {
     });
 
     const last_item_id =
-      notificationList.length > 0 ? notificationList[notificationList.length - 1].id : 0;
+      notificationList.length === dto.size ? notificationList[notificationList.length - 1].id : 0;
 
     return { items: notificationListResDto, last_item_id };
   }
