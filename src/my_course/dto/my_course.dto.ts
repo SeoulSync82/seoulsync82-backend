@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 
 export class MyCourseListReqDto {
@@ -93,6 +93,14 @@ export class MyCourseListResDto {
     description: '지하철 호선',
   })
   line: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '음식점, 카페, 술집',
+    description: '커스텀',
+  })
+  @Transform(({ obj }) => obj.course?.customs)
+  customs: string;
 
   @Expose()
   @ApiProperty({

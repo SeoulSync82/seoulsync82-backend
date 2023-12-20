@@ -29,6 +29,7 @@ export class MyCourseService {
     if (courseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
+    console.log(courseList);
 
     const userList = await this.userQueryRepository.findUserList(
       courseList.map((item) => item.user_uuid),

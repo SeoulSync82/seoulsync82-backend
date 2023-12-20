@@ -17,6 +17,7 @@ export class MyCourseQueryRepository {
 
     return await this.repository.find({
       where: whereConditions,
+      relations: { course: true },
       order: { created_at: 'DESC' },
       take: dto.size,
     });
