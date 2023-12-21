@@ -93,7 +93,7 @@ export class AuthService {
         expires: now,
         httpOnly: true,
         secure: false, // HTTP 환경에서는 false로 설정
-        sameSite: 'lax', // 'none' 대신 'lax'를 사용
+        sameSite: 'none', // 'none' 대신 'lax'를 사용
       });
 
       return {
