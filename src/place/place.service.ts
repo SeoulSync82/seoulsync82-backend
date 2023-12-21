@@ -20,7 +20,8 @@ export class PlaceService {
       excludeExtraneousValues: true,
     });
 
-    const last_item_id = cultureList.length > 0 ? cultureList[cultureList.length - 1].id : 0;
+    const last_item_id =
+      cultureList.length === dto.size ? cultureList[cultureList.length - 1].id : 0;
 
     return { items: cultureListDto, last_item_id };
   }
@@ -49,7 +50,7 @@ export class PlaceService {
     });
 
     const last_item_id =
-      exhibitionList.length > 0 ? exhibitionList[exhibitionList.length - 1].id : 0;
+      exhibitionList.length === dto.size ? exhibitionList[exhibitionList.length - 1].id : 0;
 
     return { items: exhibitionDto, last_item_id };
   }
@@ -64,7 +65,7 @@ export class PlaceService {
       excludeExtraneousValues: true,
     });
 
-    const last_item_id = popupList.length > 0 ? popupList[popupList.length - 1].id : 0;
+    const last_item_id = popupList.length === dto.size ? popupList[popupList.length - 1].id : 0;
 
     return { items: popupDto, last_item_id };
   }

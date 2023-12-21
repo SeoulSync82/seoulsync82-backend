@@ -44,7 +44,7 @@ export class SearchService {
       await this.searchQueryLogRepository.update(id);
     }
 
-    const last_item_id = searchList.length > 0 ? searchList[searchList.length - 1].id : 0;
+    const last_item_id = searchList.length === dto.size ? searchList[searchList.length - 1].id : 0;
 
     return { items: searchListDto, last_item_id };
   }
