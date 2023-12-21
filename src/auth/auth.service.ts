@@ -233,6 +233,7 @@ export class AuthService {
     try {
       // refreshToken 유효성 검사
       const getRefreshToken = req.cookies['eid_refresh_token'];
+      console.log(req);
       console.log('req.cookies', req.cookies);
       console.log('getRefreshToken', getRefreshToken);
       if (isEmpty(getRefreshToken)) {
