@@ -94,7 +94,7 @@ export class AuthService {
         httpOnly: true,
         secure: false, // HTTP 환경에서는 false로 설정
         sameSite: 'none', // 'none' 대신 'lax'를 사용
-        domain: 'staging.seoulsync82.com',
+        // domain: 'staging.seoulsync82.com',
       });
 
       return {
