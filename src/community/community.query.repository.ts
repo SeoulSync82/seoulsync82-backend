@@ -52,4 +52,10 @@ export class CommunityQueryRepository {
       order: { created_at: 'DESC' },
     });
   }
+
+  async findCommunityByMyCourse(uuid): Promise<CommunityEntity> {
+    return await this.repository.findOne({
+      where: { my_course_uuid: uuid, archived_at: IsNull() },
+    });
+  }
 }

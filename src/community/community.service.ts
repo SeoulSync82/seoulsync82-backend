@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { isNotEmpty } from 'class-validator';
 import e from 'express';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
@@ -38,6 +39,10 @@ export class CommunityService {
     const myCourse = await this.myCourseQueryRepository.findOne(dto.my_course_uuid);
     if (!myCourse) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+    const community = await this.communityQueryRepository.findCommunityByMyCourse(myCourse.uuid);
+    if (isNotEmpty(community)) {
+      throw new ConflictException(ERROR.DUPLICATION);
     }
 
     const communityEntity = new CommunityEntity();
