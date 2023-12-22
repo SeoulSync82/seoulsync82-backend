@@ -34,4 +34,10 @@ export class MyCourseQueryRepository {
       where: { uuid: In(uuids) },
     });
   }
+
+  async findMyCourse(uuid): Promise<MyCourseEntity[]> {
+    return await this.repository.find({
+      where: { uuid: uuid },
+    });
+  }
 }

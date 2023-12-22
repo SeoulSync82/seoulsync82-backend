@@ -187,6 +187,13 @@ export class CommunityDetailResDto {
   @Expose()
   @ApiProperty({
     example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    description: '커뮤니티 uuid',
+  })
+  uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
     description: '코스 uuid',
   })
   course_uuid: string;
@@ -235,6 +242,20 @@ export class CommunityDetailResDto {
     description: '지하철 역',
   })
   subway: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '이 코스는 최고에요 ㅎㅎ',
+    description: '리뷰',
+  })
+  review: string;
+
+  @Expose()
+  @ApiProperty({
+    example: true,
+    description: '구독여부',
+  })
+  isBookmarked: Boolean;
 
   @Expose()
   @ApiProperty({
