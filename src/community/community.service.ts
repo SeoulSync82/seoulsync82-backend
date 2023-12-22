@@ -35,8 +35,8 @@ export class CommunityService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async communityPost(user, dto: CommunityPostReqDto) {
-    const myCourse = await this.myCourseQueryRepository.findOne(dto.my_course_uuid);
+  async communityPost(uuid, user, dto: CommunityPostReqDto) {
+    const myCourse = await this.myCourseQueryRepository.findOne(uuid);
     if (!myCourse) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }

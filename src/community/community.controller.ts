@@ -42,7 +42,7 @@ export class CommunityController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('/')
+  @Post('/:uuid')
   @ApiOperation({
     summary: '커뮤니티 글쓰기',
     description: '커뮤니티 글쓰기',
@@ -52,11 +52,18 @@ export class CommunityController {
     description: '커뮤니티 글쓰기',
     type: DetailResponseDto,
   })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '내 코스 uuid',
+  })
   async communityPost(
+    @Param('uuid') uuid: string,
     @CurrentUser() user,
     @Body(BadWordsPipe) dto: CommunityPostReqDto,
   ): Promise<DetailResponseDto> {
-    return await this.communityService.communityPost(user, dto);
+    return await this.communityService.communityPost(uuid, user, dto);
   }
 
   @UseGuards(JwtAuthGuard)
