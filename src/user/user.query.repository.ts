@@ -10,7 +10,7 @@ export class UserQueryRepository {
 
   async findUser(user): Promise<UserEntity> {
     return await this.repository.findOne({
-      where: { email: user.email, name: user.nickname, type: user.type },
+      where: { email: user.email, type: user.type },
     });
   }
 
