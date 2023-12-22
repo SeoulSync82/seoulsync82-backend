@@ -17,6 +17,9 @@ export class CommunityEntity {
   user_name: string;
 
   @Column()
+  course_uuid: string;
+
+  @Column()
   my_course_uuid: string;
 
   @Column()
