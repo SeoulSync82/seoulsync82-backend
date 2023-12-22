@@ -22,6 +22,7 @@ import { RequestWithUser } from 'src/commons/interfaces/common.interface';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
+import { EnhancedRequest } from './dto/login-cookie-request.dto';
 import { LogoutAuthOutputDto } from './dto/logout.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
@@ -130,7 +131,7 @@ export class AuthController {
     summary: '로그인 연장',
     description: '로그인 연장',
   })
-  async silentRefresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async silentRefresh(@Req() req: EnhancedRequest, @Res({ passthrough: true }) res: Response) {
     return await this.authService.silentRefresh(req, res);
   }
 
