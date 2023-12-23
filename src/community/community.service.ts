@@ -144,7 +144,6 @@ export class CommunityService {
     if (myCourse.length === 0) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
-    console.log(myCourse);
 
     const coursePlaces = await this.courseQueryRepository.findPlace(myCourse[0].course_uuid);
     const reaction: ReactionEntity[] =
@@ -153,14 +152,14 @@ export class CommunityService {
 
     const communityDetailResDto = new CommunityDetailResDto({
       uuid: uuid,
-      course_uuid: myCourse[0].course_uuid,
+      course_uuid: community.course_uuid,
       user_uuid: communityUser.uuid,
       user_name: communityUser.name,
       user_profile_image: communityUser.profile_image,
       review: community.review,
       isBookmarked: myCourse.map((item) => item.user_uuid).includes(user.uuid),
-      my_course_uuid: myCourse[0].uuid,
-      my_course_name: myCourse[0].course_name,
+      my_course_uuid: community.my_course_uuid,
+      my_course_name: community.my_course_name,
       subway: myCourse[0].subway,
       count: coursePlaces.length,
       like: reaction.length,
