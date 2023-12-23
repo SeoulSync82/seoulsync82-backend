@@ -37,7 +37,7 @@ export class MyCourseQueryRepository {
 
   async findMyCourse(uuid): Promise<MyCourseEntity[]> {
     return await this.repository.find({
-      where: { uuid: uuid },
+      where: { course_uuid: uuid },
     });
   }
 }
