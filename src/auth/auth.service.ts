@@ -92,9 +92,8 @@ export class AuthService {
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: false, // HTTP 환경에서는 false로 설정
-        sameSite: 'none', // 'none' 대신 'lax'를 사용
-        // domain: 'staging.seoulsync82.com',
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       });
 
       return {
@@ -156,8 +155,8 @@ export class AuthService {
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true,
+        sameSite: 'none',
       });
       return {
         ok: true,
