@@ -44,7 +44,6 @@ async function bootstrap() {
       origin: ['http://localhost:3457', 'http://staging.seoulsync82.com:3457'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
-      allowedHeaders: ['*'],
     }),
   );
 
