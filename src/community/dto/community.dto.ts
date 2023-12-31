@@ -474,6 +474,14 @@ export class CommunityMyCourseListResDto {
 
   @Expose()
   @ApiProperty({
+    example: '음식점, 카페, 술집',
+    description: '커스텀',
+  })
+  @Transform(({ obj }) => obj.course?.customs)
+  customs: string;
+
+  @Expose()
+  @ApiProperty({
     example: '2023-10-21 00:00:00',
     description: '생성일',
   })
