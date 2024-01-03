@@ -1,6 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { retry } from 'rxjs';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
@@ -8,49 +7,49 @@ import { ReactionQueryRepository } from 'src/community/reaction.query.repository
 import { CourseModule } from 'src/course/course.module';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto, CourseRecommendResDto } from 'src/course/dto/course.dto';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { CourseSaveReqDto, MyCourseDetailResDto, MyCourseListResDto } from './dto/my_course.dto';
-import { MyCourseQueryRepository } from './my_course.query.repository';
+import { BookmarkListResDto, CourseSaveReqDto, MyCourseDetailResDto } from './dto/bookmark.dto';
+import { BookmarkQueryRepository } from './bookmark.query.repository';
 import { Emojis } from 'src/auth/constants/emoji';
 import { UserQueryRepository } from 'src/user/user.query.repository';
+import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 
 @Injectable()
-export class MyCourseService {
+export class BookmarkService {
   constructor(
-    private readonly myCourseQueryRepository: MyCourseQueryRepository,
+    private readonly bookmarkQueryRepository: BookmarkQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async myCourseList(dto, user) {
-    const courseList = await this.myCourseQueryRepository.find(dto, user);
+  async bookmarkList(dto, user) {
+    const courseList = await this.bookmarkQueryRepository.find(dto, user);
     if (courseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
-    console.log(courseList);
 
     const userList = await this.userQueryRepository.findUserList(
       courseList.map((item) => item.user_uuid),
     );
 
-    const myCourseListResDto = plainToInstance(MyCourseListResDto, courseList, {
+    const bookmarkListResDto = plainToInstance(BookmarkListResDto, courseList, {
       excludeExtraneousValues: true,
-    }).map((myCourse) => {
-      myCourse.user_profile_image = userList.find(
-        (user) => user.uuid === myCourse.user_uuid,
+    }).map((bookmark) => {
+      bookmark.user_profile_image = userList.find(
+        (user) => user.uuid === bookmark.user_uuid,
       ).profile_image;
-      return myCourse;
+      return bookmark;
     });
 
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
-    return { items: myCourseListResDto, last_item_id };
+    return { items: bookmarkListResDto, last_item_id };
   }
 
   async myCourseDetail(uuid) {
-    const course = await this.myCourseQueryRepository.findOne(uuid);
+    const course = await this.bookmarkQueryRepository.findOne(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
@@ -79,52 +78,40 @@ export class MyCourseService {
     return myCourseDetailResDto;
   }
 
-  async courseSave(user, uuid, dto: CourseSaveReqDto) {
+  async bookmarkSave(user, uuid) {
     const course = await this.courseQueryRepository.findCourse(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const myCourseEntity = new MyCourseEntity();
-    myCourseEntity.uuid = generateUUID();
-    myCourseEntity.course_uuid = uuid;
-    myCourseEntity.subway = course.subway;
-    myCourseEntity.line = course.line;
-    myCourseEntity.user_uuid = user.uuid;
-    myCourseEntity.user_name = user.nickname;
+    const bookmarkEntity = new BookmarkEntity();
+    bookmarkEntity.uuid = generateUUID();
+    bookmarkEntity.course_uuid = uuid;
+    bookmarkEntity.subway = course.subway;
+    bookmarkEntity.line = course.line;
+    bookmarkEntity.course_name = course.course_name;
+    bookmarkEntity.course_image = course.course_image;
+    bookmarkEntity.user_uuid = user.uuid;
+    bookmarkEntity.user_name = user.nickname;
 
-    const themes = [];
-    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
-    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+    const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
 
-    if (themes.length === 0) {
-      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
-      myCourseEntity.course_name = `${course.subway}역 주변 코스 일정${randomEmoji}`;
-    } else {
-      // 무작위 테마 선택
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-
-      // 테마에서 이모지 분리
-      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
-      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
-      console.log(`${course.subway}역 ${themeText} 코스 일정${themeEmoji}`);
-      myCourseEntity.course_name = `${course.subway}역 ${themeText} 코스 일정${themeEmoji}`;
-    }
-
-    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
-    if (myCourse) {
+    if (isEmpty(myBookmark)) {
+      await this.bookmarkQueryRepository.bookmarkSave(bookmarkEntity);
+    } else if (isEmpty(myBookmark.archived_at)) {
       throw new ConflictException(ERROR.DUPLICATION);
+    } else {
+      await this.bookmarkQueryRepository.bookmarkUpdate(bookmarkEntity);
     }
-    await this.courseQueryRepository.saveMyCourse(myCourseEntity);
 
-    return DetailResponseDto.uuid(myCourseEntity.uuid);
+    return DetailResponseDto.uuid(uuid);
   }
 
-  async courseDelete(user, uuid) {
-    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
-    if (!myCourse) {
+  async bookmarkDelete(user, uuid) {
+    const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
+    if (!myBookmark) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    } else await this.courseQueryRepository.deleteMyCourse(myCourse.id);
+    } else await this.bookmarkQueryRepository.bookmarkDelete(myBookmark);
 
     return DetailResponseDto.uuid(uuid);
   }

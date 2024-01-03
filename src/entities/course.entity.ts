@@ -1,6 +1,6 @@
 import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CourseDetailEntity } from './course.detail.entity';
-import { MyCourseEntity } from './my_course.entity';
+import { BookmarkEntity } from './bookmark.entity';
 
 @Entity({ name: 'course' })
 export class CourseEntity {
@@ -18,6 +18,12 @@ export class CourseEntity {
   line: string;
 
   @Column()
+  course_image: string;
+
+  @Column()
+  course_name: string;
+
+  @Column()
   user_uuid: string;
 
   @Column()
@@ -29,9 +35,6 @@ export class CourseEntity {
   @Column()
   customs: string;
 
-  @Column()
-  image: string;
-
   @Column('datetime', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
@@ -41,6 +44,6 @@ export class CourseEntity {
   @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.course)
   courseDetails: CourseDetailEntity[];
 
-  @OneToMany(() => MyCourseEntity, (myCourse) => myCourse.course)
-  myCourses: MyCourseEntity[];
+  @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.course)
+  bookmarks: BookmarkEntity[];
 }

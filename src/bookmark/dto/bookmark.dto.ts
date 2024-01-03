@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 
-export class MyCourseListReqDto {
+export class BookmarkListReqDto {
   @Expose()
   @ApiProperty({
     example: 0,
-    description: '마지막 내코스 아이디',
+    description: '마지막 북마크 아이디',
     required: false,
   })
   last_id?: number;
@@ -14,26 +14,33 @@ export class MyCourseListReqDto {
   @Expose()
   @ApiProperty({
     example: 10,
-    description: '한 번에 보여줄 내코스 개수',
+    description: '한 번에 보여줄 북마크 개수',
     required: false,
   })
   size?: number;
 }
 
-export class MyCourseListResDto {
+export class BookmarkListResDto {
   @Expose()
   @ApiProperty({
     example: 1,
-    description: '내 코스 id',
+    description: '북마크 id',
   })
   id: number;
 
   @Expose()
   @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내코스 uuid',
+    example: 'c152acef58875943b20b5cd511f25902',
+    description: '코스 uuid',
   })
-  uuid: string;
+  course_uuid: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '잠실나루역 주변 코스 일정🔥',
+    description: '코스 이름',
+  })
+  course_name: string;
 
   @Expose()
   @ApiProperty({
@@ -58,20 +65,6 @@ export class MyCourseListResDto {
     required: false,
   })
   user_profile_image: string;
-
-  @Expose()
-  @ApiProperty({
-    example: 'c152acef58875943b20b5cd511f25902',
-    description: '내코스 uuid',
-  })
-  course_uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '개지리는 성수역 코스추천',
-    description: '내코스 이름',
-  })
-  course_name: string;
 
   @Expose()
   @ApiProperty({
@@ -112,17 +105,15 @@ export class MyCourseListResDto {
 export class CourseSaveReqDto {
   @Expose()
   @ApiProperty({
-    example: '가성비 좋은',
+    example: '분위기 있는🌃',
     description: '음식점 테마',
-    required: false,
   })
   theme_restaurant?: string;
 
   @Expose()
   @ApiProperty({
-    example: '인스타 감성',
+    example: '인스타 감성💫',
     description: '카페 테마',
-    required: false,
   })
   theme_cafe?: string;
 
@@ -151,8 +142,8 @@ export class MyCourseDetailResDto {
 
   @Expose()
   @ApiProperty({
-    example: '개지리는 성수역 코스추천',
-    description: '내 코스 이름',
+    example: '잠실나루역 주변 코스 일정🔥',
+    description: '코스 이름',
   })
   my_course_name: string;
 

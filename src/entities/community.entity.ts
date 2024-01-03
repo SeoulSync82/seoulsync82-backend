@@ -20,10 +20,7 @@ export class CommunityEntity {
   course_uuid: string;
 
   @Column()
-  my_course_uuid: string;
-
-  @Column()
-  my_course_name: string;
+  course_name: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 1 })
   score: number;

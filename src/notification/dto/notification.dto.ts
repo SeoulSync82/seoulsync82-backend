@@ -50,7 +50,7 @@ export class NotificationListReqDto {
   @Expose()
   @ApiProperty({
     example: 0,
-    description: '마지막 내코스 아이디',
+    description: '마지막 알림 아이디',
     required: false,
   })
   last_id?: number;
@@ -58,7 +58,7 @@ export class NotificationListReqDto {
   @Expose()
   @ApiProperty({
     example: 10,
-    description: '한 번에 보여줄 내코스 개수',
+    description: '한 번에 보여줄 알림 개수',
     required: false,
   })
   size?: number;

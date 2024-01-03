@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { CourseEntity } from './course.entity';
 
-@Entity({ name: 'my_course' })
-export class MyCourseEntity {
+@Entity({ name: 'bookmark' })
+export class BookmarkEntity {
   @Column({ type: 'integer' })
   @Generated('increment')
   id: number;
@@ -33,9 +33,6 @@ export class MyCourseEntity {
   @Column()
   user_name: string;
 
-  // @Column({ type: 'decimal', precision: 10, scale: 1 })
-  // score: number;
-
   @Column()
   course_image: string;
 
@@ -57,7 +54,7 @@ export class MyCourseEntity {
   })
   updated_at: Date;
 
-  @ManyToOne(() => CourseEntity, (Course) => Course.myCourses)
+  @ManyToOne(() => CourseEntity, (Course) => Course.bookmarks)
   @JoinColumn({ name: 'course_uuid', referencedColumnName: 'uuid' })
   course: CourseEntity;
 }

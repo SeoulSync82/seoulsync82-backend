@@ -15,7 +15,7 @@ import Joi from 'joi';
 // import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { SearchModule } from './search/search.module';
 import { ThemeModule } from './theme/theme.module';
-import { MyCourseModule } from './my_course/my_course.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
 import { CommunityModule } from './community/community.module';
 
 @Module({
@@ -49,7 +49,7 @@ import { CommunityModule } from './community/community.module';
     AuthModule,
     SearchModule,
     ThemeModule,
-    MyCourseModule,
+    BookmarkModule,
     CommunityModule,
   ],
   controllers: [AppController],

@@ -1,22 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { Emojis } from 'src/auth/constants/emoji';
 import { ERROR } from 'src/auth/constants/error';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayCustomCheckResDto, CustomListDto } from 'src/place/dto/subway.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
 import {
+  CourseDetailResDto,
   CoursePlaceDto,
   CourseRecommendReqDto,
   CourseRecommendResDto,
+  MyCourseHistoryResDto,
   SubwayCustomsCheckReqDto,
 } from './dto/course.dto';
+import { UserQueryRepository } from 'src/user/user.query.repository';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { isNotEmpty } from 'src/commons/util/is/is-empty';
+import { CommunityQueryRepository } from 'src/community/community.query.repository';
+import { CommunityEntity } from 'src/entities/community.entity';
+import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
+import { ReactionEntity } from 'src/entities/reaction.entity';
 
 @Injectable()
 export class CourseService {
@@ -24,6 +34,10 @@ export class CourseService {
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly subwayQueryRepository: SubwayQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
+    private readonly userQueryRepository: UserQueryRepository,
+    private readonly bookmarkQueryRepository: BookmarkQueryRepository,
+    private readonly communityQueryRepository: CommunityQueryRepository,
+    private readonly reactionQueryRepository: ReactionQueryRepository,
   ) {}
 
   async courseRecommend(user, dto: CourseRecommendReqDto) {
@@ -155,7 +169,6 @@ export class CourseService {
       // sorting한 장소는 기존 placeNonSorting에서 제거
 
       if (!customSortingPlace[0]) {
-        console.log(place_type);
         throw new NotFoundException(
           `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
         );
@@ -172,12 +185,30 @@ export class CourseService {
       placeSorting.push(coursePlaceDto);
     }
 
+    const themes = [];
+    let course_name: string;
+
+    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
+    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+
+    if (themes.length === 0) {
+      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
+      course_name = `${dto.subway}역 주변 코스 일정 ${randomEmoji}`;
+    } else {
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
+      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
+      course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
+    }
+
     const courseRecommendResDto = new CourseRecommendResDto({
       uuid: generateUUID(),
       subway: dto.subway,
       theme_cafe: dto.theme_cafe,
-      theme_restaurant: dto.theme_restaurant, // 오타 수정: restuarant -> restaurant
-      count: dto.customs?.length ?? 0, // 옵셔널 체이닝과 널 병합 연산자 사용
+      theme_restaurant: dto.theme_restaurant,
+      course_name: course_name,
+      count: dto.customs?.length ?? 0,
       place: placeSorting,
     });
 
@@ -185,6 +216,7 @@ export class CourseService {
     courseEntity.uuid = courseRecommendResDto.uuid;
     courseEntity.line = dto.line;
     courseEntity.subway = dto.subway;
+    courseEntity.course_name = course_name;
     courseEntity.user_uuid = user.uuid;
     courseEntity.user_name = user.nickname;
     courseEntity.count = courseRecommendResDto.count;
@@ -259,7 +291,6 @@ export class CourseService {
     for (const custom in countCustoms) {
       if (custom !== '문화') {
         const customPlace = subwayPlaceList.filter((item) => item.place_type === custom);
-        // console.log(customPlace);
         function calculateWeight(customPlace) {
           return customPlace.score * Math.log(customPlace.review_count + 1);
         }
@@ -309,7 +340,6 @@ export class CourseService {
       // sorting한 장소는 기존 placeNonSorting에서 제거
 
       if (!customSortingPlace[0]) {
-        console.log(place_type);
         throw new NotFoundException(
           `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
         );
@@ -326,12 +356,30 @@ export class CourseService {
       placeSorting.push(coursePlaceDto);
     }
 
+    const themes = [];
+    let course_name: string;
+
+    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
+    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+
+    if (themes.length === 0) {
+      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
+      course_name = `${dto.subway}역 주변 코스 일정 ${randomEmoji}`;
+    } else {
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
+      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
+      course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
+    }
+
     const courseRecommendResDto = new CourseRecommendResDto({
       uuid: generateUUID(),
       subway: dto.subway,
       theme_cafe: dto.theme_cafe,
-      theme_restaurant: dto.theme_restaurant, // 오타 수정: restuarant -> restaurant
-      count: dto.customs?.length ?? 0, // 옵셔널 체이닝과 널 병합 연산자 사용
+      theme_restaurant: dto.theme_restaurant,
+      course_name: course_name,
+      count: dto.customs?.length ?? 0,
       place: placeSorting,
     });
 
@@ -342,19 +390,88 @@ export class CourseService {
   }
 
   async subwayCustomsCheck(dto: SubwayCustomsCheckReqDto) {
-    const subwayCustoms = await this.subwayQueryRepository.groupByCustom(dto);
+    const subwayCustoms = await this.subwayQueryRepository.groupByCustoms(dto);
 
-    const customsTypes = subwayCustoms.map((item) => item.subway_place_type);
+    function findCountByType(type, results) {
+      const item = results.find((item) => item.type === type);
+      return item ? parseInt(item.count, 10) : 0;
+    }
 
     const customsCheck = new CustomListDto({
-      음식점: customsTypes.includes('음식점'),
-      카페: customsTypes.includes('카페'),
-      술집: customsTypes.includes('술집'),
-      쇼핑: customsTypes.includes('쇼핑'),
-      문화: customsTypes.includes('전시') || customsTypes.includes('팝업'),
-      놀거리: customsTypes.includes('놀거리'),
+      음식점: findCountByType('음식점', subwayCustoms),
+      카페: findCountByType('카페', subwayCustoms),
+      술집: findCountByType('술집', subwayCustoms),
+      쇼핑: findCountByType('쇼핑', subwayCustoms),
+      문화: findCountByType('전시', subwayCustoms) + findCountByType('팝업', subwayCustoms),
+      놀거리: findCountByType('놀거리', subwayCustoms),
     });
 
     return new SubwayCustomCheckResDto({ customs: [customsCheck] });
+  }
+
+  async myCourseHistory(dto, user) {
+    const courseList = await this.courseQueryRepository.findMyCourse(dto, user);
+    if (courseList.length === 0) {
+      return ResponseDataDto.from([], null, 0);
+    }
+
+    const userList = await this.userQueryRepository.findUserList(
+      courseList.map((item) => item.user_uuid),
+    );
+
+    const myHistoryListResDto = plainToInstance(MyCourseHistoryResDto, courseList, {
+      excludeExtraneousValues: true,
+    }).map((myHistory) => {
+      myHistory.user_profile_image = userList.find(
+        (user) => user.uuid === myHistory.user_uuid,
+      ).profile_image;
+      return myHistory;
+    });
+
+    const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
+
+    return { items: myHistoryListResDto, last_item_id };
+  }
+
+  async courseDetail(uuid, user) {
+    const course = await this.courseQueryRepository.findOne(uuid);
+    if (!course) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const bookmark: BookmarkEntity = await this.bookmarkQueryRepository.findUserBookmark(
+      user,
+      uuid,
+    );
+    const community: CommunityEntity = await this.communityQueryRepository.findCommunityByCourse(
+      uuid,
+      user,
+    );
+    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
+    const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
+
+    const courseDetailResDto = new CourseDetailResDto({
+      course_uuid: uuid,
+      course_name: course.course_name,
+      subway: course.subway,
+      count: coursePlaces.length,
+      customs: course.customs,
+      isBookmarked: isNotEmpty(bookmark),
+      isPosted: isNotEmpty(community),
+      isLiked: isNotEmpty(reaction),
+      place: plainToInstance(
+        CoursePlaceDto,
+        coursePlaces.map((coursePlace) => ({
+          ...coursePlace.place,
+          sort: coursePlace.sort,
+          uuid: coursePlace.place_uuid,
+        })),
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
+    });
+
+    return courseDetailResDto;
   }
 }

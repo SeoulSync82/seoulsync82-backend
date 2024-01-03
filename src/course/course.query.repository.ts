@@ -2,8 +2,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { time } from 'console';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
-import { Repository } from 'typeorm';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
+import { Repository, In, IsNull, LessThan } from 'typeorm';
 
 export class CourseQueryRepository {
   constructor(
@@ -11,8 +11,8 @@ export class CourseQueryRepository {
     private repository: Repository<CourseEntity>,
     @InjectRepository(CourseDetailEntity)
     private detailRepository: Repository<CourseDetailEntity>,
-    @InjectRepository(MyCourseEntity)
-    private myCourseRepository: Repository<MyCourseEntity>,
+    @InjectRepository(BookmarkEntity)
+    private bookmarkRepository: Repository<BookmarkEntity>,
   ) {}
 
   async saveCourse(courseEntity) {
@@ -20,14 +20,7 @@ export class CourseQueryRepository {
   }
 
   async saveCourseDetail(courseDetailEntity) {
-    return await this.detailRepository
-      .save(courseDetailEntity)
-      .then(() => {
-        console.log('Course details saved successfully');
-      })
-      .catch((error) => {
-        console.error('Error saving course details:', error);
-      });
+    return await this.detailRepository.save(courseDetailEntity);
   }
 
   async findUserHistoryCourse(uuid: string): Promise<CourseDetailEntity[]> {
@@ -43,28 +36,10 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  async saveMyCourse(myCourseEntity) {
-    return await this.myCourseRepository.save(myCourseEntity);
-  }
-
-  async findOne(user, uuid): Promise<MyCourseEntity> {
-    return await this.myCourseRepository.findOne({
-      where: { user_uuid: user.uuid, course_uuid: uuid },
-    });
-  }
-
   async findCourse(uuid): Promise<CourseEntity> {
     return await this.repository.findOne({
       where: { uuid: uuid },
     });
-  }
-
-  async deleteMyCourse(id) {
-    return await this.myCourseRepository.update({ id: id }, { archived_at: new Date() });
-  }
-
-  async reSaveMyCourse(id) {
-    return await this.myCourseRepository.update({ id: id }, { archived_at: null });
   }
 
   async findPlace(courseUuid: string): Promise<any[]> {
@@ -74,5 +49,44 @@ export class CourseQueryRepository {
       .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
       .select(['courseDetail', 'place'])
       .getMany();
+  }
+
+  // async findPlaceWithDetail(courseUuid: string) {
+  //   return await this.repository.find({
+  //     where: { uuid: courseUuid },
+  //     relations: { courseDetails: true },
+  //   });
+  // }
+
+  async findList(uuids): Promise<CourseEntity[]> {
+    return await this.repository.find({
+      where: { uuid: In(uuids) },
+    });
+  }
+
+  async findOne(uuid): Promise<CourseEntity> {
+    return await this.repository.findOne({
+      where: { uuid: uuid },
+    });
+  }
+
+  async findMyCourse(dto, user): Promise<CourseEntity[]> {
+    const whereConditions = { user_uuid: user.uuid };
+
+    if (dto.last_id > 0) {
+      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
+    }
+
+    return await this.repository.find({
+      where: whereConditions,
+      order: { created_at: 'DESC' },
+      take: dto.size,
+    });
+  }
+
+  async findUserCourse(uuid, user): Promise<CourseEntity> {
+    return await this.repository.findOne({
+      where: { user_uuid: user.uuid },
+    });
   }
 }

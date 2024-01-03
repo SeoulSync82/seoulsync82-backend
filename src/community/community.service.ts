@@ -8,10 +8,10 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
 import { UserEntity } from 'src/entities/user.entity';
-import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
@@ -24,34 +24,34 @@ import {
   CommunityPutReqDto,
 } from './dto/community.dto';
 import { ReactionQueryRepository } from './reaction.query.repository';
+import { CourseEntity } from 'src/entities/course.entity';
 
 @Injectable()
 export class CommunityService {
   constructor(
     private readonly communityQueryRepository: CommunityQueryRepository,
-    private readonly myCourseQueryRepository: MyCourseQueryRepository,
+    private readonly bookmarkQueryRepository: BookmarkQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly reactionQueryRepository: ReactionQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async communityPost(uuid, user, dto: CommunityPostReqDto) {
-    const myCourse = await this.myCourseQueryRepository.findOne(uuid);
-    if (!myCourse) {
+    const course = await this.courseQueryRepository.findOne(uuid);
+    if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
-    const community = await this.communityQueryRepository.findCommunityByMyCourse(myCourse.uuid);
+    const community = await this.communityQueryRepository.findCommunityByCourse(uuid, user);
     if (isNotEmpty(community)) {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
     const communityEntity = new CommunityEntity();
     communityEntity.uuid = generateUUID();
-    communityEntity.course_uuid = myCourse.course_uuid;
+    communityEntity.course_uuid = uuid;
     communityEntity.user_name = user.nickname;
     communityEntity.user_uuid = user.uuid;
-    communityEntity.my_course_uuid = myCourse.uuid;
-    communityEntity.my_course_name = myCourse.course_name;
+    communityEntity.course_name = course.course_name;
     communityEntity.review = dto.review;
     communityEntity.score = dto.score;
 
@@ -61,17 +61,17 @@ export class CommunityService {
   }
 
   async communityMyCourseList(dto, user) {
-    const myCourseList = await this.myCourseQueryRepository.find(dto, user);
+    const myCourseList: CourseEntity[] = await this.courseQueryRepository.findMyCourse(dto, user);
     if (myCourseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
 
-    const myCommunity = await this.communityQueryRepository.myCommunity(user);
+    const myCommunity: CommunityEntity[] = await this.communityQueryRepository.myCommunity(user);
 
     const communityMyCourseList = plainToInstance(CommunityMyCourseListResDto, myCourseList, {
       excludeExtraneousValues: true,
     }).map((my) => {
-      my.isPost = myCommunity.map((item) => item.my_course_uuid).includes(my.uuid);
+      my.isPosted = myCommunity.map((item) => item.course_uuid).includes(my.course_uuid);
       return my;
     });
 
@@ -93,8 +93,8 @@ export class CommunityService {
       return ResponseDataDto.from([], null, 0);
     }
 
-    const courseList: MyCourseEntity[] = await this.myCourseQueryRepository.findList(
-      communityList.map((item) => item.my_course_uuid),
+    const courseList: CourseEntity[] = await this.courseQueryRepository.findList(
+      communityList.map((item) => item.course_uuid),
     );
 
     const reaction = await this.reactionQueryRepository.findCommunityReaction(
@@ -108,14 +108,15 @@ export class CommunityService {
     const communityListResDto = plainToInstance(CommunityListResDto, communityList, {
       excludeExtraneousValues: true,
     }).map((community) => {
-      community.course_uuid = courseList.find(
-        (item) => item.uuid === community.my_course_uuid,
-      ).course_uuid;
-      community.line = courseList.find((item) => item.uuid === community.my_course_uuid).line;
-      community.subway = courseList.find((item) => item.uuid === community.my_course_uuid).subway;
+      community.course_uuid = courseList.find((item) => item.uuid === community.course_uuid).uuid;
+      community.line = courseList.find((item) => item.uuid === community.course_uuid).line;
+      community.subway = courseList.find((item) => item.uuid === community.course_uuid).subway;
       community.course_image = courseList.find(
-        (item) => item.uuid === community.my_course_uuid,
+        (item) => item.uuid === community.course_uuid,
       ).course_image;
+      community.course_name = courseList.find(
+        (item) => item.uuid === community.course_uuid,
+      ).course_name;
       community.like = reaction.filter((item) => item.target_uuid === community.uuid).length;
       community.isLiked = reaction
         .filter((item) => item.target_uuid === community.uuid)
@@ -140,12 +141,10 @@ export class CommunityService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const myCourse = await this.myCourseQueryRepository.findMyCourse(community.course_uuid);
-    if (myCourse.length === 0) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
+    const bookmark = await this.bookmarkQueryRepository.findMyCourse(community.course_uuid);
+    const course = await this.courseQueryRepository.findOne(community.course_uuid);
+    const coursePlaces = await this.courseQueryRepository.findPlace(community.course_uuid);
 
-    const coursePlaces = await this.courseQueryRepository.findPlace(myCourse[0].course_uuid);
     const reaction: ReactionEntity[] =
       await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
     const communityUser: UserEntity = await this.userQueryRepository.findOne(community.user_uuid);
@@ -157,10 +156,10 @@ export class CommunityService {
       user_name: communityUser.name,
       user_profile_image: communityUser.profile_image,
       review: community.review,
-      isBookmarked: myCourse.map((item) => item.user_uuid).includes(user.uuid),
-      my_course_uuid: community.my_course_uuid,
-      my_course_name: community.my_course_name,
-      subway: myCourse[0].subway,
+      isBookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
+      course_name: community.course_name,
+      course_image: course.course_image,
+      subway: course.subway,
       count: coursePlaces.length,
       like: reaction.length,
       isLiked: reaction.map((item) => item.user_uuid).includes(user.uuid),

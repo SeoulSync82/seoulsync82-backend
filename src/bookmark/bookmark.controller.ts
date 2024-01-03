@@ -18,31 +18,26 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import {
-  CourseSaveReqDto,
-  MyCourseDetailResDto,
-  MyCourseListReqDto,
-  MyCourseListResDto,
-} from './dto/my_course.dto';
-import { MyCourseService } from './my_course.service';
+import { BookmarkListReqDto, BookmarkListResDto, MyCourseDetailResDto } from './dto/bookmark.dto';
+import { BookmarkService } from './bookmark.service';
 
-@ApiTags('내코스')
-@Controller('/api/my/course')
+@ApiTags('북마크')
+@Controller('/api/bookmark')
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(SeoulSync82ExceptionFilter)
-export class MyCourseController {
-  constructor(private readonly myCourseService: MyCourseService) {}
+export class BookmarkController {
+  constructor(private readonly bookmarkService: BookmarkService) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @Get('/')
   @ApiOperation({
-    summary: '내 코스 목록',
-    description: '내 코스 목록',
+    summary: '북마크 목록',
+    description: '북마크 목록',
   })
-  @ApiArraySuccessResponse(MyCourseListResDto)
-  async myCourseList(@Query() dto: MyCourseListReqDto, @CurrentUser() user) {
-    return await this.myCourseService.myCourseList(dto, user);
+  @ApiArraySuccessResponse(BookmarkListResDto)
+  async bookmarkList(@Query() dto: BookmarkListReqDto, @CurrentUser() user) {
+    return await this.bookmarkService.bookmarkList(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,6 +46,7 @@ export class MyCourseController {
   @ApiOperation({
     summary: '내 코스 상세',
     description: '내 코스 상세',
+    deprecated: true,
   })
   @ApiSuccessResponse(MyCourseDetailResDto)
   @ApiParam({
@@ -60,19 +56,19 @@ export class MyCourseController {
     description: '내코스 uuid',
   })
   async myCourseDetail(@Param('uuid') uuid: string) {
-    return await this.myCourseService.myCourseDetail(uuid);
+    return await this.bookmarkService.myCourseDetail(uuid);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('/:uuid/save')
+  @Post('/:uuid')
   @ApiOperation({
-    summary: '내 코스 저장',
-    description: '내 코스 저장',
+    summary: '북마크 저장',
+    description: '북마크 저장',
   })
   @ApiResponse({
     status: 200,
-    description: 'AI 코스 내 코스 저장',
+    description: '북마크 저장',
     type: DetailResponseDto,
   })
   @ApiParam({
@@ -81,33 +77,32 @@ export class MyCourseController {
     required: false,
     description: '코스 uuid',
   })
-  async courseSave(
+  async bookmarkSave(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
+    return await this.bookmarkService.bookmarkSave(user, uuid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Delete('/:uuid')
+  @ApiOperation({
+    summary: '북마크 삭제',
+    description: '북마크 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '북마크 삭제',
+    type: DetailResponseDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '코스 uuid',
+  })
+  async bookmarkDelete(
     @CurrentUser() user,
     @Param('uuid') uuid: string,
-    @Body() dto: CourseSaveReqDto,
   ): Promise<DetailResponseDto> {
-    return await this.myCourseService.courseSave(user, uuid, dto);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @Delete('/:uuid/delete')
-  @ApiOperation({
-    summary: '내 코스 삭제',
-    description: '내 코스 삭제',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'AI 코스 내 코스 삭제',
-    type: DetailResponseDto,
-  })
-  @ApiParam({
-    name: 'uuid',
-    type: 'string',
-    required: false,
-    description: '코스 uuid',
-  })
-  async courseDelete(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
-    return await this.myCourseService.courseDelete(user, uuid);
+    return await this.bookmarkService.bookmarkDelete(user, uuid);
   }
 }

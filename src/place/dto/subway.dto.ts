@@ -3,22 +3,46 @@ import { Expose, Type } from 'class-transformer';
 
 export class CustomListDto {
   @Expose()
-  음식점: boolean;
+  @ApiProperty({
+    example: '100',
+    description: '커스텀 갯수',
+  })
+  음식점: number;
 
   @Expose()
-  카페: boolean;
+  @ApiProperty({
+    example: '100',
+    description: '커스텀 갯수',
+  })
+  카페: number;
 
   @Expose()
-  술집: boolean;
+  @ApiProperty({
+    example: '100',
+    description: '커스텀 갯수',
+  })
+  술집: number;
 
   @Expose()
-  쇼핑: boolean;
+  @ApiProperty({
+    example: '100',
+    description: '커스텀 갯수',
+  })
+  쇼핑: number;
 
   @Expose()
-  문화: boolean;
+  @ApiProperty({
+    example: '100',
+    description: '커스텀 갯수',
+  })
+  문화: number;
 
   @Expose()
-  놀거리: boolean;
+  @ApiProperty({
+    example: '100',
+    description: '커스텀 갯수',
+  })
+  놀거리: number;
 
   constructor(data?: Partial<CustomListDto>) {
     if (data) {

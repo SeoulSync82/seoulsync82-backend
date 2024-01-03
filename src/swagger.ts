@@ -3,8 +3,13 @@ import {
   CommunityListResDto,
   CommunityDetailResDto,
 } from './community/dto/community.dto';
-import { CoursePlaceDto, CourseRecommendResDto } from './course/dto/course.dto';
-import { MyCourseDetailResDto, MyCourseListResDto } from './my_course/dto/my_course.dto';
+import {
+  CourseDetailResDto,
+  CoursePlaceDto,
+  CourseRecommendResDto,
+  MyCourseHistoryResDto,
+} from './course/dto/course.dto';
+import { BookmarkListResDto, MyCourseDetailResDto } from './bookmark/dto/bookmark.dto';
 import { NotificationListResDto } from './notification/dto/notification.dto';
 import { CultureDto, CultureListDto, ExhibitionDto, PopupDto } from './place/dto/place.dto';
 import { SubwayCustomCheckResDto } from './place/dto/subway.dto';
@@ -23,9 +28,11 @@ export const SwaggerModels = [
   CoursePlaceDto,
   NotificationListResDto,
   ThemeListDto,
-  MyCourseListResDto,
+  BookmarkListResDto,
   MyCourseDetailResDto,
   CommunityMyCourseListResDto,
   CommunityListResDto,
   CommunityDetailResDto,
+  MyCourseHistoryResDto,
+  CourseDetailResDto,
 ];
