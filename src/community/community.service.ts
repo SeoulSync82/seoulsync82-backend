@@ -8,10 +8,10 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
 import { UserEntity } from 'src/entities/user.entity';
-import { MyCourseQueryRepository } from 'src/my_course/my_course.query.repository';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { CommunityController } from './community.controller';
 import { CommunityQueryRepository } from './community.query.repository';
@@ -29,14 +29,14 @@ import { ReactionQueryRepository } from './reaction.query.repository';
 export class CommunityService {
   constructor(
     private readonly communityQueryRepository: CommunityQueryRepository,
-    private readonly myCourseQueryRepository: MyCourseQueryRepository,
+    private readonly BookmarkQueryRepository: BookmarkQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly reactionQueryRepository: ReactionQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async communityPost(uuid, user, dto: CommunityPostReqDto) {
-    const myCourse = await this.myCourseQueryRepository.findOne(uuid);
+    const myCourse = await this.BookmarkQueryRepository.findOne(uuid);
     if (!myCourse) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
@@ -61,7 +61,7 @@ export class CommunityService {
   }
 
   async communityMyCourseList(dto, user) {
-    const myCourseList = await this.myCourseQueryRepository.find(dto, user);
+    const myCourseList = await this.BookmarkQueryRepository.find(dto, user);
     if (myCourseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
@@ -93,7 +93,7 @@ export class CommunityService {
       return ResponseDataDto.from([], null, 0);
     }
 
-    const courseList: MyCourseEntity[] = await this.myCourseQueryRepository.findList(
+    const courseList: BookmarkEntity[] = await this.BookmarkQueryRepository.findList(
       communityList.map((item) => item.my_course_uuid),
     );
 
@@ -140,7 +140,7 @@ export class CommunityService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const myCourse = await this.myCourseQueryRepository.findMyCourse(community.course_uuid);
+    const myCourse = await this.BookmarkQueryRepository.findMyCourse(community.course_uuid);
     if (myCourse.length === 0) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }

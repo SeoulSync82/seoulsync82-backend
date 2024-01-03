@@ -6,7 +6,7 @@ import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayCustomCheckResDto, CustomListDto } from 'src/place/dto/subway.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
@@ -343,12 +343,30 @@ export class CourseService {
       placeSorting.push(coursePlaceDto);
     }
 
+    const themes = [];
+    let course_name: string;
+
+    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
+    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+
+    if (themes.length === 0) {
+      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
+      course_name = `${dto.subway}역 주변 코스 일정 ${randomEmoji}`;
+    } else {
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
+      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
+      course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
+    }
+
     const courseRecommendResDto = new CourseRecommendResDto({
       uuid: generateUUID(),
       subway: dto.subway,
       theme_cafe: dto.theme_cafe,
-      theme_restaurant: dto.theme_restaurant, // 오타 수정: restuarant -> restaurant
-      count: dto.customs?.length ?? 0, // 옵셔널 체이닝과 널 병합 연산자 사용
+      theme_restaurant: dto.theme_restaurant,
+      course_name: course_name,
+      count: dto.customs?.length ?? 0,
       place: placeSorting,
     });
 

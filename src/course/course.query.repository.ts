@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { time } from 'console';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { Repository } from 'typeorm';
 
 export class CourseQueryRepository {
@@ -11,8 +11,8 @@ export class CourseQueryRepository {
     private repository: Repository<CourseEntity>,
     @InjectRepository(CourseDetailEntity)
     private detailRepository: Repository<CourseDetailEntity>,
-    @InjectRepository(MyCourseEntity)
-    private myCourseRepository: Repository<MyCourseEntity>,
+    @InjectRepository(BookmarkEntity)
+    private myCourseRepository: Repository<BookmarkEntity>,
   ) {}
 
   async saveCourse(courseEntity) {
@@ -36,11 +36,11 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  async saveMyCourse(myCourseEntity) {
-    return await this.myCourseRepository.save(myCourseEntity);
+  async saveMyCourse(BookmarkEntity) {
+    return await this.myCourseRepository.save(BookmarkEntity);
   }
 
-  async findOne(user, uuid): Promise<MyCourseEntity> {
+  async findOne(user, uuid): Promise<BookmarkEntity> {
     return await this.myCourseRepository.findOne({
       where: { user_uuid: user.uuid, course_uuid: uuid },
     });

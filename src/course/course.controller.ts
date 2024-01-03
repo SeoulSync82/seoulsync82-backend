@@ -14,10 +14,8 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto, ResponseDataDto, ResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { CourseSaveReqDto } from 'src/my_course/dto/my_course.dto';
 import { SubwayCustomCheckResDto } from 'src/place/dto/subway.dto';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseService } from './course.service';

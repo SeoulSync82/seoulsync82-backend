@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { CourseEntity } from './course.entity';
 
-@Entity({ name: 'my_course' })
-export class MyCourseEntity {
+@Entity({ name: 'bookmark' })
+export class BookmarkEntity {
   @Column({ type: 'integer' })
   @Generated('increment')
   id: number;

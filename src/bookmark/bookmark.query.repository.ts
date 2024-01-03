@@ -1,14 +1,14 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { MyCourseEntity } from 'src/entities/my_course.entity';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { IsNull, LessThan, Repository, In } from 'typeorm';
 
-export class MyCourseQueryRepository {
+export class BookmarkQueryRepository {
   constructor(
-    @InjectRepository(MyCourseEntity)
-    private repository: Repository<MyCourseEntity>,
+    @InjectRepository(BookmarkEntity)
+    private repository: Repository<BookmarkEntity>,
   ) {}
 
-  async find(dto, user): Promise<MyCourseEntity[]> {
+  async find(dto, user): Promise<BookmarkEntity[]> {
     const whereConditions = { user_uuid: user.uuid, archived_at: IsNull() };
 
     if (dto.last_id > 0) {
@@ -23,19 +23,19 @@ export class MyCourseQueryRepository {
     });
   }
 
-  async findOne(uuid): Promise<MyCourseEntity> {
+  async findOne(uuid): Promise<BookmarkEntity> {
     return await this.repository.findOne({
       where: { uuid: uuid, archived_at: IsNull() },
     });
   }
 
-  async findList(uuids): Promise<MyCourseEntity[]> {
+  async findList(uuids): Promise<BookmarkEntity[]> {
     return await this.repository.find({
       where: { uuid: In(uuids) },
     });
   }
 
-  async findMyCourse(uuid): Promise<MyCourseEntity[]> {
+  async findMyCourse(uuid): Promise<BookmarkEntity[]> {
     return await this.repository.find({
       where: { course_uuid: uuid },
     });

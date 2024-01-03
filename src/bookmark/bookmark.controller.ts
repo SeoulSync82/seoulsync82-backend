@@ -23,15 +23,15 @@ import {
   MyCourseDetailResDto,
   MyCourseListReqDto,
   MyCourseListResDto,
-} from './dto/my_course.dto';
-import { MyCourseService } from './my_course.service';
+} from './dto/bookmark.dto';
+import { BookmarkService } from './bookmark.service';
 
-@ApiTags('내코스')
-@Controller('/api/my/course')
+@ApiTags('북마크')
+@Controller('/api/bookmark')
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(SeoulSync82ExceptionFilter)
-export class MyCourseController {
-  constructor(private readonly myCourseService: MyCourseService) {}
+export class BookmarkController {
+  constructor(private readonly bookmarkService: BookmarkService) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
@@ -42,7 +42,7 @@ export class MyCourseController {
   })
   @ApiArraySuccessResponse(MyCourseListResDto)
   async myCourseList(@Query() dto: MyCourseListReqDto, @CurrentUser() user) {
-    return await this.myCourseService.myCourseList(dto, user);
+    return await this.bookmarkService.myCourseList(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -60,7 +60,7 @@ export class MyCourseController {
     description: '내코스 uuid',
   })
   async myCourseDetail(@Param('uuid') uuid: string) {
-    return await this.myCourseService.myCourseDetail(uuid);
+    return await this.bookmarkService.myCourseDetail(uuid);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -86,7 +86,7 @@ export class MyCourseController {
     @Param('uuid') uuid: string,
     @Body() dto: CourseSaveReqDto,
   ): Promise<DetailResponseDto> {
-    return await this.myCourseService.courseSave(user, uuid, dto);
+    return await this.bookmarkService.courseSave(user, uuid, dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -108,6 +108,6 @@ export class MyCourseController {
     description: '코스 uuid',
   })
   async courseDelete(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
-    return await this.myCourseService.courseDelete(user, uuid);
+    return await this.bookmarkService.courseDelete(user, uuid);
   }
 }
