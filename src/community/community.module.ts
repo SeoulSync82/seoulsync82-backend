@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseModule } from 'src/course/course.module';
 import { CommunityEntity } from 'src/entities/community.entity';
@@ -14,12 +14,13 @@ import { ReactionQueryRepository } from './reaction.query.repository';
 @Module({
   imports: [
     UserModule,
-    CourseModule,
+    forwardRef(() => CourseModule),
     BookmarkModule,
     NotificationModule,
     TypeOrmModule.forFeature([CommunityEntity, ReactionEntity]),
   ],
   controllers: [CommunityController],
   providers: [CommunityService, CommunityQueryRepository, ReactionQueryRepository],
+  exports: [CommunityQueryRepository, ReactionQueryRepository],
 })
 export class CommunityModule {}

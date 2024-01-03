@@ -21,6 +21,7 @@ import { SubwayCustomCheckResDto } from 'src/place/dto/subway.dto';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseService } from './course.service';
 import {
+  CourseDetailResDto,
   CourseRecommendReqDto,
   CourseRecommendResDto,
   MyCourseHistoryReqDto,
@@ -80,5 +81,23 @@ export class CourseController {
   @ApiArraySuccessResponse(MyCourseHistoryResDto)
   async myCourseHistory(@Query() dto: MyCourseHistoryReqDto, @CurrentUser() user) {
     return await this.courseService.myCourseHistory(dto, user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/:uuid')
+  @ApiOperation({
+    summary: '코스 상세',
+    description: '코스 상세',
+  })
+  @ApiSuccessResponse(CourseDetailResDto)
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '코스 uuid',
+  })
+  async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user) {
+    return await this.courseService.courseDetail(uuid, user);
   }
 }

@@ -55,7 +55,7 @@ export class BookmarkQueryRepository {
 
   async findUserBookmark(user, uuid): Promise<BookmarkEntity> {
     return await this.repository.findOne({
-      where: { user_uuid: user.uuid, course_uuid: uuid },
+      where: { user_uuid: user.uuid, course_uuid: uuid, archived_at: IsNull() },
     });
   }
 }

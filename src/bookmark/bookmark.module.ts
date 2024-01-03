@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseModule } from 'src/course/course.module';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
@@ -9,7 +9,12 @@ import { BookmarkQueryRepository } from './bookmark.query.repository';
 import { BookmarkService } from './bookmark.service';
 
 @Module({
-  imports: [UserModule, PlaceModule, CourseModule, TypeOrmModule.forFeature([BookmarkEntity])],
+  imports: [
+    forwardRef(() => CourseModule),
+    UserModule,
+    PlaceModule,
+    TypeOrmModule.forFeature([BookmarkEntity]),
+  ],
   controllers: [BookmarkController],
   providers: [BookmarkService, BookmarkQueryRepository],
   exports: [BookmarkQueryRepository],

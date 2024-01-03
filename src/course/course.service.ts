@@ -13,6 +13,7 @@ import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
 import {
+  CourseDetailResDto,
   CoursePlaceDto,
   CourseRecommendReqDto,
   CourseRecommendResDto,
@@ -20,6 +21,12 @@ import {
   SubwayCustomsCheckReqDto,
 } from './dto/course.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { isNotEmpty } from 'src/commons/util/is/is-empty';
+import { CommunityQueryRepository } from 'src/community/community.query.repository';
+import { CommunityEntity } from 'src/entities/community.entity';
+import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
+import { ReactionEntity } from 'src/entities/reaction.entity';
 
 @Injectable()
 export class CourseService {
@@ -28,6 +35,9 @@ export class CourseService {
     private readonly subwayQueryRepository: SubwayQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
+    private readonly bookmarkQueryRepository: BookmarkQueryRepository,
+    private readonly communityQueryRepository: CommunityQueryRepository,
+    private readonly reactionQueryRepository: ReactionQueryRepository,
   ) {}
 
   async courseRecommend(user, dto: CourseRecommendReqDto) {
@@ -421,5 +431,47 @@ export class CourseService {
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
     return { items: myHistoryListResDto, last_item_id };
+  }
+
+  async courseDetail(uuid, user) {
+    const course = await this.courseQueryRepository.findOne(uuid);
+    if (!course) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const bookmark: BookmarkEntity = await this.bookmarkQueryRepository.findUserBookmark(
+      user,
+      uuid,
+    );
+    const community: CommunityEntity = await this.communityQueryRepository.findCommunityByCourse(
+      uuid,
+      user,
+    );
+    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
+    const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
+
+    const courseDetailResDto = new CourseDetailResDto({
+      course_uuid: uuid,
+      course_name: course.course_name,
+      subway: course.subway,
+      count: coursePlaces.length,
+      customs: course.customs,
+      isBookmarked: isNotEmpty(bookmark),
+      isPosted: isNotEmpty(community),
+      isLiked: isNotEmpty(reaction),
+      place: plainToInstance(
+        CoursePlaceDto,
+        coursePlaces.map((coursePlace) => ({
+          ...coursePlace.place,
+          sort: coursePlace.sort,
+          uuid: coursePlace.place_uuid,
+        })),
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
+    });
+
+    return courseDetailResDto;
   }
 }

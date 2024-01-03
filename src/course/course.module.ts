@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
@@ -8,9 +8,13 @@ import { CourseController } from './course.controller';
 import { CourseQueryRepository } from './course.query.repository';
 import { CourseService } from './course.service';
 import { UserModule } from 'src/user/user.module';
+import { BookmarkModule } from 'src/bookmark/bookmark.module';
+import { CommunityModule } from 'src/community/community.module';
 
 @Module({
   imports: [
+    forwardRef(() => BookmarkModule),
+    forwardRef(() => CommunityModule),
     UserModule,
     PlaceModule,
     TypeOrmModule.forFeature([CourseEntity, CourseDetailEntity, BookmarkEntity]),

@@ -83,4 +83,10 @@ export class CourseQueryRepository {
       take: dto.size,
     });
   }
+
+  async findBookmarkUser(uuid, user): Promise<CourseEntity> {
+    return await this.repository.findOne({
+      where: { user_uuid: user.uuid },
+    });
+  }
 }
