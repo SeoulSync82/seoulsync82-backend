@@ -30,13 +30,6 @@ export class BookmarkListResDto {
 
   @Expose()
   @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내코스 uuid',
-  })
-  uuid: string;
-
-  @Expose()
-  @ApiProperty({
     example: '2871948cc25b589ea0a672a6f060fae3',
     description: '유저 uuid',
   })

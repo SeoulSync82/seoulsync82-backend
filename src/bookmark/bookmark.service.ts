@@ -1,6 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { retry } from 'rxjs';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
@@ -10,12 +9,7 @@ import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto, CourseRecommendResDto } from 'src/course/dto/course.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import {
-  BookmarkListResDto,
-  CourseSaveReqDto,
-  MyCourseDetailResDto,
-  MyCourseListResDto,
-} from './dto/bookmark.dto';
+import { BookmarkListResDto, CourseSaveReqDto, MyCourseDetailResDto } from './dto/bookmark.dto';
 import { BookmarkQueryRepository } from './bookmark.query.repository';
 import { Emojis } from 'src/auth/constants/emoji';
 import { UserQueryRepository } from 'src/user/user.query.repository';
@@ -30,7 +24,7 @@ export class BookmarkService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async myCourseList(dto, user) {
+  async bookmarkList(dto, user) {
     const courseList = await this.bookmarkQueryRepository.find(dto, user);
     if (courseList.length === 0) {
       return ResponseDataDto.from([], null, 0);

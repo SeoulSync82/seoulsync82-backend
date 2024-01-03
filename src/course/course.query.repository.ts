@@ -3,7 +3,7 @@ import { time } from 'console';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 
 export class CourseQueryRepository {
   constructor(
@@ -49,5 +49,11 @@ export class CourseQueryRepository {
       .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
       .select(['courseDetail', 'place'])
       .getMany();
+  }
+
+  async findList(uuids): Promise<CourseEntity[]> {
+    return await this.repository.find({
+      where: { uuid: In(uuids) },
+    });
   }
 }
