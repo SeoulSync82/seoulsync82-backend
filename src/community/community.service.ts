@@ -61,24 +61,24 @@ export class CommunityService {
   }
 
   async communityMyCourseList(dto, user) {
-    const myCourseList = await this.bookmarkQueryRepository.find(dto, user);
+    const myCourseList: CourseEntity[] = await this.courseQueryRepository.findMyCourse(dto, user);
     if (myCourseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
 
-    const myCommunity = await this.communityQueryRepository.myCommunity(user);
+    const myCommunity: CommunityEntity[] = await this.communityQueryRepository.myCommunity(user);
 
-    // const communityMyCourseList = plainToInstance(CommunityMyCourseListResDto, myCourseList, {
-    //   excludeExtraneousValues: true,
-    // }).map((my) => {
-    //   my.isPost = myCommunity.map((item) => item.my_course_uuid).includes(my.uuid);
-    //   return my;
-    // });
+    const communityMyCourseList = plainToInstance(CommunityMyCourseListResDto, myCourseList, {
+      excludeExtraneousValues: true,
+    }).map((my) => {
+      my.isPosted = myCommunity.map((item) => item.course_uuid).includes(my.course_uuid);
+      return my;
+    });
 
     const last_item_id =
       myCourseList.length === dto.size ? myCourseList[myCourseList.length - 1].id : 0;
 
-    return { items: 1, last_item_id };
+    return { items: communityMyCourseList, last_item_id };
   }
 
   async communityList(dto: CommunityListReqDto, user) {

@@ -70,8 +70,8 @@ export class CommunityController {
   @ApiBearerAuth('access-token')
   @Get('/my/course')
   @ApiOperation({
-    summary: '커뮤니티 글쓰기 - 내 코스 목록',
-    description: '커뮤니티 글쓰기 - 내 코스 목록',
+    summary: '커뮤니티 글쓰기 - 내 코스 추천내역',
+    description: '커뮤니티 글쓰기 - 내 코스 추천내역',
   })
   @ApiArraySuccessResponse(CommunityMyCourseListResDto)
   async communityMyCourseList(@Query() dto: CommunityMyCourseListReqDto, @CurrentUser() user) {

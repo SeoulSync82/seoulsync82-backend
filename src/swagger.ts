@@ -4,6 +4,7 @@ import {
   CommunityDetailResDto,
 } from './community/dto/community.dto';
 import {
+  CourseDetailResDto,
   CoursePlaceDto,
   CourseRecommendResDto,
   MyCourseHistoryResDto,
@@ -33,4 +34,5 @@ export const SwaggerModels = [
   CommunityListResDto,
   CommunityDetailResDto,
   MyCourseHistoryResDto,
+  CourseDetailResDto,
 ];

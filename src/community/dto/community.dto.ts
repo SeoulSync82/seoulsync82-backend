@@ -425,22 +425,16 @@ export class CommunityMyCourseListResDto {
 
   @Expose()
   @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내코스 uuid',
-  })
-  uuid: string;
-
-  @Expose()
-  @ApiProperty({
     example: 'c152acef58875943b20b5cd511f25902',
-    description: '내코스 uuid',
+    description: '코스 uuid',
   })
+  @Transform(({ obj }) => obj.uuid)
   course_uuid: string;
 
   @Expose()
   @ApiProperty({
     example: '잠실나루역 주변 코스 일정🔥',
-    description: '내코스 이름',
+    description: '코스 이름',
   })
   course_name: string;
 
@@ -470,7 +464,7 @@ export class CommunityMyCourseListResDto {
     example: '음식점, 카페, 술집',
     description: '커스텀',
   })
-  @Transform(({ obj }) => obj.course?.customs)
+  @Transform(({ obj }) => obj?.customs)
   customs: string;
 
   @Expose()
@@ -485,5 +479,5 @@ export class CommunityMyCourseListResDto {
     example: 'true',
     description: '내가 작성한 글인지',
   })
-  isPost: boolean;
+  isPosted: boolean;
 }
