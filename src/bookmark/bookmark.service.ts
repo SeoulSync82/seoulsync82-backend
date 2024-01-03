@@ -14,6 +14,7 @@ import { CourseSaveReqDto, MyCourseDetailResDto, MyCourseListResDto } from './dt
 import { BookmarkQueryRepository } from './bookmark.query.repository';
 import { Emojis } from 'src/auth/constants/emoji';
 import { UserQueryRepository } from 'src/user/user.query.repository';
+import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 
 @Injectable()
 export class BookmarkService {
@@ -78,7 +79,7 @@ export class BookmarkService {
     return myCourseDetailResDto;
   }
 
-  async courseSave(user, uuid, dto: CourseSaveReqDto) {
+  async bookmarkSave(user, uuid) {
     const course = await this.courseQueryRepository.findCourse(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -95,19 +96,23 @@ export class BookmarkService {
     bookmarkEntity.user_name = user.nickname;
 
     const myBookmark = await this.courseQueryRepository.findOne(user, uuid);
-    if (myBookmark) {
-      throw new ConflictException(ERROR.DUPLICATION);
-    }
-    await this.courseQueryRepository.bookmarkSave(bookmarkEntity);
 
-    return DetailResponseDto.uuid(bookmarkEntity.uuid);
+    if (isEmpty(myBookmark)) {
+      await this.courseQueryRepository.bookmarkSave(bookmarkEntity);
+    } else if (isEmpty(myBookmark.archived_at)) {
+      throw new ConflictException(ERROR.DUPLICATION);
+    } else {
+      await this.courseQueryRepository.bookmarkUpdate(bookmarkEntity);
+    }
+
+    return DetailResponseDto.uuid(uuid);
   }
 
-  async courseDelete(user, uuid) {
-    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
-    if (!myCourse) {
+  async bookmarkDelete(user, uuid) {
+    const myBookmark = await this.courseQueryRepository.findOne(user, uuid);
+    if (!myBookmark) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    } else await this.courseQueryRepository.deleteMyCourse(myCourse.id);
+    } else await this.courseQueryRepository.deleteMyCourse(myBookmark.id);
 
     return DetailResponseDto.uuid(uuid);
   }

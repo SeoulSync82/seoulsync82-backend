@@ -81,24 +81,20 @@ export class BookmarkController {
     required: false,
     description: '코스 uuid',
   })
-  async courseSave(
-    @CurrentUser() user,
-    @Param('uuid') uuid: string,
-    @Body() dto: CourseSaveReqDto,
-  ): Promise<DetailResponseDto> {
-    return await this.bookmarkService.courseSave(user, uuid, dto);
+  async bookmarkSave(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
+    return await this.bookmarkService.bookmarkSave(user, uuid);
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:uuid/delete')
+  @Delete('/:uuid')
   @ApiOperation({
-    summary: '내 코스 삭제',
-    description: '내 코스 삭제',
+    summary: '북마크 삭제',
+    description: '북마크 삭제',
   })
   @ApiResponse({
     status: 200,
-    description: 'AI 코스 내 코스 삭제',
+    description: '북마크 삭제',
     type: DetailResponseDto,
   })
   @ApiParam({
@@ -107,7 +103,10 @@ export class BookmarkController {
     required: false,
     description: '코스 uuid',
   })
-  async courseDelete(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
-    return await this.bookmarkService.courseDelete(user, uuid);
+  async bookmarkDelete(
+    @CurrentUser() user,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return await this.bookmarkService.bookmarkDelete(user, uuid);
   }
 }

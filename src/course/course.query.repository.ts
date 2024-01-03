@@ -40,6 +40,10 @@ export class CourseQueryRepository {
     return await this.bookmarkRepository.save(bookmarkEntity);
   }
 
+  async bookmarkDelete(bookmarkEntity: BookmarkEntity) {
+    return await this.bookmarkRepository.update({ id: bookmarkEntity.id }, { archived_at: null });
+  }
+
   async findOne(user, uuid): Promise<BookmarkEntity> {
     return await this.bookmarkRepository.findOne({
       where: { user_uuid: user.uuid, course_uuid: uuid },
