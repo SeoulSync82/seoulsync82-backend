@@ -342,17 +342,20 @@ export class CourseService {
   }
 
   async subwayCustomsCheck(dto: SubwayCustomsCheckReqDto) {
-    const subwayCustoms = await this.subwayQueryRepository.groupByCustom(dto);
+    const subwayCustoms = await this.subwayQueryRepository.groupByCustoms(dto);
 
-    const customsTypes = subwayCustoms.map((item) => item.subway_place_type);
+    function findCountByType(type, results) {
+      const item = results.find((item) => item.type === type);
+      return item ? parseInt(item.count, 10) : 0;
+    }
 
     const customsCheck = new CustomListDto({
-      음식점: customsTypes.includes('음식점'),
-      카페: customsTypes.includes('카페'),
-      술집: customsTypes.includes('술집'),
-      쇼핑: customsTypes.includes('쇼핑'),
-      문화: customsTypes.includes('전시') || customsTypes.includes('팝업'),
-      놀거리: customsTypes.includes('놀거리'),
+      음식점: findCountByType('음식점', subwayCustoms),
+      카페: findCountByType('카페', subwayCustoms),
+      술집: findCountByType('술집', subwayCustoms),
+      쇼핑: findCountByType('쇼핑', subwayCustoms),
+      문화: findCountByType('전시', subwayCustoms) + findCountByType('팝업', subwayCustoms),
+      놀거리: findCountByType('놀거리', subwayCustoms),
     });
 
     return new SubwayCustomCheckResDto({ customs: [customsCheck] });

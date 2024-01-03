@@ -16,10 +16,11 @@ export class SubwayQueryRepository {
     });
   }
 
-  async groupByCustom(dto: SubwayCustomsCheckReqDto) {
+  async groupByCustoms(dto: SubwayCustomsCheckReqDto) {
     return await this.repository
       .createQueryBuilder('subway')
-      .select('subway.place_type')
+      .select('subway.place_type', 'type')
+      .addSelect('COUNT(subway.id)', 'count')
       .where('subway.name = :name AND subway.line = :line', {
         name: dto.subway,
         line: dto.line,
