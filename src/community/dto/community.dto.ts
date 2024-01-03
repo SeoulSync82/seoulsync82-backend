@@ -101,14 +101,21 @@ export class CommunityListResDto {
   @Expose()
   @ApiProperty({
     example: 'c152acef58875943b20b5cd511f25902',
-    description: '내코스 uuid',
+    description: '코스 uuid',
   })
   course_uuid: string;
 
   @Expose()
   @ApiProperty({
+    example: '잠실나루역 주변 코스 일정🔥',
+    description: '내코스 이름',
+  })
+  course_name: string;
+
+  @Expose()
+  @ApiProperty({
     example: '',
-    description: '장소 이미지',
+    description: '코스 이미지',
   })
   course_image: string;
 
@@ -203,17 +210,17 @@ export class CommunityDetailResDto {
 
   @Expose()
   @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내 코스 uuid',
+    example: '잠실나루역 주변 코스 일정🔥',
+    description: '내코스 이름',
   })
-  my_course_uuid: string;
+  course_name: string;
 
   @Expose()
   @ApiProperty({
-    example: '개지리는 성수역 코스추천',
-    description: '내 코스 이름',
+    example: '',
+    description: '코스 이미지',
   })
-  my_course_name: string;
+  course_image: string;
 
   @Expose()
   @ApiProperty({
@@ -432,7 +439,7 @@ export class CommunityMyCourseListResDto {
 
   @Expose()
   @ApiProperty({
-    example: '개지리는 성수역 코스추천',
+    example: '잠실나루역 주변 코스 일정🔥',
     description: '내코스 이름',
   })
   course_name: string;

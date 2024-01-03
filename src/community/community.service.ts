@@ -68,17 +68,17 @@ export class CommunityService {
 
     const myCommunity = await this.communityQueryRepository.myCommunity(user);
 
-    const communityMyCourseList = plainToInstance(CommunityMyCourseListResDto, myCourseList, {
-      excludeExtraneousValues: true,
-    }).map((my) => {
-      my.isPost = myCommunity.map((item) => item.my_course_uuid).includes(my.uuid);
-      return my;
-    });
+    // const communityMyCourseList = plainToInstance(CommunityMyCourseListResDto, myCourseList, {
+    //   excludeExtraneousValues: true,
+    // }).map((my) => {
+    //   my.isPost = myCommunity.map((item) => item.my_course_uuid).includes(my.uuid);
+    //   return my;
+    // });
 
     const last_item_id =
       myCourseList.length === dto.size ? myCourseList[myCourseList.length - 1].id : 0;
 
-    return { items: communityMyCourseList, last_item_id };
+    return { items: 1, last_item_id };
   }
 
   async communityList(dto: CommunityListReqDto, user) {
@@ -114,6 +114,9 @@ export class CommunityService {
       community.course_image = courseList.find(
         (item) => item.uuid === community.course_uuid,
       ).course_image;
+      community.course_name = courseList.find(
+        (item) => item.uuid === community.course_uuid,
+      ).course_name;
       community.like = reaction.filter((item) => item.target_uuid === community.uuid).length;
       community.isLiked = reaction
         .filter((item) => item.target_uuid === community.uuid)
@@ -138,12 +141,10 @@ export class CommunityService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const myCourse = await this.bookmarkQueryRepository.findMyCourse(community.course_uuid);
-    if (myCourse.length === 0) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
+    const bookmark = await this.bookmarkQueryRepository.findMyCourse(community.course_uuid);
+    const course = await this.courseQueryRepository.findOne(community.course_uuid);
+    const coursePlaces = await this.courseQueryRepository.findPlace(community.course_uuid);
 
-    const coursePlaces = await this.courseQueryRepository.findPlace(myCourse[0].course_uuid);
     const reaction: ReactionEntity[] =
       await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
     const communityUser: UserEntity = await this.userQueryRepository.findOne(community.user_uuid);
@@ -155,10 +156,10 @@ export class CommunityService {
       user_name: communityUser.name,
       user_profile_image: communityUser.profile_image,
       review: community.review,
-      isBookmarked: myCourse.map((item) => item.user_uuid).includes(user.uuid),
-      my_course_uuid: community.my_course_uuid,
-      my_course_name: community.my_course_name,
-      subway: myCourse[0].subway,
+      isBookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
+      course_name: community.course_name,
+      course_image: course.course_image,
+      subway: course.subway,
       count: coursePlaces.length,
       like: reaction.length,
       isLiked: reaction.map((item) => item.user_uuid).includes(user.uuid),
