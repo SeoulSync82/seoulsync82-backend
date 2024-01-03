@@ -6,7 +6,7 @@ export class BookmarkListReqDto {
   @Expose()
   @ApiProperty({
     example: 0,
-    description: '마지막 내코스 아이디',
+    description: '마지막 북마크 아이디',
     required: false,
   })
   last_id?: number;
@@ -14,7 +14,7 @@ export class BookmarkListReqDto {
   @Expose()
   @ApiProperty({
     example: 10,
-    description: '한 번에 보여줄 내코스 개수',
+    description: '한 번에 보여줄 북마크 개수',
     required: false,
   })
   size?: number;
@@ -24,21 +24,21 @@ export class BookmarkListResDto {
   @Expose()
   @ApiProperty({
     example: 1,
-    description: '내 코스 id',
+    description: '북마크 id',
   })
   id: number;
 
   @Expose()
   @ApiProperty({
     example: 'c152acef58875943b20b5cd511f25902',
-    description: '내코스 uuid',
+    description: '코스 uuid',
   })
   course_uuid: string;
 
   @Expose()
   @ApiProperty({
     example: '잠실나루역 주변 코스 일정🔥',
-    description: '내코스 이름',
+    description: '코스 이름',
   })
   course_name: string;
 
@@ -143,7 +143,7 @@ export class MyCourseDetailResDto {
   @Expose()
   @ApiProperty({
     example: '잠실나루역 주변 코스 일정🔥',
-    description: '내코스 이름',
+    description: '코스 이름',
   })
   my_course_name: string;
 

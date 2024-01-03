@@ -36,11 +36,11 @@ export class BookmarkService {
 
     const bookmarkListResDto = plainToInstance(BookmarkListResDto, courseList, {
       excludeExtraneousValues: true,
-    }).map((myCourse) => {
-      myCourse.user_profile_image = userList.find(
-        (user) => user.uuid === myCourse.user_uuid,
+    }).map((bookmark) => {
+      bookmark.user_profile_image = userList.find(
+        (user) => user.uuid === bookmark.user_uuid,
       ).profile_image;
-      return myCourse;
+      return bookmark;
     });
 
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;

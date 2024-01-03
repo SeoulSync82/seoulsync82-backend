@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
@@ -22,6 +23,8 @@ import { CourseService } from './course.service';
 import {
   CourseRecommendReqDto,
   CourseRecommendResDto,
+  MyCourseHistoryReqDto,
+  MyCourseHistoryResDto,
   SubwayCustomsCheckReqDto,
 } from './dto/course.dto';
 
@@ -57,54 +60,6 @@ export class CourseController {
     return await this.courseService.courseRecommendNonLogin(dto);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth('access-token')
-  // @Post('/:uuid/save')
-  // @ApiOperation({
-  //   summary: 'AI 코스 내 코스 저장',
-  //   description: 'AI 코스 내 코스 저장',
-  // })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'AI 코스 내 코스 저장',
-  //   type: DetailResponseDto,
-  // })
-  // @ApiParam({
-  //   name: 'uuid',
-  //   type: 'string',
-  //   required: false,
-  //   description: '코스 uuid',
-  // })
-  // async courseSave(
-  //   @CurrentUser() user,
-  //   @Param('uuid') uuid: string,
-  //   @Body() dto: CourseSaveReqDto,
-  // ): Promise<DetailResponseDto> {
-  //   return await this.courseService.courseSave(user, uuid, dto);
-  // }
-
-  // @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth('access-token')
-  // @Delete('/:uuid/delete')
-  // @ApiOperation({
-  //   summary: 'AI 코스 내 코스 삭제',
-  //   description: 'AI 코스 내 코스 삭제',
-  // })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'AI 코스 내 코스 삭제',
-  //   type: DetailResponseDto,
-  // })
-  // @ApiParam({
-  //   name: 'uuid',
-  //   type: 'string',
-  //   required: false,
-  //   description: '코스 uuid',
-  // })
-  // async courseDelete(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
-  //   return await this.courseService.courseDelete(user, uuid);
-  // }
-
   @Get('/subway/customs-check')
   @ApiOperation({
     summary: '지하철 역 커스텀 체크',
@@ -113,5 +68,17 @@ export class CourseController {
   @ApiSuccessResponse(SubwayCustomCheckResDto)
   async subwayCustomsCheck(@Query() dto: SubwayCustomsCheckReqDto) {
     return await this.courseService.subwayCustomsCheck(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/my-history')
+  @ApiOperation({
+    summary: '내 코스 추천내역',
+    description: '내 코스 추천내역',
+  })
+  @ApiArraySuccessResponse(MyCourseHistoryResDto)
+  async myCourseHistory(@Query() dto: MyCourseHistoryReqDto, @CurrentUser() user) {
+    return await this.courseService.myCourseHistory(dto, user);
   }
 }

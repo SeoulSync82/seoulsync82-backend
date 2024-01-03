@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Emojis } from 'src/auth/constants/emoji';
 import { ERROR } from 'src/auth/constants/error';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
@@ -16,8 +16,10 @@ import {
   CoursePlaceDto,
   CourseRecommendReqDto,
   CourseRecommendResDto,
+  MyCourseHistoryResDto,
   SubwayCustomsCheckReqDto,
 } from './dto/course.dto';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 
 @Injectable()
 export class CourseService {
@@ -25,6 +27,7 @@ export class CourseService {
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly subwayQueryRepository: SubwayQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
+    private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async courseRecommend(user, dto: CourseRecommendReqDto) {
@@ -394,5 +397,29 @@ export class CourseService {
     });
 
     return new SubwayCustomCheckResDto({ customs: [customsCheck] });
+  }
+
+  async myCourseHistory(dto, user) {
+    const courseList = await this.courseQueryRepository.findMyCourse(dto, user);
+    if (courseList.length === 0) {
+      return ResponseDataDto.from([], null, 0);
+    }
+
+    const userList = await this.userQueryRepository.findUserList(
+      courseList.map((item) => item.user_uuid),
+    );
+
+    const myHistoryListResDto = plainToInstance(MyCourseHistoryResDto, courseList, {
+      excludeExtraneousValues: true,
+    }).map((myHistory) => {
+      myHistory.user_profile_image = userList.find(
+        (user) => user.uuid === myHistory.user_uuid,
+      ).profile_image;
+      return myHistory;
+    });
+
+    const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
+
+    return { items: myHistoryListResDto, last_item_id };
   }
 }

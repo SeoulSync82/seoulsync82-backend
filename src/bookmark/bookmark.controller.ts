@@ -18,7 +18,7 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { BookmarkListReqDto, MyCourseDetailResDto } from './dto/bookmark.dto';
+import { BookmarkListReqDto, BookmarkListResDto, MyCourseDetailResDto } from './dto/bookmark.dto';
 import { BookmarkService } from './bookmark.service';
 
 @ApiTags('북마크')
@@ -35,7 +35,7 @@ export class BookmarkController {
     summary: '북마크 목록',
     description: '북마크 목록',
   })
-  @ApiArraySuccessResponse(BookmarkListReqDto)
+  @ApiArraySuccessResponse(BookmarkListResDto)
   async bookmarkList(@Query() dto: BookmarkListReqDto, @CurrentUser() user) {
     return await this.bookmarkService.bookmarkList(dto, user);
   }

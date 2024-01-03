@@ -3,7 +3,7 @@ import { time } from 'console';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
-import { Repository, In } from 'typeorm';
+import { Repository, In, IsNull, LessThan } from 'typeorm';
 
 export class CourseQueryRepository {
   constructor(
@@ -67,6 +67,20 @@ export class CourseQueryRepository {
   async findOne(uuid): Promise<CourseEntity> {
     return await this.repository.findOne({
       where: { uuid: uuid },
+    });
+  }
+
+  async findMyCourse(dto, user): Promise<CourseEntity[]> {
+    const whereConditions = { user_uuid: user.uuid };
+
+    if (dto.last_id > 0) {
+      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
+    }
+
+    return await this.repository.find({
+      where: whereConditions,
+      order: { created_at: 'DESC' },
+      take: dto.size,
     });
   }
 }
