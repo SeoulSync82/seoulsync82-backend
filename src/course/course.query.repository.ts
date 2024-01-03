@@ -20,14 +20,7 @@ export class CourseQueryRepository {
   }
 
   async saveCourseDetail(courseDetailEntity) {
-    return await this.detailRepository
-      .save(courseDetailEntity)
-      .then(() => {
-        console.log('Course details saved successfully');
-      })
-      .catch((error) => {
-        console.error('Error saving course details:', error);
-      });
+    return await this.detailRepository.save(courseDetailEntity);
   }
 
   async findUserHistoryCourse(uuid: string): Promise<CourseDetailEntity[]> {

@@ -33,9 +33,6 @@ export class MyCourseEntity {
   @Column()
   user_name: string;
 
-  // @Column({ type: 'decimal', precision: 10, scale: 1 })
-  // score: number;
-
   @Column()
   course_image: string;
 

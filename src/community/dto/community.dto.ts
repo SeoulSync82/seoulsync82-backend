@@ -122,7 +122,7 @@ export class CommunityListResDto {
   @Expose()
   @ApiProperty({
     example: '',
-    description: '장소 이름',
+    description: '장소 이미지',
   })
   course_image: string;
 

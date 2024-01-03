@@ -18,6 +18,12 @@ export class CourseEntity {
   line: string;
 
   @Column()
+  course_image: string;
+
+  @Column()
+  course_name: string;
+
+  @Column()
   user_uuid: string;
 
   @Column()

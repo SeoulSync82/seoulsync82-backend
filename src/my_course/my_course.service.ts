@@ -29,7 +29,6 @@ export class MyCourseService {
     if (courseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
-    console.log(courseList);
 
     const userList = await this.userQueryRepository.findUserList(
       courseList.map((item) => item.user_uuid),
@@ -90,26 +89,10 @@ export class MyCourseService {
     myCourseEntity.course_uuid = uuid;
     myCourseEntity.subway = course.subway;
     myCourseEntity.line = course.line;
+    myCourseEntity.course_name = course.course_name;
+    myCourseEntity.course_image = course.course_image;
     myCourseEntity.user_uuid = user.uuid;
     myCourseEntity.user_name = user.nickname;
-
-    const themes = [];
-    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
-    if (dto.theme_cafe) themes.push(dto.theme_cafe);
-
-    if (themes.length === 0) {
-      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
-      myCourseEntity.course_name = `${course.subway}역 주변 코스 일정${randomEmoji}`;
-    } else {
-      // 무작위 테마 선택
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-
-      // 테마에서 이모지 분리
-      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
-      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
-      console.log(`${course.subway}역 ${themeText} 코스 일정${themeEmoji}`);
-      myCourseEntity.course_name = `${course.subway}역 ${themeText} 코스 일정${themeEmoji}`;
-    }
 
     const myCourse = await this.courseQueryRepository.findOne(user, uuid);
     if (myCourse) {

@@ -71,6 +71,20 @@ export class CourseRecommendResDto {
 
   @Expose()
   @ApiProperty({
+    example: '잠실나루역 주변 코스 일정🔥',
+    description: '내코스 이름',
+  })
+  course_name: string;
+
+  @Expose()
+  @ApiProperty({
+    example: '',
+    description: '장소 이미지',
+  })
+  course_image: string;
+
+  @Expose()
+  @ApiProperty({
     example: '2',
     description: '코스 장소 갯수',
   })
