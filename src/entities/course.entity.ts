@@ -44,6 +44,6 @@ export class CourseEntity {
   @OneToMany(() => CourseDetailEntity, (courseDetail) => courseDetail.course)
   courseDetails: CourseDetailEntity[];
 
-  @OneToMany(() => BookmarkEntity, (myCourse) => myCourse.course)
-  myCourses: BookmarkEntity[];
+  @OneToMany(() => BookmarkEntity, (bookmark) => bookmark.course)
+  bookmarks: BookmarkEntity[];
 }

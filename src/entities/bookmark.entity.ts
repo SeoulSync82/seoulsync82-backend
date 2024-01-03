@@ -54,7 +54,7 @@ export class BookmarkEntity {
   })
   updated_at: Date;
 
-  @ManyToOne(() => CourseEntity, (Course) => Course.myCourses)
+  @ManyToOne(() => CourseEntity, (Course) => Course.bookmarks)
   @JoinColumn({ name: 'course_uuid', referencedColumnName: 'uuid' })
   course: CourseEntity;
 }

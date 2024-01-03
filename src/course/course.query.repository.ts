@@ -36,32 +36,10 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  async bookmarkSave(bookmarkEntity: BookmarkEntity) {
-    return await this.bookmarkRepository.save(bookmarkEntity);
-  }
-
-  async bookmarkDelete(bookmarkEntity: BookmarkEntity) {
-    return await this.bookmarkRepository.update({ id: bookmarkEntity.id }, { archived_at: null });
-  }
-
-  async findOne(user, uuid): Promise<BookmarkEntity> {
-    return await this.bookmarkRepository.findOne({
-      where: { user_uuid: user.uuid, course_uuid: uuid },
-    });
-  }
-
   async findCourse(uuid): Promise<CourseEntity> {
     return await this.repository.findOne({
       where: { uuid: uuid },
     });
-  }
-
-  async deleteMyCourse(id) {
-    return await this.bookmarkRepository.update({ id: id }, { archived_at: new Date() });
-  }
-
-  async reSaveMyCourse(id) {
-    return await this.bookmarkRepository.update({ id: id }, { archived_at: null });
   }
 
   async findPlace(courseUuid: string): Promise<any[]> {

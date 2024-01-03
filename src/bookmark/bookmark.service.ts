@@ -10,7 +10,12 @@ import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto, CourseRecommendResDto } from 'src/course/dto/course.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { CourseSaveReqDto, MyCourseDetailResDto, MyCourseListResDto } from './dto/bookmark.dto';
+import {
+  BookmarkListResDto,
+  CourseSaveReqDto,
+  MyCourseDetailResDto,
+  MyCourseListResDto,
+} from './dto/bookmark.dto';
 import { BookmarkQueryRepository } from './bookmark.query.repository';
 import { Emojis } from 'src/auth/constants/emoji';
 import { UserQueryRepository } from 'src/user/user.query.repository';
@@ -19,14 +24,14 @@ import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 @Injectable()
 export class BookmarkService {
   constructor(
-    private readonly BookmarkQueryRepository: BookmarkQueryRepository,
+    private readonly bookmarkQueryRepository: BookmarkQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   async myCourseList(dto, user) {
-    const courseList = await this.BookmarkQueryRepository.find(dto, user);
+    const courseList = await this.bookmarkQueryRepository.find(dto, user);
     if (courseList.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
@@ -35,7 +40,7 @@ export class BookmarkService {
       courseList.map((item) => item.user_uuid),
     );
 
-    const myCourseListResDto = plainToInstance(MyCourseListResDto, courseList, {
+    const bookmarkListResDto = plainToInstance(BookmarkListResDto, courseList, {
       excludeExtraneousValues: true,
     }).map((myCourse) => {
       myCourse.user_profile_image = userList.find(
@@ -46,11 +51,11 @@ export class BookmarkService {
 
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
-    return { items: myCourseListResDto, last_item_id };
+    return { items: bookmarkListResDto, last_item_id };
   }
 
   async myCourseDetail(uuid) {
-    const course = await this.BookmarkQueryRepository.findOne(uuid);
+    const course = await this.bookmarkQueryRepository.findOne(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
@@ -95,24 +100,24 @@ export class BookmarkService {
     bookmarkEntity.user_uuid = user.uuid;
     bookmarkEntity.user_name = user.nickname;
 
-    const myBookmark = await this.courseQueryRepository.findOne(user, uuid);
+    const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
 
     if (isEmpty(myBookmark)) {
-      await this.courseQueryRepository.bookmarkSave(bookmarkEntity);
+      await this.bookmarkQueryRepository.bookmarkSave(bookmarkEntity);
     } else if (isEmpty(myBookmark.archived_at)) {
       throw new ConflictException(ERROR.DUPLICATION);
     } else {
-      await this.courseQueryRepository.bookmarkUpdate(bookmarkEntity);
+      await this.bookmarkQueryRepository.bookmarkUpdate(bookmarkEntity);
     }
 
     return DetailResponseDto.uuid(uuid);
   }
 
   async bookmarkDelete(user, uuid) {
-    const myBookmark = await this.courseQueryRepository.findOne(user, uuid);
+    const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
     if (!myBookmark) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    } else await this.courseQueryRepository.deleteMyCourse(myBookmark.id);
+    } else await this.bookmarkQueryRepository.bookmarkDelete(myBookmark);
 
     return DetailResponseDto.uuid(uuid);
   }

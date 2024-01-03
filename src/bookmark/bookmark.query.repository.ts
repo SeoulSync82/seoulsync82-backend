@@ -18,7 +18,7 @@ export class BookmarkQueryRepository {
     return await this.repository.find({
       where: whereConditions,
       relations: { course: true },
-      order: { created_at: 'DESC' },
+      order: { updated_at: 'DESC' },
       take: dto.size,
     });
   }
@@ -38,6 +38,24 @@ export class BookmarkQueryRepository {
   async findMyCourse(uuid): Promise<BookmarkEntity[]> {
     return await this.repository.find({
       where: { course_uuid: uuid },
+    });
+  }
+
+  async bookmarkSave(bookmarkEntity: BookmarkEntity) {
+    return await this.repository.save(bookmarkEntity);
+  }
+
+  async bookmarkDelete(bookmarkEntity: BookmarkEntity) {
+    return await this.repository.update({ id: bookmarkEntity.id }, { archived_at: new Date() });
+  }
+
+  async bookmarkUpdate(bookmarkEntity: BookmarkEntity) {
+    return await this.repository.update({ id: bookmarkEntity.id }, { archived_at: null });
+  }
+
+  async findUserBookmark(user, uuid): Promise<BookmarkEntity> {
+    return await this.repository.findOne({
+      where: { user_uuid: user.uuid, course_uuid: uuid },
     });
   }
 }

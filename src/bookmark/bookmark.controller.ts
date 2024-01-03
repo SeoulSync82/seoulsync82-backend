@@ -19,6 +19,7 @@ import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import {
+  BookmarkListReqDto,
   CourseSaveReqDto,
   MyCourseDetailResDto,
   MyCourseListReqDto,
@@ -37,12 +38,12 @@ export class BookmarkController {
   @ApiBearerAuth('access-token')
   @Get('/')
   @ApiOperation({
-    summary: '내 코스 목록',
-    description: '내 코스 목록',
+    summary: '북마크 목록',
+    description: '북마크 목록',
   })
   @ApiArraySuccessResponse(MyCourseListResDto)
-  async myCourseList(@Query() dto: MyCourseListReqDto, @CurrentUser() user) {
-    return await this.bookmarkService.myCourseList(dto, user);
+  async bookmarkList(@Query() dto: BookmarkListReqDto, @CurrentUser() user) {
+    return await this.bookmarkService.bookmarkList(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,6 +52,7 @@ export class BookmarkController {
   @ApiOperation({
     summary: '내 코스 상세',
     description: '내 코스 상세',
+    deprecated: true,
   })
   @ApiSuccessResponse(MyCourseDetailResDto)
   @ApiParam({

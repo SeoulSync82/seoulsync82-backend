@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 
-export class MyCourseListReqDto {
+export class BookmarkListReqDto {
   @Expose()
   @ApiProperty({
     example: 0,
@@ -20,7 +20,7 @@ export class MyCourseListReqDto {
   size?: number;
 }
 
-export class MyCourseListResDto {
+export class BookmarkListResDto {
   @Expose()
   @ApiProperty({
     example: 1,
