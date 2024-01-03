@@ -56,4 +56,10 @@ export class CourseQueryRepository {
       where: { uuid: In(uuids) },
     });
   }
+
+  async findOne(uuid): Promise<CourseEntity> {
+    return await this.repository.findOne({
+      where: { uuid: uuid },
+    });
+  }
 }

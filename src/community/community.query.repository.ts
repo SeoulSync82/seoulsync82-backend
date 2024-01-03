@@ -53,9 +53,9 @@ export class CommunityQueryRepository {
     });
   }
 
-  async findCommunityByMyCourse(uuid): Promise<CommunityEntity> {
+  async findCommunityByCourse(uuid, user): Promise<CommunityEntity> {
     return await this.repository.findOne({
-      where: { my_course_uuid: uuid, archived_at: IsNull() },
+      where: { course_uuid: uuid, user_uuid: user.uuid, archived_at: IsNull() },
     });
   }
 }

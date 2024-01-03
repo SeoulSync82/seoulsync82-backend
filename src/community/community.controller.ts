@@ -56,7 +56,7 @@ export class CommunityController {
     name: 'uuid',
     type: 'string',
     required: false,
-    description: '내 코스 uuid',
+    description: '코스 uuid',
   })
   async communityPost(
     @Param('uuid') uuid: string,

@@ -100,20 +100,6 @@ export class CommunityListResDto {
 
   @Expose()
   @ApiProperty({
-    example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '내코스 uuid',
-  })
-  my_course_uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '개지리는 성수역 코스추천',
-    description: '내코스 이름',
-  })
-  my_course_name: string;
-
-  @Expose()
-  @ApiProperty({
     example: 'c152acef58875943b20b5cd511f25902',
     description: '내코스 uuid',
   })

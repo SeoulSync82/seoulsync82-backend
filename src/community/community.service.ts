@@ -37,22 +37,21 @@ export class CommunityService {
   ) {}
 
   async communityPost(uuid, user, dto: CommunityPostReqDto) {
-    const myCourse = await this.bookmarkQueryRepository.findOne(uuid);
-    if (!myCourse) {
+    const course = await this.courseQueryRepository.findOne(uuid);
+    if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
-    const community = await this.communityQueryRepository.findCommunityByMyCourse(myCourse.uuid);
+    const community = await this.communityQueryRepository.findCommunityByCourse(uuid, user);
     if (isNotEmpty(community)) {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
     const communityEntity = new CommunityEntity();
     communityEntity.uuid = generateUUID();
-    communityEntity.course_uuid = myCourse.course_uuid;
+    communityEntity.course_uuid = uuid;
     communityEntity.user_name = user.nickname;
     communityEntity.user_uuid = user.uuid;
-    communityEntity.my_course_uuid = myCourse.uuid;
-    communityEntity.my_course_name = myCourse.course_name;
+    communityEntity.course_name = course.course_name;
     communityEntity.review = dto.review;
     communityEntity.score = dto.score;
 
