@@ -84,23 +84,23 @@ export class BookmarkService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const BookmarkEntity = new BookmarkEntity();
-    BookmarkEntity.uuid = generateUUID();
-    BookmarkEntity.course_uuid = uuid;
-    BookmarkEntity.subway = course.subway;
-    BookmarkEntity.line = course.line;
-    BookmarkEntity.course_name = course.course_name;
-    BookmarkEntity.course_image = course.course_image;
-    BookmarkEntity.user_uuid = user.uuid;
-    BookmarkEntity.user_name = user.nickname;
+    const bookmarkEntity = new BookmarkEntity();
+    bookmarkEntity.uuid = generateUUID();
+    bookmarkEntity.course_uuid = uuid;
+    bookmarkEntity.subway = course.subway;
+    bookmarkEntity.line = course.line;
+    bookmarkEntity.course_name = course.course_name;
+    bookmarkEntity.course_image = course.course_image;
+    bookmarkEntity.user_uuid = user.uuid;
+    bookmarkEntity.user_name = user.nickname;
 
-    const myCourse = await this.courseQueryRepository.findOne(user, uuid);
-    if (myCourse) {
+    const myBookmark = await this.courseQueryRepository.findOne(user, uuid);
+    if (myBookmark) {
       throw new ConflictException(ERROR.DUPLICATION);
     }
-    await this.courseQueryRepository.saveMyCourse(BookmarkEntity);
+    await this.courseQueryRepository.bookmarkSave(bookmarkEntity);
 
-    return DetailResponseDto.uuid(BookmarkEntity.uuid);
+    return DetailResponseDto.uuid(bookmarkEntity.uuid);
   }
 
   async courseDelete(user, uuid) {

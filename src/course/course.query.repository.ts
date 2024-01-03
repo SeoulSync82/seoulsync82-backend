@@ -12,7 +12,7 @@ export class CourseQueryRepository {
     @InjectRepository(CourseDetailEntity)
     private detailRepository: Repository<CourseDetailEntity>,
     @InjectRepository(BookmarkEntity)
-    private myCourseRepository: Repository<BookmarkEntity>,
+    private bookmarkRepository: Repository<BookmarkEntity>,
   ) {}
 
   async saveCourse(courseEntity) {
@@ -36,12 +36,12 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  async saveMyCourse(BookmarkEntity) {
-    return await this.myCourseRepository.save(BookmarkEntity);
+  async bookmarkSave(bookmarkEntity: BookmarkEntity) {
+    return await this.bookmarkRepository.save(bookmarkEntity);
   }
 
   async findOne(user, uuid): Promise<BookmarkEntity> {
-    return await this.myCourseRepository.findOne({
+    return await this.bookmarkRepository.findOne({
       where: { user_uuid: user.uuid, course_uuid: uuid },
     });
   }
@@ -53,11 +53,11 @@ export class CourseQueryRepository {
   }
 
   async deleteMyCourse(id) {
-    return await this.myCourseRepository.update({ id: id }, { archived_at: new Date() });
+    return await this.bookmarkRepository.update({ id: id }, { archived_at: new Date() });
   }
 
   async reSaveMyCourse(id) {
-    return await this.myCourseRepository.update({ id: id }, { archived_at: null });
+    return await this.bookmarkRepository.update({ id: id }, { archived_at: null });
   }
 
   async findPlace(courseUuid: string): Promise<any[]> {

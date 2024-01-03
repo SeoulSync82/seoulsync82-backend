@@ -65,14 +65,14 @@ export class BookmarkController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('/:uuid/save')
+  @Post('/:uuid')
   @ApiOperation({
-    summary: '내 코스 저장',
-    description: '내 코스 저장',
+    summary: '북마크 저장',
+    description: '북마크 저장',
   })
   @ApiResponse({
     status: 200,
-    description: 'AI 코스 내 코스 저장',
+    description: '북마크 저장',
     type: DetailResponseDto,
   })
   @ApiParam({
