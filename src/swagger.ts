@@ -6,6 +6,7 @@ import {
 import {
   CourseDetailResDto,
   CoursePlaceDto,
+  CoursePlaceListResDto,
   CourseRecommendResDto,
   MyCourseHistoryResDto,
 } from './course/dto/course.dto';
@@ -42,4 +43,5 @@ export const SwaggerModels = [
   MyCourseHistoryResDto,
   CourseDetailResDto,
   PlaceDetailResDto,
+  CoursePlaceListResDto,
 ];

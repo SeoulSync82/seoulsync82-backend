@@ -427,6 +427,14 @@ export class PlaceDetailResDto {
   })
   @Transform(({ value }) => value ?? undefined)
   brand?: string;
+
+  @Expose()
+  @ApiProperty({
+    example: 'https://www.popply.co.kr/popup/608',
+    description: 'URL',
+  })
+  @Transform(({ value }) => value ?? undefined)
+  url?: string;
 }
 export class ExhibitionDto {
   @ApiProperty({

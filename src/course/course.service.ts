@@ -14,7 +14,9 @@ import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
 import {
   CourseDetailResDto,
+  CoursePlaceDetailDto,
   CoursePlaceDto,
+  CoursePlaceListResDto,
   CourseRecommendReqDto,
   CourseRecommendResDto,
   MyCourseHistoryResDto,
@@ -474,5 +476,31 @@ export class CourseService {
     });
 
     return courseDetailResDto;
+  }
+
+  async coursePlaceList(uuid) {
+    const course = await this.courseQueryRepository.findOne(uuid);
+    if (!course) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+    const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
+
+    const coursePlaceListResDto = new CoursePlaceListResDto({
+      course_uuid: uuid,
+      course_name: course.course_name,
+      place: plainToInstance(
+        CoursePlaceDetailDto,
+        coursePlaces.map((coursePlace) => ({
+          ...coursePlace.place,
+          sort: coursePlace.sort,
+          uuid: coursePlace.place_uuid,
+        })),
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
+    });
+
+    return coursePlaceListResDto;
   }
 }

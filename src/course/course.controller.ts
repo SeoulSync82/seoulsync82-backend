@@ -22,6 +22,7 @@ import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseService } from './course.service';
 import {
   CourseDetailResDto,
+  CoursePlaceListResDto,
   CourseRecommendReqDto,
   CourseRecommendResDto,
   MyCourseHistoryReqDto,
@@ -99,5 +100,21 @@ export class CourseController {
   })
   async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user) {
     return await this.courseService.courseDetail(uuid, user);
+  }
+
+  @Get('/:uuid/place/list')
+  @ApiOperation({
+    summary: '코스 장소별 목록',
+    description: '코스 장소별 목록',
+  })
+  @ApiSuccessResponse(CoursePlaceListResDto)
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '코스 uuid',
+  })
+  async coursePlaceList(@Param('uuid') uuid: string) {
+    return await this.courseService.coursePlaceList(uuid);
   }
 }
