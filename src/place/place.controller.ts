@@ -24,7 +24,14 @@ import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { CultureDto, CultureListDto, ExhibitionDto, PlaceReadDto, PopupDto } from './dto/place.dto';
+import {
+  CultureDto,
+  CultureListDto,
+  ExhibitionDto,
+  PlaceDetailResDto,
+  PlaceReadDto,
+  PopupDto,
+} from './dto/place.dto';
 import { PlaceService } from './place.service';
 
 @ApiTags('장소')
@@ -114,5 +121,21 @@ export class PlaceController {
   })
   async findPopupList(@Query() dto: PlaceReadDto) {
     return await this.placeService.findPopupList(dto);
+  }
+
+  @Get('/:uuid')
+  @ApiOperation({
+    summary: '장소 상세',
+    description: '장소 상세',
+  })
+  @ApiSuccessResponse(PlaceDetailResDto)
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '장소 uuid',
+  })
+  async findPlaceDetail(@Param('uuid') uuid: string): Promise<PlaceDetailResDto> {
+    return await this.placeService.findPlaceDetail(uuid);
   }
 }

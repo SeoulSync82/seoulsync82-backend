@@ -51,13 +51,6 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  // async findPlaceWithDetail(courseUuid: string) {
-  //   return await this.repository.find({
-  //     where: { uuid: courseUuid },
-  //     relations: { courseDetails: true },
-  //   });
-  // }
-
   async findList(uuids): Promise<CourseEntity[]> {
     return await this.repository.find({
       where: { uuid: In(uuids) },
