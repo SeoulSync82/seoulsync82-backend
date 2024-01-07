@@ -474,6 +474,13 @@ export class CourseDetailResDto {
 
   @Expose()
   @ApiProperty({
+    example: '2023-10-21 00:00:00',
+    description: '생성일',
+  })
+  created_at: Date;
+
+  @Expose()
+  @ApiProperty({
     example: [
       {
         sort: 1,

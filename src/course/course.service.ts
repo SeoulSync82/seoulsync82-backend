@@ -459,6 +459,7 @@ export class CourseService {
       isBookmarked: isNotEmpty(bookmark),
       isPosted: isNotEmpty(community),
       isLiked: isNotEmpty(reaction),
+      created_at: course.created_at,
       place: plainToInstance(
         CoursePlaceDto,
         coursePlaces.map((coursePlace) => ({
