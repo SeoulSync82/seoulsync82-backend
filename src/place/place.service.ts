@@ -1,7 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { CultureDto, CultureListDto, ExhibitionDto, PlaceReadDto, PopupDto } from './dto/place.dto';
+import {
+  CultureDto,
+  CultureListDto,
+  ExhibitionDto,
+  PlaceDetailResDto,
+  PlaceReadDto,
+  PopupDto,
+} from './dto/place.dto';
 import { PlaceQueryRepository } from './place.query.repository';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
@@ -68,5 +75,18 @@ export class PlaceService {
     const last_item_id = popupList.length === dto.size ? popupList[popupList.length - 1].id : 0;
 
     return { items: popupDto, last_item_id };
+  }
+
+  async findPlaceDetail(uuid) {
+    const placeDetail: PlaceEntity = await this.placeQueryRepository.findOne(uuid);
+    if (!placeDetail) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const placeDetailResDto: PlaceDetailResDto = plainToInstance(PlaceDetailResDto, placeDetail, {
+      excludeExtraneousValues: true,
+    });
+
+    return placeDetailResDto;
   }
 }
