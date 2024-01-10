@@ -14,6 +14,7 @@ export class SearchQueryLogRepository {
       where: {
         search: search,
         user_uuid: user.uuid,
+        archived_at: IsNull(),
       },
     });
   }
@@ -53,5 +54,18 @@ export class SearchQueryLogRepository {
 
   async deleteSearchLog(searchLogEntity) {
     return await this.repository.update({ id: searchLogEntity.id }, { archived_at: new Date() });
+  }
+
+  async findUserSearchLogList(user): Promise<SearchLogEntity[]> {
+    return await this.repository.find({
+      where: {
+        user_uuid: user.uuid,
+        archived_at: IsNull(),
+      },
+    });
+  }
+
+  async save(searchLogEntity: SearchLogEntity[]): Promise<SearchLogEntity[]> {
+    return await this.repository.save(searchLogEntity);
   }
 }

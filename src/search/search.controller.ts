@@ -131,4 +131,19 @@ export class SearchController {
   ): Promise<DetailResponseDto> {
     return await this.searchService.deleteSearchLog(uuid, user);
   }
+
+  @Patch('/')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '최근 검색어 전체 삭제',
+    description: '최근 검색어 전체 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '최근 검색어 전체 삭제',
+  })
+  async deleteAllSearchLog(@CurrentUser() user) {
+    return await this.searchService.deleteAllSearchLog(user);
+  }
 }

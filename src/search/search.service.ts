@@ -21,18 +21,6 @@ export class SearchService {
   ) {}
 
   async searchPlace(dto: SearchDto, user) {
-    if (!dto.search) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-    const searchList = await this.placeQueryRepository.search(dto);
-    if (!searchList || searchList.length === 0) {
-      return ResponseDataDto.from([], null, 0);
-    }
-
-    const searchListDto: SearchListDto[] = plainToInstance(SearchListDto, searchList, {
-      excludeExtraneousValues: true,
-    });
-
     const searchLog: SearchLogEntity[] = await this.searchQueryLogRepository.findLog(
       dto.search,
       user,
@@ -44,6 +32,15 @@ export class SearchService {
       const id = searchLog.filter((item) => item.search === dto.search).map((item) => item.id);
       await this.searchQueryLogRepository.update(id);
     }
+
+    const searchList = await this.placeQueryRepository.search(dto);
+    if (!searchList || searchList.length === 0) {
+      return ResponseDataDto.from([], null, 0);
+    }
+
+    const searchListDto: SearchListDto[] = plainToInstance(SearchListDto, searchList, {
+      excludeExtraneousValues: true,
+    });
 
     const last_item_id = searchList.length === dto.size ? searchList[searchList.length - 1].id : 0;
 
@@ -86,5 +83,19 @@ export class SearchService {
     await this.searchQueryLogRepository.deleteSearchLog(userSearchLog);
 
     return DetailResponseDto.uuid(uuid);
+  }
+
+  async deleteAllSearchLog(user) {
+    const userAllSearchLog: SearchLogEntity[] =
+      await this.searchQueryLogRepository.findUserSearchLogList(user);
+    if (userAllSearchLog.length === 0) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    userAllSearchLog.forEach((log) => (log.archived_at = new Date()));
+
+    await this.searchQueryLogRepository.save(userAllSearchLog);
+
+    return { total: userAllSearchLog.length };
   }
 }
