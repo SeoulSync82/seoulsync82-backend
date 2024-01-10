@@ -72,8 +72,7 @@ export class SearchService {
     if (searchLog.length === 0) {
       return ResponseDataDto.from([], null, 0);
     }
-    const result = searchLog.map((item) => item.search).slice(0, 10);
 
-    return ResponseDataDto.from(result, null, 0);
+    return ResponseDataDto.from(searchLog, null, 0);
   }
 }

@@ -36,6 +36,7 @@ export class SearchQueryLogRepository {
         user_uuid: user.uuid,
       },
       order: { updated_at: 'DESC' },
+      take: 10,
     });
   }
 }
