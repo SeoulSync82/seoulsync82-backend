@@ -121,6 +121,13 @@ export class CommunityListResDto {
 
   @Expose()
   @ApiProperty({
+    example: '음식점, 카페, 술집',
+    description: '커스텀',
+  })
+  customs: string;
+
+  @Expose()
+  @ApiProperty({
     example: '성수',
     description: '지하철 역',
   })
