@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
@@ -74,5 +75,16 @@ export class SearchService {
     }
 
     return ResponseDataDto.from(searchLog, null, 0);
+  }
+
+  async deleteSearchLog(uuid, user) {
+    const userSearchLog = await this.searchQueryLogRepository.findUserSearchLog(uuid, user);
+    if (isEmpty(userSearchLog)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    await this.searchQueryLogRepository.deleteSearchLog(userSearchLog);
+
+    return DetailResponseDto.uuid(uuid);
   }
 }
