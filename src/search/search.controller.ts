@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Query,
   UseFilters,
   UseGuards,
@@ -110,5 +111,39 @@ export class SearchController {
   })
   async searchRecent(@CurrentUser() user): Promise<ResponseDataDto> {
     return await this.searchService.searchRecent(user);
+  }
+
+  @Patch('/:uuid')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '최근 검색어 삭제',
+    description: '최근 검색어 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '최근 검색어 삭제',
+    type: DetailResponseDto,
+  })
+  async deleteSearchLog(
+    @Param('uuid') uuid: string,
+    @CurrentUser() user,
+  ): Promise<DetailResponseDto> {
+    return await this.searchService.deleteSearchLog(uuid, user);
+  }
+
+  @Patch('/')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '최근 검색어 전체 삭제',
+    description: '최근 검색어 전체 삭제',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '최근 검색어 전체 삭제',
+  })
+  async deleteAllSearchLog(@CurrentUser() user) {
+    return await this.searchService.deleteAllSearchLog(user);
   }
 }

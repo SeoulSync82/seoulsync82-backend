@@ -109,6 +109,7 @@ export class CommunityService {
       excludeExtraneousValues: true,
     }).map((community) => {
       community.course_uuid = courseList.find((item) => item.uuid === community.course_uuid).uuid;
+      community.customs = courseList.find((item) => item.uuid === community.course_uuid).customs;
       community.line = courseList.find((item) => item.uuid === community.course_uuid).line;
       community.subway = courseList.find((item) => item.uuid === community.course_uuid).subway;
       community.course_image = courseList.find(
