@@ -35,6 +35,46 @@ export class AuthController {
   ) {}
   //-----------------------구글 로그인-----------------------------//
 
+  // @Get('/user/login/google')
+  // @ApiOperation({
+  //   summary: '구글 로그인',
+  //   description: '구글 로그인',
+  // })
+  // @UseGuards(AuthGuard('google'))
+  // async googleAuth(@Req() _req: Request, @Query('state') state: string) {
+  //   // 여기서 state 저장하고
+  //   console.log('zzzzzzi', state);
+  //   passport.authenticate('google', { state })(_req);
+  // }
+
+  // /* Get Google Auth Callback */
+  // @Get('/auth/google/callback')
+  // @UseGuards(AuthGuard('google'))
+  // async googleAuthCallback(
+  //   @Req() req: GoogleRequest,
+  //   @Res() res: Response,
+  //   @Query('state') state: string,
+  // ) {
+  //   try {
+  //     // 여기서 꺼내쓰는법
+  //     const result = await this.authService.googleLogin(req, res);
+  //     console.log(state);
+  //     const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
+  //     const frontendUrl =
+  //       env === 'staging'
+  //         ? 'http://staging.seoulsync82.com:3457/main'
+  //         : 'http://localhost:3457/main';
+
+  //     console.log('frontendUrl', frontendUrl);
+  //     console.log('env', env);
+
+  //     res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+  //   } catch (error) {
+  //     console.error('Error parsing state:', error);
+  //     res.redirect('/error');
+  //   }
+  // }
+
   @Get('/user/login/google')
   @ApiOperation({
     summary: '구글 로그인',
@@ -42,8 +82,6 @@ export class AuthController {
   })
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() _req: Request, @Query('state') state: string) {
-    // 여기서 state 저장하고
-    console.log('zzzzzzi', state);
     passport.authenticate('google', { state })(_req);
   }
 
@@ -58,16 +96,12 @@ export class AuthController {
     try {
       // 여기서 꺼내쓰는법
       const result = await this.authService.googleLogin(req, res);
-      console.log(state);
-      const env = state ? JSON.parse(decodeURIComponent(state)).env : 'default';
       const frontendUrl =
-        env === 'staging'
+        req.headers['x-forwarded-host'] === 'staging.seoulsync82.com'
           ? 'http://staging.seoulsync82.com:3457/main'
           : 'http://localhost:3457/main';
-
-      console.log('frontendUrl', frontendUrl);
-      console.log('env', env);
-
+      console.log(req.headers['x-forwarded-host']);
+      console.log(frontendUrl);
       res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
