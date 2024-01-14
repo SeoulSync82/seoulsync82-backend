@@ -96,6 +96,11 @@ export class AuthController {
     try {
       // 여기서 꺼내쓰는법
       const result = await this.authService.googleLogin(req, res);
+      console.log(req.headers);
+      console.log('왜안되냐이거');
+      console.log(req.headers['host']);
+      console.log(req.headers['x-forwarded-host']);
+      console.log(state);
       const frontendUrl =
         req.headers['x-forwarded-host'] === 'staging.seoulsync82.com'
           ? 'http://staging.seoulsync82.com:3457/main'
