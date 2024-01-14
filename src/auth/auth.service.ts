@@ -92,8 +92,8 @@ export class AuthService {
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true,
+        sameSite: 'none',
       });
 
       return {
@@ -155,9 +155,10 @@ export class AuthService {
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: true,
+        secure: false,
         sameSite: 'none',
       });
+      //  sameSite: 'none' 은 secure : true 일때 정상작동
       return {
         ok: true,
         eid_access_token,
