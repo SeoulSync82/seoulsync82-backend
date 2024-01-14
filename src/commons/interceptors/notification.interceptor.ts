@@ -3,8 +3,6 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { NotificationPushDto } from 'src/notification/dto/notification.dto';
 import { NotificationQueryRepository } from 'src/notification/notification.query.repository';
-import { Generated } from 'typeorm';
-import { generateUUID } from '../util/uuid';
 
 @Injectable()
 export class NotificationInterceptor implements NestInterceptor {

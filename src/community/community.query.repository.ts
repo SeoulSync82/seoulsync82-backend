@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { IsNull, LessThan, Repository } from 'typeorm';
+import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
 
 export class CommunityQueryRepository {
   constructor(
@@ -12,7 +13,7 @@ export class CommunityQueryRepository {
     return await this.repository.save(communityEntity);
   }
 
-  async find(dto): Promise<CommunityEntity[]> {
+  async find(dto: ApiCommunityGetRequestQueryDto): Promise<CommunityEntity[]> {
     const whereConditions = { archived_at: IsNull() };
 
     if (dto.last_id > 0) {
@@ -26,7 +27,7 @@ export class CommunityQueryRepository {
     });
   }
 
-  async findMyCommunity(dto, user): Promise<CommunityEntity[]> {
+  async findMyCommunity(dto: ApiCommunityGetRequestQueryDto, user): Promise<CommunityEntity[]> {
     const whereConditions = { user_uuid: user.uuid, archived_at: IsNull() };
 
     if (dto.last_id > 0) {

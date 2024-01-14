@@ -6,10 +6,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   root: true,
   env: {
     node: true,
@@ -31,6 +28,8 @@ module.exports = {
     '**/*.json',
   ],
   rules: {
+    'unused-imports/no-unused-imports': 'warn',
+    'unused-imports/no-unused-vars': 'warn',
     '@typescript-eslint/no-unused-vars': 'off',
     'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/interface-name-prefix': 'off',
@@ -42,10 +41,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'no-console': 'warn',
     'object-curly-newline': ['error', { multiline: true, consistent: true }],
-    'lines-between-class-members': [
-      'error',
-      'always',
-      { exceptAfterSingleLine: true },
-    ],
+    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
+    'prefer-const': 'off',
   },
 };

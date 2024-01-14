@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { getTsBuildInfoEmitOutputFilePath } from 'typescript';
 
 export class PlaceReadDto {
   @Expose()
   @ApiProperty({
     example: 0,
-    description: '마지막 장소 아이디',
+    description: '가장 마지막으로 본 전시/팝업 아이디',
     required: false,
   })
   last_id?: number;
@@ -14,7 +13,34 @@ export class PlaceReadDto {
   @Expose()
   @ApiProperty({
     example: 10,
-    description: '한 번에 보여줄 장소 개수',
+    description: '한 번에 보여질 전시/팝업 수',
+    required: false,
+  })
+  size?: number;
+
+  @Expose()
+  @ApiProperty({
+    example: 'latest',
+    description: '정렬',
+    required: false,
+  })
+  order: string;
+}
+
+export class PlaceCultureReadDto {
+  @Expose()
+  @ApiProperty({
+    example: 0,
+    description: '가장 마지막으로 본 전시/팝업 아이디',
+    required: false,
+  })
+  last_id?: number;
+
+  @Expose()
+  @ApiProperty({
+    example: 10,
+    description: '한 번에 보여질 전시/팝업 수',
+    required: false,
   })
   size?: number;
 

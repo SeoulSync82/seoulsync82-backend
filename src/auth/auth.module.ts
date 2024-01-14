@@ -12,7 +12,6 @@ import { UserService } from 'src/user/user.service';
 import { UserEntity } from 'src/entities/user.entity';
 // import { JwtAccessStrategy } from "src/commons/auth/jwt-access.strategy";
 import { ConfigModule } from 'src/config/config.module';
-import { ConfigService } from 'src/config/config.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { JwtStrategy } from 'src/commons/auth/jwt-strategy';
 import { UserModule } from 'src/user/user.module';

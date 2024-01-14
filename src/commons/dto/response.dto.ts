@@ -67,7 +67,7 @@ export class DetailResponseDto {
   @Expose()
   @ApiProperty({
     example: '{}',
-    description: '데이타',
+    description: '데이터',
   })
   data: any;
 
@@ -92,7 +92,7 @@ export class AffectedResponseDto {
   @Expose()
   @ApiProperty({
     example: '{}',
-    description: '데이타',
+    description: '데이터',
   })
   data: any;
 
@@ -138,12 +138,4 @@ export class ResponseTotalDataDto {
   ) {
     return new ResponseTotalDataDto(array, total, last_item, last_item_id, mockup, cache);
   }
-
-  // static fromArray(array: Array<any>, mockup?: boolean, cache?: boolean) {
-  //   return new ResponseTotalDataDto(array, null, null, mockup, cache);
-  // }
-
-  // static fromArrayWithTotal(array: Array<any>, total: number, mockup?: boolean, cache?: boolean) {
-  //   return new ResponseTotalDataDto(array, total, null, mockup ? mockup : false, cache);
-  // }
 }

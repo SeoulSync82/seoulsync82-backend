@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Put,
   UseFilters,
   UseGuards,
@@ -11,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
-import { UpdateUserDto } from './dto/user.dto';
+import { ApiUserUpdatePutRequestBodyDto } from './dto/api-user-update-put-request-body.dto';
 import { UserService } from './user.service';
 
 @ApiTags('사용자')
@@ -34,12 +33,14 @@ export class UserController {
     summary: '프로필 수정',
     description: '프로필 수정',
   })
-  @ApiResponse({
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '프로필 수정 성공',
     status: 200,
-    description: '프로필 수정',
-    type: DetailResponseDto,
   })
-  async profileUpdate(@Body(BadWordsPipe) dto: UpdateUserDto, @CurrentUser() user) {
+  async profileUpdate(
+    @Body(BadWordsPipe) dto: ApiUserUpdatePutRequestBodyDto,
+    @CurrentUser() user,
+  ) {
     return await this.userService.profileUpdate(dto, user);
   }
 

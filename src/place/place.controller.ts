@@ -1,37 +1,28 @@
 import {
   Controller,
   Get,
+  HttpStatus,
   Param,
   Query,
-  Req,
   UseFilters,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiQuery,
-  ApiParam,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
-import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import {
-  CultureDto,
-  CultureListDto,
-  ExhibitionDto,
-  PlaceDetailResDto,
-  PlaceReadDto,
-  PopupDto,
-} from './dto/place.dto';
+import { ApiPlaceCultureDetailGetResponseDto } from './dto/api-place-culture-detail-get-response.dto';
+import { ApiPlaceCultureGetRequestQueryDto } from './dto/api-place-culture-get-request-query.dto';
+import { ApiPlaceCultureGetResponseDto } from './dto/api-place-culture-get-response.dto';
+import { ApiPlaceDetailGetResponseDto } from './dto/api-place-detail-get-response.dto';
+import { ApiPlaceExhibitionGetRequestQueryDto } from './dto/api-place-exhibition-get-request-query.dto';
+import { ApiPlaceExhibitionGetResponseDto } from './dto/api-place-exhibition-get-response.dto';
+import { ApiPlacePopupGetRequestQueryDto } from './dto/api-place-popup-get-request-query.dto';
+import { ApiPlacePopupGetResponseDto } from './dto/api-place-popup-get-response.dto';
+
 import { PlaceService } from './place.service';
 
 @ApiTags('장소')
@@ -46,20 +37,11 @@ export class PlaceController {
     summary: '전시/팝업 간편 목록',
     description: '전시/팝업 간편 목록',
   })
-  @ApiArraySuccessResponse(CultureListDto)
-  @ApiQuery({
-    name: 'last_id',
-    type: 'number',
-    required: false,
-    description: '가장 마지막으로 본 전시/팝업 아이디',
+  @ApiArraySuccessResponse(ApiPlaceCultureGetResponseDto, {
+    description: '전시/팝업 간편 목록 조회 성공',
+    status: HttpStatus.OK,
   })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-    description: '한 번에 보여질 전시/팝업 수',
-  })
-  async findCultureList(@Query() dto: PlaceReadDto) {
+  async findCultureList(@Query() dto: ApiPlaceCultureGetRequestQueryDto) {
     return await this.placeService.findCultureList(dto);
   }
 
@@ -68,15 +50,24 @@ export class PlaceController {
     summary: '전시/팝업 상세',
     description: '전시/팝업 상세',
   })
-  @ApiSuccessResponse(CultureDto)
+  @ApiSuccessResponse(ApiPlaceCultureDetailGetResponseDto, {
+    description: '전시/팝업 상세 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '장소 uuid가 존재하지 않는 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',
     required: false,
     description: '장소 uuid',
   })
-  async findCultureOne(@Param('uuid') uuid: string): Promise<CultureDto> {
-    return await this.placeService.findCultureOne(uuid);
+  async findCultureDetail(
+    @Param('uuid') uuid: string,
+  ): Promise<ApiPlaceCultureDetailGetResponseDto> {
+    return await this.placeService.findCultureDetail(uuid);
   }
 
   @Get('/exhibition')
@@ -84,20 +75,11 @@ export class PlaceController {
     summary: '전시소개 목록',
     description: '전시소개 목록',
   })
-  @ApiArraySuccessResponse(ExhibitionDto)
-  @ApiQuery({
-    name: 'last_id',
-    type: 'number',
-    required: false,
-    description: '가장 마지막으로 본 전시 아이디',
+  @ApiArraySuccessResponse(ApiPlaceExhibitionGetResponseDto, {
+    description: '전시소개 목록 조회 성공',
+    status: HttpStatus.OK,
   })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-    description: '한 번에 보여질 전시수',
-  })
-  async findExhibitionList(@Query() dto: PlaceReadDto) {
+  async findExhibitionList(@Query() dto: ApiPlaceExhibitionGetRequestQueryDto) {
     return await this.placeService.findExhibitionList(dto);
   }
 
@@ -106,20 +88,11 @@ export class PlaceController {
     summary: '팝업소개 목록',
     description: '팝업소개 목록',
   })
-  @ApiArraySuccessResponse(PopupDto)
-  @ApiQuery({
-    name: 'last_id',
-    type: 'number',
-    required: false,
-    description: '가장 마지막으로 본 팝업 아이디',
+  @ApiArraySuccessResponse(ApiPlacePopupGetResponseDto, {
+    description: '팝업소개 목록 조회 성공',
+    status: HttpStatus.OK,
   })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-    description: '한 번에 보여질 팝업 수',
-  })
-  async findPopupList(@Query() dto: PlaceReadDto) {
+  async findPopupList(@Query() dto: ApiPlacePopupGetRequestQueryDto) {
     return await this.placeService.findPopupList(dto);
   }
 
@@ -128,14 +101,21 @@ export class PlaceController {
     summary: '장소 상세',
     description: '장소 상세',
   })
-  @ApiSuccessResponse(PlaceDetailResDto)
+  @ApiSuccessResponse(ApiPlaceDetailGetResponseDto, {
+    description: '장소 상세 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '장소 uuid가 존재하지 않는 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',
     required: false,
     description: '장소 uuid',
   })
-  async findPlaceDetail(@Param('uuid') uuid: string): Promise<PlaceDetailResDto> {
+  async findPlaceDetail(@Param('uuid') uuid: string): Promise<ApiPlaceDetailGetResponseDto> {
     return await this.placeService.findPlaceDetail(uuid);
   }
 }

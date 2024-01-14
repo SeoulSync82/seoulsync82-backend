@@ -6,9 +6,11 @@ import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
-import { CultureDto } from 'src/place/dto/place.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { SearchDetailDto, SearchDto, SearchListDto } from './dto/search.dto';
+import { ApiSearchDetailGetResponseDto } from './dto/api-search-detail-get-response.dto';
+import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
+import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
+import { SearchDetailDto } from './dto/search.dto';
 import { SearchQueryLogRepository } from './search.log.query.repository';
 import { SearchQueryRepository } from './search.query.repository';
 
@@ -20,7 +22,7 @@ export class SearchService {
     private readonly searchQueryLogRepository: SearchQueryLogRepository,
   ) {}
 
-  async searchPlace(dto: SearchDto, user) {
+  async searchPlace(dto: ApiSearchGetRequestQueryDto, user) {
     const searchLog: SearchLogEntity[] = await this.searchQueryLogRepository.findLog(
       dto.search,
       user,
@@ -35,16 +37,16 @@ export class SearchService {
 
     const searchList = await this.placeQueryRepository.search(dto);
     if (!searchList || searchList.length === 0) {
-      return ResponseDataDto.from([], null, 0);
+      return { items: [] };
     }
 
-    const searchListDto: SearchListDto[] = plainToInstance(SearchListDto, searchList, {
+    const apiSearchGetResponseDto = plainToInstance(ApiSearchGetResponseDto, searchList, {
       excludeExtraneousValues: true,
     });
 
     const last_item_id = searchList.length === dto.size ? searchList[searchList.length - 1].id : 0;
 
-    return { items: searchListDto, last_item_id };
+    return { items: apiSearchGetResponseDto, last_item_id };
   }
 
   async searchDetail(uuid) {
@@ -53,16 +55,20 @@ export class SearchService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const searchDetailDto: SearchDetailDto = plainToInstance(SearchDetailDto, searchDetail, {
-      excludeExtraneousValues: true,
-    });
+    const apiSearchDetailGetResponseDto: SearchDetailDto = plainToInstance(
+      ApiSearchDetailGetResponseDto,
+      searchDetail,
+      {
+        excludeExtraneousValues: true,
+      },
+    );
 
-    return searchDetailDto;
+    return apiSearchDetailGetResponseDto;
   }
 
   async searchPopular() {
     const result = ['곱찹', '라멘', '감자탕', '돈까스', '스시'];
-    return ResponseDataDto.from(result, null, 0);
+    return { items: [] };
   }
 
   async searchRecent(user) {

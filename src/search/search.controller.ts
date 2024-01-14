@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Query,
@@ -8,26 +9,20 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiQuery,
-  ApiParam,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { use } from 'passport';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
-import { PlaceReadDto } from 'src/place/dto/place.dto';
-import { SearchDetailDto, SearchDto, SearchListDto } from './dto/search.dto';
+import { ApiSearchDetailGetResponseDto } from './dto/api-search-detail-get-response.dto';
+import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
+import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
 import { SearchService } from './search.service';
 
 @ApiTags('검색')
@@ -44,26 +39,11 @@ export class SearchController {
     summary: '검색',
     description: '검색',
   })
-  @ApiArraySuccessResponse(SearchListDto)
-  @ApiQuery({
-    name: 'search',
-    type: 'string',
-    required: false,
-    description: '장소 이름',
+  @ApiArraySuccessResponse(ApiSearchGetResponseDto, {
+    description: '검색 성공',
+    status: HttpStatus.OK,
   })
-  @ApiQuery({
-    name: 'last_id',
-    type: 'number',
-    required: false,
-    description: '가장 마지막으로 본 전시/팝업 아이디',
-  })
-  @ApiQuery({
-    name: 'size',
-    type: 'number',
-    required: false,
-    description: '한 번에 보여질 전시/팝업 수',
-  })
-  async searchPlace(@Query(BadWordsPipe) dto: SearchDto, @CurrentUser() user) {
+  async searchPlace(@Query(BadWordsPipe) dto: ApiSearchGetRequestQueryDto, @CurrentUser() user) {
     return await this.searchService.searchPlace(dto, user);
   }
 
@@ -72,7 +52,14 @@ export class SearchController {
     summary: '검색 상세',
     description: '검색 상세',
   })
-  @ApiSuccessResponse(SearchDetailDto)
+  @ApiSuccessResponse(ApiSearchDetailGetResponseDto, {
+    description: '검색 상세 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '장소 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',
@@ -104,10 +91,9 @@ export class SearchController {
     summary: '최근 검색어 목록',
     description: '최근 검색어 목록',
   })
-  @ApiResponse({
-    status: 200,
-    description: '최근 검색어 목록',
-    type: ResponseDto,
+  @ApiSuccessResponse(ResponseDto, {
+    description: '최근 검색어 목록 조회 성공',
+    status: HttpStatus.CREATED,
   })
   async searchRecent(@CurrentUser() user): Promise<ResponseDataDto> {
     return await this.searchService.searchRecent(user);
@@ -120,10 +106,13 @@ export class SearchController {
     summary: '최근 검색어 삭제',
     description: '최근 검색어 삭제',
   })
-  @ApiResponse({
-    status: 200,
-    description: '최근 검색어 삭제',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '최근 검색어 삭제 완료',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '검색어 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   async deleteSearchLog(
     @Param('uuid') uuid: string,
@@ -139,9 +128,13 @@ export class SearchController {
     summary: '최근 검색어 전체 삭제',
     description: '최근 검색어 전체 삭제',
   })
-  @ApiResponse({
-    status: 200,
-    description: '최근 검색어 전체 삭제',
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '최근 검색어 전체 삭제 완료',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '최근 검색어가 하나도 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   async deleteAllSearchLog(@CurrentUser() user) {
     return await this.searchService.deleteAllSearchLog(user);
