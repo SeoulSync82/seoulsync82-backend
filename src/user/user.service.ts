@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { ConfigService } from 'src/config/config.service';
-import { UserEntity } from 'src/entities/user.entity';
-import { resourceLimits } from 'worker_threads';
 import { UserQueryRepository } from './user.query.repository';
 import * as jwt from 'jsonwebtoken';
 
@@ -14,7 +12,6 @@ export class UserService {
   ) {}
 
   async getUser(getUserInputDto) {
-    // const user = UserEntity
     const data = 0;
     return data;
   }

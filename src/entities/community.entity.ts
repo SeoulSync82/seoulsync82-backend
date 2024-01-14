@@ -1,5 +1,4 @@
-import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CourseDetailEntity } from './course.detail.entity';
+import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'community' })
 export class CommunityEntity {

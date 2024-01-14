@@ -1,7 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
-import { IsNull, LessThan, Repository, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 
 export class ReactionQueryRepository {
   constructor(

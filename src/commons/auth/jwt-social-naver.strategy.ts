@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-naver';
 import { ConfigService } from 'src/config/config.service';
-import { Request } from 'express';
 
 @Injectable()
 export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {

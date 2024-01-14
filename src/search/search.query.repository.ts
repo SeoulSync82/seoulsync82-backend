@@ -1,7 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { now } from 'mongoose';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 export class SearchQueryRepository {
   constructor(

@@ -10,7 +10,6 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConfigService } from './config/config.service';
-import Joi from 'joi';
 // import { JwtAccessStrategy } from './commons/auth/jwt-access.strategy';
 // import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { SearchModule } from './search/search.module';

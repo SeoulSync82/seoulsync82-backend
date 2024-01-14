@@ -1,13 +1,17 @@
-import { ApiOkResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
-import { applyDecorators, Type } from '@nestjs/common';
+import { ApiResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
+import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
+import { isEmpty } from '../util/is/is-empty';
 
 export const ApiSuccessResponse = <TModel extends Type<unknown>>(
   model: TModel,
   options?: ApiResponseOptions,
 ) => {
+  const status = isEmpty(options?.status) ? HttpStatus.OK : options.status;
+
   return applyDecorators(
-    ApiOkResponse({
+    ApiResponse({
       ...options,
+      status,
       schema: {
         allOf: [
           {

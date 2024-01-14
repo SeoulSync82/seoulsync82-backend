@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
-import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { NotificationListResDto } from './dto/notification.dto';
+import { ApiNotificationListGetRequestQueryDto } from './dto/api-notification-list-get-request-query.dto';
+import { ApiNotificationListGetResponseDto } from './dto/api-notification-list-get-response.dto';
 import { NotificationQueryRepository } from './notification.query.repository';
 
 @Injectable()
@@ -13,19 +14,23 @@ export class NotificationService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async notificationList(dto, user) {
+  async notificationList(dto: ApiNotificationListGetRequestQueryDto, user) {
     const notificationList = await this.notificationQueryRepository.findList(dto, user);
     if (notificationList.length === 0) {
-      return ResponseDataDto.from([], null, 0);
+      return { items: [] };
     }
 
     const userList = await this.userQueryRepository.findUserList(
       notificationList.map((item) => item.user_uuid),
     );
 
-    const notificationListResDto = plainToInstance(NotificationListResDto, notificationList, {
-      excludeExtraneousValues: true,
-    }).map((notification) => {
+    const apiNotificationListGetResponseDto = plainToInstance(
+      ApiNotificationListGetResponseDto,
+      notificationList,
+      {
+        excludeExtraneousValues: true,
+      },
+    ).map((notification) => {
       notification.user_thumbnail = userList.find(
         (item) => item.uuid === notification.user_uuid,
       ).profile_image;
@@ -35,7 +40,7 @@ export class NotificationService {
     const last_item_id =
       notificationList.length === dto.size ? notificationList[notificationList.length - 1].id : 0;
 
-    return { items: notificationListResDto, last_item_id };
+    return { items: apiNotificationListGetResponseDto, last_item_id };
   }
 
   async notificationRead(uuid, user) {

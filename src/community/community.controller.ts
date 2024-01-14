@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Post,
@@ -11,27 +10,29 @@ import {
   UseGuards,
   UseInterceptors,
   Req,
+  HttpStatus,
+  Patch,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { CommunityService } from './community.service';
-import {
-  CommunityDetailResDto,
-  CommunityListReqDto,
-  CommunityListResDto,
-  CommunityMyCourseListReqDto,
-  CommunityMyCourseListResDto,
-  CommunityPostReqDto,
-  CommunityPutReqDto,
-} from './dto/community.dto';
+import { ApiCommunityDetailGetResponseDto } from './dto/api-community-detail-get-response.dto';
+import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
+import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
+import { ApiCommunityMyCourseGetRequestQueryDto } from './dto/api-community-my-course-get-request-query.dto';
+import { ApiCommunityMyCourseGetResponseDto } from './dto/api-community-my-course-get-response.dto';
+import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
+import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
@@ -47,10 +48,17 @@ export class CommunityController {
     summary: '커뮤니티 글쓰기',
     description: '커뮤니티 글쓰기',
   })
-  @ApiResponse({
-    status: 200,
-    description: '커뮤니티 글쓰기',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '커뮤니티 글쓰기 성공',
+    status: HttpStatus.CREATED,
+  })
+  @ApiExceptionResponse([ERROR.DUPLICATION], {
+    description: '이미 작성한 게시글일 경우',
+    status: HttpStatus.CONFLICT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({
     name: 'uuid',
@@ -61,7 +69,7 @@ export class CommunityController {
   async communityPost(
     @Param('uuid') uuid: string,
     @CurrentUser() user,
-    @Body(BadWordsPipe) dto: CommunityPostReqDto,
+    @Body(BadWordsPipe) dto: ApiCommunityPostRequestBodyDto,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPost(uuid, user, dto);
   }
@@ -73,8 +81,14 @@ export class CommunityController {
     summary: '커뮤니티 글쓰기 - 내 코스 추천내역',
     description: '커뮤니티 글쓰기 - 내 코스 추천내역',
   })
-  @ApiArraySuccessResponse(CommunityMyCourseListResDto)
-  async communityMyCourseList(@Query() dto: CommunityMyCourseListReqDto, @CurrentUser() user) {
+  @ApiArraySuccessResponse(ApiCommunityMyCourseGetResponseDto, {
+    description: '커뮤니티 글쓰기 - 내 코스 추천내역 조회 성공',
+    status: HttpStatus.OK,
+  })
+  async communityMyCourseList(
+    @Query() dto: ApiCommunityMyCourseGetRequestQueryDto,
+    @CurrentUser() user,
+  ) {
     return await this.communityService.communityMyCourseList(dto, user);
   }
 
@@ -85,8 +99,11 @@ export class CommunityController {
     summary: '커뮤니티 목록',
     description: '커뮤니티 목록',
   })
-  @ApiArraySuccessResponse(CommunityListResDto)
-  async communityList(@Query() dto: CommunityListReqDto, @CurrentUser() user) {
+  @ApiArraySuccessResponse(ApiCommunityGetResponseDto, {
+    description: '커뮤니티 목록 조회 성공',
+    status: HttpStatus.OK,
+  })
+  async communityList(@Query() dto: ApiCommunityGetRequestQueryDto, @CurrentUser() user) {
     return await this.communityService.communityList(dto, user);
   }
 
@@ -97,7 +114,14 @@ export class CommunityController {
     summary: '커뮤니티 상세',
     description: '커뮤니티 상세',
   })
-  @ApiSuccessResponse(CommunityDetailResDto)
+  @ApiSuccessResponse(ApiCommunityDetailGetResponseDto, {
+    description: '커뮤니티 상세 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '커뮤니티 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',
@@ -115,10 +139,13 @@ export class CommunityController {
     summary: '커뮤니티 수정',
     description: '커뮤니티 수정',
   })
-  @ApiResponse({
-    status: 200,
-    description: '커뮤니티 수정',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '커뮤니티 수정 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '커뮤니티 uuid가 존재하지 않거나 게시물 작성자와 유저가 다른 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({
     name: 'uuid',
@@ -128,7 +155,7 @@ export class CommunityController {
   })
   async communityPut(
     @CurrentUser() user,
-    @Body(BadWordsPipe) dto: CommunityPutReqDto,
+    @Body(BadWordsPipe) dto: ApiCommunityPutRequestBodyDto,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPut(user, dto, uuid);
@@ -136,15 +163,18 @@ export class CommunityController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:uuid')
+  @Patch('/:uuid')
   @ApiOperation({
     summary: '커뮤니티 삭제',
     description: '커뮤니티 삭제',
   })
-  @ApiResponse({
-    status: 200,
-    description: '커뮤니티 삭제',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '북마크 삭제 완료',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '커뮤니티 uuid가 존재하지 않거나 게시물 작성자와 유저가 다른 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({
     name: 'uuid',
@@ -166,10 +196,17 @@ export class CommunityController {
     summary: '커뮤니티 코스 좋아요',
     description: '커뮤니티 코스 좋아요',
   })
-  @ApiResponse({
-    status: 200,
-    description: '커뮤니티 코스 좋아요',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '커뮤니티 코스 좋아요 성공',
+    status: HttpStatus.CREATED,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '커뮤니티 uuid가 존재하지 않은 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiExceptionResponse([ERROR.DUPLICATION], {
+    description: '이미 좋아요를 누른 게시글일 경우',
+    status: HttpStatus.CONFLICT,
   })
   @ApiParam({
     name: 'uuid',
@@ -190,15 +227,22 @@ export class CommunityController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:uuid/reaction')
+  @Patch('/:uuid/reaction')
   @ApiOperation({
     summary: '커뮤니티 코스 좋아요 취소',
     description: '커뮤니티 코스 좋아요 취소',
   })
-  @ApiResponse({
-    status: 200,
-    description: '커뮤니티 코스 좋아요 취소',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '커뮤니티 코스 좋아요 취소 성공',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '커뮤니티 uuid가 존재하지 않은 경우 || 좋아요를 누르지 않은 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiExceptionResponse([ERROR.DUPLICATION], {
+    description: '이미 좋아요 취소를 누른 게시글일 경우',
+    status: HttpStatus.CONFLICT,
   })
   @ApiParam({
     name: 'uuid',
