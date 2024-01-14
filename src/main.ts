@@ -22,9 +22,9 @@ async function bootstrap() {
       transform: true,
       // whitelist: true, // DTO에 없는 속성을 제거
       // forbidNonWhitelisted: true, // DTO에 정의되지 않은 속성이 들어오면 요청을 거부
-      // transformOptions: {
-      //   enableImplicitConversion: true, // 타입 변환을 자동으로 수행
-      // },
+      transformOptions: {
+        enableImplicitConversion: true, // 타입 변환을 자동으로 수행
+      },
       exceptionFactory: (error: ValidationError[] = []) => {
         return new BadRequestException(
           error.some((error) =>
