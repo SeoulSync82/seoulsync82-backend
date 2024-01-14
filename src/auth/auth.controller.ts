@@ -82,6 +82,10 @@ export class AuthController {
   })
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() _req: Request, @Query('state') state: string) {
+    console.log('State:', state);
+    console.log('URL:', _req.url);
+    console.log('Headers:', _req.headers);
+    console.log('Query Parameters:', _req.query);
     passport.authenticate('google', { state })(_req);
   }
 
