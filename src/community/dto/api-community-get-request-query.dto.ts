@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { IsBoolean, IsInt, IsNotEmpty, IsOptional, Max, Min } from 'class-validator';
+import { ToBoolean } from 'src/commons/decorators/to-boolean.decorator';
 
 export class ApiCommunityGetRequestQueryDto {
   @IsOptional()
@@ -29,6 +29,6 @@ export class ApiCommunityGetRequestQueryDto {
     description: '내가 쓴 게시물',
     required: false,
   })
-  @Transform(({ value }) => value === 'true')
+  @ToBoolean()
   me?: boolean;
 }
