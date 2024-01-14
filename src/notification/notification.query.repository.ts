@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { NotificationEntity } from 'src/entities/notification.entity';
-import { IsNull, LessThan, Repository, In } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
+import { ApiNotificationListGetRequestQueryDto } from './dto/api-notification-list-get-request-query.dto';
 
 export class NotificationQueryRepository {
   constructor(
@@ -13,7 +13,7 @@ export class NotificationQueryRepository {
     return await this.repository.save(notificationData);
   }
 
-  async findList(dto, user): Promise<NotificationEntity[]> {
+  async findList(dto: ApiNotificationListGetRequestQueryDto, user): Promise<NotificationEntity[]> {
     const whereConditions = { target_user_uuid: user.uuid };
 
     if (dto.last_id > 0) {

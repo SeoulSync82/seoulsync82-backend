@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { distinct } from 'rxjs';
-import { CourseRecommendReqDto, SubwayCustomsCheckReqDto } from 'src/course/dto/course.dto';
+import { ApiCourseSubwayCheckGetRequestQueryDto } from 'src/course/dto/api-course-subway-check-get-request-query.dto';
+import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { Repository, In, Not } from 'typeorm';
 
@@ -16,7 +16,7 @@ export class SubwayQueryRepository {
     });
   }
 
-  async groupByCustoms(dto: SubwayCustomsCheckReqDto) {
+  async groupByCustoms(dto: ApiCourseSubwayCheckGetRequestQueryDto) {
     return await this.repository
       .createQueryBuilder('subway')
       .select('subway.place_type', 'type')

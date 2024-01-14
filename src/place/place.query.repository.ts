@@ -1,9 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { now } from 'mongoose';
-import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
+import { ApiCourseRecommendPostRequestBodyDto } from 'src/course/dto/api-course-recommend-post-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
-import { SearchDto } from 'src/search/dto/search.dto';
+import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
 import {
   LessThan,
   MoreThan,
@@ -13,7 +12,9 @@ import {
   FindOptionsWhere,
   FindOptionsOrder,
 } from 'typeorm';
-import { PlaceReadDto } from './dto/place.dto';
+import { ApiPlaceCultureGetRequestQueryDto } from './dto/api-place-culture-get-request-query.dto';
+import { ApiPlaceExhibitionGetRequestQueryDto } from './dto/api-place-exhibition-get-request-query.dto';
+import { ApiPlacePopupGetRequestQueryDto } from './dto/api-place-popup-get-request-query.dto';
 
 export class PlaceQueryRepository {
   constructor(
@@ -23,7 +24,7 @@ export class PlaceQueryRepository {
     private subwayRepository: Repository<SubwayEntity>,
   ) {}
 
-  async findList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
+  async findList(dto: ApiPlaceCultureGetRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
 
     const q = await this.repository
@@ -43,7 +44,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findExhibitionList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
+  async findExhibitionList(dto: ApiPlaceExhibitionGetRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
     const whereConditions = { place_type: '전시', end_date: MoreThan(now) };
     let orderType = {};
@@ -65,7 +66,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findPopupList(dto: PlaceReadDto): Promise<PlaceEntity[]> {
+  async findPopupList(dto: ApiPlacePopupGetRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
     const whereConditions: FindOptionsWhere<PlaceEntity> = {
       place_type: '팝업',
@@ -90,7 +91,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async search(dto: SearchDto): Promise<PlaceEntity[]> {
+  async search(dto: ApiSearchGetRequestQueryDto): Promise<PlaceEntity[]> {
     const whereConditions = {
       place_name: Like(`%${dto.search}%`),
     };
@@ -115,7 +116,10 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findSubwayPlaceList(customs, dto: CourseRecommendReqDto): Promise<PlaceEntity[]> {
+  async findSubwayPlaceList(
+    customs,
+    dto: ApiCourseRecommendPostRequestBodyDto,
+  ): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
@@ -126,7 +130,7 @@ export class PlaceQueryRepository {
       .getMany();
   }
 
-  async findSubwayCultureList(dto: CourseRecommendReqDto): Promise<PlaceEntity[]> {
+  async findSubwayCultureList(dto: ApiCourseRecommendPostRequestBodyDto): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
@@ -136,12 +140,4 @@ export class PlaceQueryRepository {
       .andWhere('p.end_date > :now', { now: new Date() })
       .getMany();
   }
-
-  // async findPlace(courseUuid: string): Promise<PlaceEntity[]> {
-  //   return await this.repository
-  //     .createQueryBuilder('place')
-  //     .innerJoin('place.courseDetails', 'courseDetail')
-  //     .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
-  //     .getMany();
-  // }
 }

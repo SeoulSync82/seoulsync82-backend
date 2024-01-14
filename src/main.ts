@@ -7,6 +7,7 @@ import * as cors from 'cors';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { ERROR } from './auth/constants/error';
 import { SwaggerModels } from './swagger';
+import { AllExceptionsFilter } from './commons/auth/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -74,6 +75,8 @@ async function bootstrap() {
       swaggerOptions: { defaultModelsExpandDepth: -1 },
     },
   );
+
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   await app.listen(3456);
 }

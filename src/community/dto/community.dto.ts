@@ -166,7 +166,7 @@ export class CommunityListResDto {
     example: 'true',
     description: '내가 좋아요 눌렀는 지',
   })
-  isLiked: Boolean;
+  isLiked: boolean;
 
   @Expose()
   @ApiProperty({
@@ -248,7 +248,7 @@ export class CommunityDetailResDto {
     example: true,
     description: '구독여부',
   })
-  isBookmarked: Boolean;
+  isBookmarked: boolean;
 
   @Expose()
   @ApiProperty({
@@ -283,7 +283,7 @@ export class CommunityDetailResDto {
     example: 'true',
     description: '내가 좋아요 눌렀는 지',
   })
-  isLiked: Boolean;
+  isLiked: boolean;
 
   @Expose()
   @ApiProperty()

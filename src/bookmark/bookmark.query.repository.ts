@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { IsNull, LessThan, Repository, In } from 'typeorm';
+import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
 
 export class BookmarkQueryRepository {
   constructor(
@@ -8,7 +9,7 @@ export class BookmarkQueryRepository {
     private repository: Repository<BookmarkEntity>,
   ) {}
 
-  async find(dto, user): Promise<BookmarkEntity[]> {
+  async find(dto: ApiBookmarkGetRequestQueryDto, user): Promise<BookmarkEntity[]> {
     const whereConditions = { user_uuid: user.uuid, archived_at: IsNull() };
 
     if (dto.last_id > 0) {

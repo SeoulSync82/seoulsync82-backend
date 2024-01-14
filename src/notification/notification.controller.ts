@@ -1,54 +1,61 @@
 import {
   Controller,
   Get,
+  HttpStatus,
   Param,
-  Post,
-  Put,
+  Patch,
   Query,
   UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { NotificationListReqDto, NotificationListResDto } from './dto/notification.dto';
+import { ApiNotificationListGetRequestQueryDto } from './dto/api-notification-list-get-request-query.dto';
+import { ApiNotificationListGetResponseDto } from './dto/api-notification-list-get-response.dto';
 import { NotificationService } from './notification.service';
 
 @ApiTags('알림')
 @Controller('/api/notification')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(SeoulSync82ExceptionFilter)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Get('/')
   @ApiOperation({
     summary: '알림 목록',
     description: '알림 목록',
   })
-  @ApiArraySuccessResponse(NotificationListResDto)
-  async notificationList(@Query() dto: NotificationListReqDto, @CurrentUser() user) {
+  @ApiArraySuccessResponse(ApiNotificationListGetResponseDto, {
+    description: '알림 목록 조회 성공',
+    status: HttpStatus.OK,
+  })
+  async notificationList(@Query() dto: ApiNotificationListGetRequestQueryDto, @CurrentUser() user) {
     return await this.notificationService.notificationList(dto, user);
   }
 
-  @Put('/:uuid')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  @Patch('/:uuid')
   @ApiOperation({
     summary: '알림 읽음 처리 ',
     description: '알림 읽음 처리 ',
   })
-  @ApiResponse({
-    status: 200,
-    description: '알림 읽음 처리',
-    type: DetailResponseDto,
+  @ApiArraySuccessResponse(DetailResponseDto, {
+    description: '알림 읽음 처리 성공',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '존재하지 않는 알림 uuid 이거나 알림의 타겟이 유저가 아닐경우',
+    status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({
     name: 'uuid',

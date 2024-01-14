@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   Controller,
   Get,
@@ -16,12 +17,9 @@ import passport from 'passport';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { ErrorsInterceptor } from 'src/commons/interceptors/error.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { RequestWithUser } from 'src/commons/interfaces/common.interface';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
 import { EnhancedRequest } from './dto/login-cookie-request.dto';
 import { LogoutAuthOutputDto } from './dto/logout.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';

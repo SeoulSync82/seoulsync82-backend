@@ -1,75 +1,92 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
+  HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { BookmarkListReqDto, BookmarkListResDto, MyCourseDetailResDto } from './dto/bookmark.dto';
 import { BookmarkService } from './bookmark.service';
+import { ApiBookmarkDetailGetResponseDto } from './dto/api-bookmark-detail-get-response.dto';
+import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
+import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
 
 @ApiTags('북마크')
 @Controller('/api/bookmark')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 @UseInterceptors(SuccessInterceptor)
 @UseFilters(SeoulSync82ExceptionFilter)
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Get('/')
   @ApiOperation({
     summary: '북마크 목록',
     description: '북마크 목록',
   })
-  @ApiArraySuccessResponse(BookmarkListResDto)
-  async bookmarkList(@Query() dto: BookmarkListReqDto, @CurrentUser() user) {
+  @ApiArraySuccessResponse(ApiBookmarkGetResponseDto, {
+    description: '북마크 목록 조회 성공',
+    status: HttpStatus.OK,
+  })
+  async bookmarkList(@Query() dto: ApiBookmarkGetRequestQueryDto, @CurrentUser() user) {
     return await this.bookmarkService.bookmarkList(dto, user);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Get('/:uuid')
   @ApiOperation({
-    summary: '내 코스 상세',
-    description: '내 코스 상세',
+    summary: '북마크 상세',
+    description: '북마크 상세',
     deprecated: true,
   })
-  @ApiSuccessResponse(MyCourseDetailResDto)
+  @ApiSuccessResponse(ApiBookmarkDetailGetResponseDto, {
+    description: '북마크 상세 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',
     required: false,
-    description: '내코스 uuid',
+    description: '코스 uuid',
   })
   async myCourseDetail(@Param('uuid') uuid: string) {
     return await this.bookmarkService.myCourseDetail(uuid);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
   @Post('/:uuid')
   @ApiOperation({
     summary: '북마크 저장',
     description: '북마크 저장',
   })
-  @ApiResponse({
-    status: 200,
-    description: '북마크 저장',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '북마크 저장 완료',
+    status: HttpStatus.CREATED,
+  })
+  @ApiExceptionResponse([ERROR.DUPLICATION], {
+    description: '이미 저장한 북마크일 경우',
+    status: HttpStatus.CONFLICT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({
     name: 'uuid',
@@ -81,17 +98,18 @@ export class BookmarkController {
     return await this.bookmarkService.bookmarkSave(user, uuid);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @Delete('/:uuid')
+  @Patch('/:uuid')
   @ApiOperation({
     summary: '북마크 삭제',
     description: '북마크 삭제',
   })
-  @ApiResponse({
-    status: 200,
-    description: '북마크 삭제',
-    type: DetailResponseDto,
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '북마크 삭제 완료',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({
     name: 'uuid',

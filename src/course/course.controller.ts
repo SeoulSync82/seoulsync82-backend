@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Query,
@@ -10,25 +10,25 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { SubwayCustomCheckResDto } from 'src/place/dto/subway.dto';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseService } from './course.service';
-import {
-  CourseDetailResDto,
-  CoursePlaceListResDto,
-  CourseRecommendReqDto,
-  CourseRecommendResDto,
-  MyCourseHistoryReqDto,
-  MyCourseHistoryResDto,
-  SubwayCustomsCheckReqDto,
-} from './dto/course.dto';
+import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
+import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-history-get-request-query.dto';
+import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-get-response.dto';
+import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
+import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
+import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
+import { ApiCourseSubwayCheckGetRequestQueryDto } from './dto/api-course-subway-check-get-request-query.dto';
+import { ApiCourseSubwayCheckGetResponseDto } from './dto/api-course-subway-check-get-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -47,8 +47,15 @@ export class CourseController {
     summary: 'AI 코스 추천',
     description: 'AI 코스 추천',
   })
-  @ApiSuccessResponse(CourseRecommendResDto)
-  async courseRecommend(@CurrentUser() user, @Body() dto: CourseRecommendReqDto) {
+  @ApiSuccessResponse(ApiCourseRecommendPostResponseDto, {
+    description: 'AI 코스 추천 완료',
+    status: HttpStatus.CREATED,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '선택한 지하철역에 custom이 부족한 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async courseRecommend(@CurrentUser() user, @Body() dto: ApiCourseRecommendPostRequestBodyDto) {
     return await this.courseService.courseRecommend(user, dto);
   }
 
@@ -57,8 +64,15 @@ export class CourseController {
     summary: 'AI 코스 추천 - 비회원',
     description: 'AI 코스 추천 - 비회원',
   })
-  @ApiSuccessResponse(CourseRecommendResDto)
-  async courseRecommendNonLogin(@Query() dto: CourseRecommendReqDto) {
+  @ApiSuccessResponse(ApiCourseRecommendPostResponseDto, {
+    description: 'AI 코스 추천 완료',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '선택한 지하철역에 custom이 부족한 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async courseRecommendNonLogin(@Query() dto: ApiCourseRecommendPostRequestBodyDto) {
     return await this.courseService.courseRecommendNonLogin(dto);
   }
 
@@ -67,8 +81,11 @@ export class CourseController {
     summary: '지하철 역 커스텀 체크',
     description: '지하철 역 커스텀 체크',
   })
-  @ApiSuccessResponse(SubwayCustomCheckResDto)
-  async subwayCustomsCheck(@Query() dto: SubwayCustomsCheckReqDto) {
+  @ApiSuccessResponse(ApiCourseSubwayCheckGetResponseDto, {
+    description: '지하철 역 커스텀 체크 성공',
+    status: HttpStatus.OK,
+  })
+  async subwayCustomsCheck(@Query() dto: ApiCourseSubwayCheckGetRequestQueryDto) {
     return await this.courseService.subwayCustomsCheck(dto);
   }
 
@@ -79,9 +96,15 @@ export class CourseController {
     summary: '내 코스 추천내역',
     description: '내 코스 추천내역',
   })
-  @ApiArraySuccessResponse(MyCourseHistoryResDto)
-  async myCourseHistory(@Query() dto: MyCourseHistoryReqDto, @CurrentUser() user) {
-    return await this.courseService.myCourseHistory(dto, user);
+  @ApiArraySuccessResponse(ApiCourseMyHistoryGetResponseDto, {
+    description: '내 코스 추천내역 조회 성공',
+    status: HttpStatus.OK,
+  })
+  async myCourseRecommandHistory(
+    @Query() dto: ApiCourseMyHistoryGetRequestQueryDto,
+    @CurrentUser() user,
+  ) {
+    return await this.courseService.myCourseRecommandHistory(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -91,7 +114,14 @@ export class CourseController {
     summary: '코스 상세',
     description: '코스 상세',
   })
-  @ApiSuccessResponse(CourseDetailResDto)
+  @ApiSuccessResponse(ApiCourseDetailGetResponseDto, {
+    description: '코스 상세 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',
@@ -107,7 +137,14 @@ export class CourseController {
     summary: '코스 장소별 목록',
     description: '코스 장소별 목록',
   })
-  @ApiSuccessResponse(CoursePlaceListResDto)
+  @ApiSuccessResponse(ApiCoursePlaceListGetResponseDto, {
+    description: '코스 장소별 목록 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({
     name: 'uuid',
     type: 'string',

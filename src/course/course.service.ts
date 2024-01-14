@@ -2,26 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Emojis } from 'src/auth/constants/emoji';
 import { ERROR } from 'src/auth/constants/error';
-import { DetailResponseDto, ResponseDataDto } from 'src/commons/dto/response.dto';
+import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { SubwayCustomCheckResDto, CustomListDto } from 'src/place/dto/subway.dto';
+import { CustomListDto } from 'src/place/dto/subway.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/place/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
-import {
-  CourseDetailResDto,
-  CoursePlaceDetailDto,
-  CoursePlaceDto,
-  CoursePlaceListResDto,
-  CourseRecommendReqDto,
-  CourseRecommendResDto,
-  MyCourseHistoryResDto,
-  SubwayCustomsCheckReqDto,
-} from './dto/course.dto';
+import { CoursePlaceDetailDto, CoursePlaceDto } from './dto/course.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { isNotEmpty } from 'src/commons/util/is/is-empty';
@@ -29,6 +20,14 @@ import { CommunityQueryRepository } from 'src/community/community.query.reposito
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { ReactionEntity } from 'src/entities/reaction.entity';
+import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
+import { ApiCourseSubwayCheckGetRequestQueryDto } from './dto/api-course-subway-check-get-request-query.dto';
+import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
+import { ApiCourseSubwayCheckGetResponseDto } from './dto/api-course-subway-check-get-response.dto';
+import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-history-get-request-query.dto';
+import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-get-response.dto';
+import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
+import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
 
 @Injectable()
 export class CourseService {
@@ -42,7 +41,7 @@ export class CourseService {
     private readonly reactionQueryRepository: ReactionQueryRepository,
   ) {}
 
-  async courseRecommend(user, dto: CourseRecommendReqDto) {
+  async courseRecommend(user, dto: ApiCourseRecommendPostRequestBodyDto) {
     let customs: string[] = dto.customs;
 
     const countCustoms = dto.customs.reduce((acc, type) => {
@@ -138,7 +137,7 @@ export class CourseService {
           // 가중치 평균을 측정해 상위 N개 추출
 
           function getRandomElements(topWeightPlaces, n) {
-            let tempArray = [...topWeightPlaces];
+            const tempArray = [...topWeightPlaces];
             const result = [];
 
             for (let i = 0; i < n && tempArray.length > 0; i++) {
@@ -204,7 +203,7 @@ export class CourseService {
       course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
     }
 
-    const courseRecommendResDto = new CourseRecommendResDto({
+    const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
       theme_cafe: dto.theme_cafe,
@@ -215,20 +214,20 @@ export class CourseService {
     });
 
     const courseEntity = new CourseEntity();
-    courseEntity.uuid = courseRecommendResDto.uuid;
+    courseEntity.uuid = apiCourseRecommendPostResponseDto.uuid;
     courseEntity.line = dto.line;
     courseEntity.subway = dto.subway;
     courseEntity.course_name = course_name;
     courseEntity.user_uuid = user.uuid;
     courseEntity.user_name = user.nickname;
-    courseEntity.count = courseRecommendResDto.count;
+    courseEntity.count = apiCourseRecommendPostResponseDto.count;
     courseEntity.customs = dto.customs.join(', ');
 
     await this.courseQueryRepository.saveCourse(courseEntity);
 
-    const courseDetailEntity = courseRecommendResDto.place.map((place) => {
+    const courseDetailEntity = apiCourseRecommendPostResponseDto.place.map((place) => {
       const courseDetail = new CourseDetailEntity();
-      courseDetail.course_uuid = courseRecommendResDto.uuid;
+      courseDetail.course_uuid = apiCourseRecommendPostResponseDto.uuid;
       courseDetail.sort = place.sort;
       courseDetail.place_uuid = place.uuid;
       courseDetail.place_name = place.place_name;
@@ -237,12 +236,11 @@ export class CourseService {
     });
 
     await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
-    // 트랜잭션 처리 필요
 
-    return courseRecommendResDto;
+    return apiCourseRecommendPostResponseDto;
   }
 
-  async courseRecommendNonLogin(dto: CourseRecommendReqDto) {
+  async courseRecommendNonLogin(dto: ApiCourseRecommendPostRequestBodyDto) {
     let customs: string[] = dto.customs;
 
     const countCustoms = dto.customs.reduce((acc, type) => {
@@ -267,7 +265,7 @@ export class CourseService {
         await this.placeQueryRepository.findSubwayCultureList(dto);
 
       function getRandomElements(topWeightPlaces, n) {
-        let tempArray = [...topWeightPlaces];
+        const tempArray = [...topWeightPlaces];
         const result = [];
 
         for (let i = 0; i < n && tempArray.length > 0; i++) {
@@ -310,7 +308,7 @@ export class CourseService {
         // 가중치 평균을 측정해 상위 N개 추출
 
         function getRandomElements(topWeightPlaces, n) {
-          let tempArray = [...topWeightPlaces];
+          const tempArray = [...topWeightPlaces];
           const result = [];
 
           for (let i = 0; i < n && tempArray.length > 0; i++) {
@@ -375,7 +373,7 @@ export class CourseService {
       course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
     }
 
-    const courseRecommendResDto = new CourseRecommendResDto({
+    const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
       theme_cafe: dto.theme_cafe,
@@ -385,13 +383,10 @@ export class CourseService {
       place: placeSorting,
     });
 
-    // 나중에 로그 가중치 삭감 반영
-    // 트랜잭션 처리 필요
-
-    return DetailResponseDto.from(courseRecommendResDto);
+    return DetailResponseDto.from(apiCourseRecommendPostResponseDto);
   }
 
-  async subwayCustomsCheck(dto: SubwayCustomsCheckReqDto) {
+  async subwayCustomsCheck(dto: ApiCourseSubwayCheckGetRequestQueryDto) {
     const subwayCustoms = await this.subwayQueryRepository.groupByCustoms(dto);
 
     function findCountByType(type, results) {
@@ -408,22 +403,26 @@ export class CourseService {
       놀거리: findCountByType('놀거리', subwayCustoms),
     });
 
-    return new SubwayCustomCheckResDto({ customs: [customsCheck] });
+    return new ApiCourseSubwayCheckGetResponseDto({ customs: [customsCheck] });
   }
 
-  async myCourseHistory(dto, user) {
+  async myCourseRecommandHistory(dto: ApiCourseMyHistoryGetRequestQueryDto, user) {
     const courseList = await this.courseQueryRepository.findMyCourse(dto, user);
     if (courseList.length === 0) {
-      return ResponseDataDto.from([], null, 0);
+      return { items: [] };
     }
 
     const userList = await this.userQueryRepository.findUserList(
       courseList.map((item) => item.user_uuid),
     );
 
-    const myHistoryListResDto = plainToInstance(MyCourseHistoryResDto, courseList, {
-      excludeExtraneousValues: true,
-    }).map((myHistory) => {
+    const apiCourseMyHistoryGetResponseDto = plainToInstance(
+      ApiCourseMyHistoryGetResponseDto,
+      courseList,
+      {
+        excludeExtraneousValues: true,
+      },
+    ).map((myHistory) => {
       myHistory.user_profile_image = userList.find(
         (user) => user.uuid === myHistory.user_uuid,
       ).profile_image;
@@ -432,7 +431,7 @@ export class CourseService {
 
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
-    return { items: myHistoryListResDto, last_item_id };
+    return { items: apiCourseMyHistoryGetResponseDto, last_item_id };
   }
 
   async courseDetail(uuid, user) {
@@ -452,7 +451,7 @@ export class CourseService {
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
-    const courseDetailResDto = new CourseDetailResDto({
+    const apiCourseDetailGetResponseDto = new ApiCourseDetailGetResponseDto({
       course_uuid: uuid,
       course_name: course.course_name,
       subway: course.subway,
@@ -475,7 +474,7 @@ export class CourseService {
       ),
     });
 
-    return courseDetailResDto;
+    return apiCourseDetailGetResponseDto;
   }
 
   async coursePlaceList(uuid) {
@@ -485,7 +484,7 @@ export class CourseService {
     }
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
-    const coursePlaceListResDto = new CoursePlaceListResDto({
+    const apiCoursePlaceListGetResponseDto = new ApiCoursePlaceListGetResponseDto({
       course_uuid: uuid,
       course_name: course.course_name,
       place: plainToInstance(
@@ -501,6 +500,6 @@ export class CourseService {
       ),
     });
 
-    return coursePlaceListResDto;
+    return apiCoursePlaceListGetResponseDto;
   }
 }

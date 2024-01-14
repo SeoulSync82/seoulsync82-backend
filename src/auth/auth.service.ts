@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from 'src/config/config.service';
 import { UserService } from 'src/user/user.service';
-import { GoogleLoginAuthOutputDto } from './dto/google-login-auth.dto';
-import { ValidateAuthInputDto, ValidateAuthOutputDto } from './dto/validate-auth.dto';
+import { ValidateAuthInputDto } from './dto/validate-auth.dto';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 // import { Provider } from 'src/entites/user.entity';
@@ -22,6 +21,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
+
   async validateUser(validateAuthInputDto: ValidateAuthInputDto) {
     try {
       const { email } = validateAuthInputDto;
