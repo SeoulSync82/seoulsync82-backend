@@ -3,18 +3,11 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  BadRequestException,
-  NotFoundException,
-  ForbiddenException,
-  ConflictException,
-  UnauthorizedException,
   Logger,
   InternalServerErrorException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import { ValidationError } from 'class-validator';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { Request, Response } from 'express';
 import { isNotEmpty } from '../util/is/is-empty';
 
 @Catch(Error)
@@ -41,71 +34,52 @@ export class SeoulSync82ExceptionFilter implements ExceptionFilter {
     }
   }
 
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<FastifyReply>();
-    const request = ctx.getRequest<FastifyRequest>();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
-    // 이미 응답이 전송되었는지 확인
-    if (response.sent) {
+    if (response.headersSent) {
       this.logger.warn('Response already sent.');
       return;
     }
 
-    switch (exception.constructor) {
-      case UnprocessableEntityException:
-        if (response.sent) return;
-        const res = exception.getResponse();
-        if (res instanceof ValidationError) {
-          response.status(exception.getStatus()).send({
-            status_code: exception.getStatus(),
-            status: Object.keys(res.constraints)
-              .map((key) => res.constraints[key])
-              .join('\n'),
-            timestamp: new Date().toISOString(),
-            path: request.url,
-          });
-        } else {
-          response.status(exception.getStatus()).send({
-            status_code: exception.getStatus(),
-            status: exception.message,
-            timestamp: new Date().toISOString(),
-            path: request.url,
-          });
-        }
-        break;
-      case BadRequestException:
-      case NotFoundException:
-      case ForbiddenException:
-      case ConflictException:
-      case UnauthorizedException:
-        if (response.sent) return;
-        response.status(exception.getStatus()).send({
-          status_code: exception.getStatus(),
-          status: exception.message,
-          timestamp: new Date().toISOString(),
-          path: request.url,
-        });
-        break;
-      case AxiosError:
-        if (response.sent) return;
-        const axiosError = this.axiosErrorHandler(exception as unknown as AxiosError);
-        response.status(new InternalServerErrorException().getStatus()).send({
-          status_code: axiosError.status,
-          status: axiosError.message,
-          timestamp: new Date().toISOString(),
-          path: request.url,
-        });
-        break;
-      default:
-        if (response.sent) return;
-        this.logger.error(`Error occurred: ${exception.message}`);
-        response.status(new InternalServerErrorException().getStatus()).send({
-          status_code: 500,
-          status: 'Internal Server Error',
-          timestamp: new Date().toISOString(),
-          path: request.url,
-        });
+    if (exception instanceof HttpException) {
+      const exceptionResponse = exception.getResponse();
+      const status = exception.getStatus();
+
+      let message = 'An error occurred'; // 기본 메시지 설정
+      if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        // 'message' 속성이 있는지 안전하게 확인
+        const responseObj = exceptionResponse as { message?: string };
+        message = responseObj.message || 'An error occurred';
+      } else if (typeof exceptionResponse === 'string') {
+        // exceptionResponse가 문자열인 경우
+        message = exceptionResponse;
+      }
+
+      response.status(status).json({
+        status_code: status,
+        status: message,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
+    } else if (exception instanceof AxiosError) {
+      const axiosError = this.axiosErrorHandler(exception);
+      response.status(axiosError.status).json({
+        status_code: axiosError.status,
+        status: axiosError.message,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
+    } else if (exception instanceof Error) {
+      this.logger.error(`Error occurred: ${exception.message}`);
+      response.status(new InternalServerErrorException().getStatus()).json({
+        status_code: 500,
+        status: 'Internal Server Error',
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
     }
   }
 }
