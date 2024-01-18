@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { ConfigService } from 'src/config/config.service';
 import { UserQueryRepository } from './user.query.repository';
 import * as jwt from 'jsonwebtoken';
+import { isEmpty } from 'class-validator';
+import { ERROR } from 'src/auth/constants/error';
+import { plainToInstance } from 'class-transformer';
+import { ApiUserProfileGetResponseDto } from './dto/api-user-profile-get-response.dto';
 
 @Injectable()
 export class UserService {
@@ -39,5 +43,23 @@ export class UserService {
       const updateUser = await this.userQueryRepository.updateUser(dto, user);
     }
     return DetailResponseDto.uuid(user.uuid);
+  }
+
+  async getProfile(user) {
+    if (isEmpty(user.uuid)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+    const userProfile = await this.userQueryRepository.findOne(user.uuid);
+    if (isEmpty(userProfile)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const apiUserProfileGetResponseDto = plainToInstance(
+      ApiUserProfileGetResponseDto,
+      userProfile,
+      { excludeExtraneousValues: true },
+    );
+
+    return apiUserProfileGetResponseDto;
   }
 }

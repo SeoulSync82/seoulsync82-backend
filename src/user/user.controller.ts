@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
   Put,
   UseFilters,
@@ -9,7 +10,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ERROR } from 'src/auth/constants/error';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
@@ -35,7 +38,7 @@ export class UserController {
   })
   @ApiSuccessResponse(DetailResponseDto, {
     description: '프로필 수정 성공',
-    status: 200,
+    status: HttpStatus.NO_CONTENT,
   })
   async profileUpdate(
     @Body(BadWordsPipe) dto: ApiUserUpdatePutRequestBodyDto,
@@ -64,5 +67,24 @@ export class UserController {
   })
   async getAccessToken(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.userService.getAccessToken(uuid);
+  }
+
+  @Get('/profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '유저 프로필 조회',
+    description: '유저 프로필 조회',
+  })
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '유저 프로필 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '유저 uuid가 없을 경우' || '해당 유저 정보가 없을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async getProfile(@CurrentUser() user) {
+    return await this.userService.getProfile(user);
   }
 }
