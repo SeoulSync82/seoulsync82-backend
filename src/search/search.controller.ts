@@ -93,7 +93,7 @@ export class SearchController {
   })
   @ApiSuccessResponse(ResponseDto, {
     description: '최근 검색어 목록 조회 성공',
-    status: HttpStatus.CREATED,
+    status: HttpStatus.OK,
   })
   async searchRecent(@CurrentUser() user): Promise<ResponseDataDto> {
     return await this.searchService.searchRecent(user);

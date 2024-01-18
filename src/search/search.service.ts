@@ -67,8 +67,8 @@ export class SearchService {
   }
 
   async searchPopular() {
-    const result = ['곱찹', '라멘', '감자탕', '돈까스', '스시'];
-    return { items: [] };
+    const result = ['마라탕', '더현대', '스시', '아쿠아리움', '감자탕'];
+    return { items: result };
   }
 
   async searchRecent(user) {

@@ -18,6 +18,7 @@ import { ApiNotificationListGetResponseDto } from './notification/dto/api-notifi
 import { ApiSearchGetResponseDto } from './search/dto/api-search-get-response.dto';
 import { ApiSearchDetailGetResponseDto } from './search/dto/api-search-detail-get-response.dto';
 import { ApiThemeListGetResponseDto } from './theme/dto/api-theme-list-get-response.dto';
+import { ApiUserProfileGetResponseDto } from './user/dto/api-user-profile-get-response.dto';
 
 export const SwaggerModels = [
   ApiPlaceCultureGetResponseDto,
@@ -40,4 +41,5 @@ export const SwaggerModels = [
   ApiCourseDetailGetResponseDto,
   ApiPlaceDetailGetResponseDto,
   ApiCoursePlaceListGetResponseDto,
+  ApiUserProfileGetResponseDto,
 ];

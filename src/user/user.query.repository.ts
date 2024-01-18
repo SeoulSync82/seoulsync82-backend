@@ -15,6 +15,10 @@ export class UserQueryRepository {
   }
 
   async createUser(user, uuid): Promise<UserEntity> {
+    if (user.type !== 'kakao') {
+      user.photo = null;
+    }
+
     return await this.repository.save({
       uuid: uuid,
       email: user.email,
