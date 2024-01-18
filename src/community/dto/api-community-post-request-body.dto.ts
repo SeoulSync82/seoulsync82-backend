@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString, Length, Matches, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Length, Max, Min } from 'class-validator';
 
 export class ApiCommunityPostRequestBodyDto {
   @IsNotEmpty()
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @Max(5)
-  @Matches(/^\d(\.\d)?$/)
   @ApiProperty({
     example: 4.0,
     description: '평점',
