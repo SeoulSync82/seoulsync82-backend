@@ -25,7 +25,7 @@ export class ApiPlaceExhibitionGetRequestQueryDto {
   @IsString()
   @IsIn(['latest', 'deadline'])
   @ApiProperty({
-    example: 'latest',
+    example: '"latest" or "deadline"',
     description: '정렬',
     required: false,
   })
