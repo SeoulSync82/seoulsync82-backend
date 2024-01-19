@@ -1,4 +1,6 @@
 import { NestFactory } from '@nestjs/core';
+import * as fs from 'fs';
+import * as https from 'https';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
@@ -9,7 +11,12 @@ import { ERROR } from './auth/constants/error';
 import { SwaggerModels } from './swagger';
 
 async function bootstrap() {
+  const httpsOptions = {
+    key: fs.readFileSync('/home/ubuntu/letsencrypt/privkey.pem'),
+    cert: fs.readFileSync('/home/ubuntu/letsencrypt/fullchain.pem'),
+  };
   const app = await NestFactory.create(AppModule, {
+    httpsOptions,
     logger:
       process.env.NODE_ENV === 'production'
         ? ['error', 'warn', 'log', 'debug']
