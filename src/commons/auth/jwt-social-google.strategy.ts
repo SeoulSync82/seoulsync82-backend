@@ -11,7 +11,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID: configService.get('GOOGLE_ID'), //.env파일에 들어있음
       clientSecret: configService.get('GOOGLE_SECRET'), //.env파일에 들어있음
       // callbackURL: 'http://localhost:3456/auth/google/callback', //.env파일에 들어있음
-      callbackURL: 'http://staging.seoulsync82.com:3456/auth/google/callback', //.env파일에 들어있음
+      callbackURL: 'https://staging.seoulsync82.com:3456/auth/google/callback', //.env파일에 들어있음
       scope: ['email', 'profile'],
     });
   }

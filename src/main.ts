@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import * as fs from 'fs';
-import * as https from 'https';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
@@ -48,7 +47,7 @@ async function bootstrap() {
   // CORS 설정 추가!
   app.use(
     cors({
-      origin: ['http://localhost:3457', 'http://staging.seoulsync82.com:3457'],
+      origin: ['http://localhost:3457', 'https://staging.seoulsync82.com:3457'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     }),

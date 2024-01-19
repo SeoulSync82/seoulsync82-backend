@@ -10,7 +10,7 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
       clientID: configService.get('NAVER_ID'), //.env파일에 들어있음
       clientSecret: configService.get('NAVER_SECRET'), //.env파일에 들어있음
       // callbackURL: 'http://localhost:3456/auth/naver/callback', //.env파일에 들어있음
-      callbackURL: 'http://staging.seoulsync82.com:3456/auth/naver/callback', //.env파일에 들어있음
+      callbackURL: 'https://staging.seoulsync82.com:3456/auth/naver/callback', //.env파일에 들어있음
     });
   }
 

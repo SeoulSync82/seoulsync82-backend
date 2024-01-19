@@ -107,7 +107,7 @@ export class AuthController {
       console.log(state);
       const frontendUrl =
         req.headers['x-forwarded-host'] === 'staging.seoulsync82.com'
-          ? 'http://staging.seoulsync82.com:3457/main'
+          ? 'https://staging.seoulsync82.com:3457/main'
           : 'http://localhost:3457/main';
       console.log(req.headers['x-forwarded-host']);
       console.log(frontendUrl);
@@ -134,7 +134,7 @@ export class AuthController {
     try {
       const result = await this.authService.kakaoLogin(req, res);
 
-      res.redirect(`http://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -158,7 +158,7 @@ export class AuthController {
     try {
       const result = await this.authService.naverLogin(req, res);
 
-      res.redirect(`http://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
