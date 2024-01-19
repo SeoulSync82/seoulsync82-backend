@@ -3,15 +3,7 @@ import { ApiCourseRecommendPostRequestBodyDto } from 'src/course/dto/api-course-
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
-import {
-  LessThan,
-  MoreThan,
-  Repository,
-  Like,
-  In,
-  FindOptionsWhere,
-  FindOptionsOrder,
-} from 'typeorm';
+import { LessThan, MoreThan, Repository, Like, In } from 'typeorm';
 import { ApiPlaceCultureGetRequestQueryDto } from './dto/api-place-culture-get-request-query.dto';
 import { ApiPlaceExhibitionGetRequestQueryDto } from './dto/api-place-exhibition-get-request-query.dto';
 import { ApiPlacePopupGetRequestQueryDto } from './dto/api-place-popup-get-request-query.dto';
@@ -68,20 +60,20 @@ export class PlaceQueryRepository {
 
   async findPopupList(dto: ApiPlacePopupGetRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
-    const whereConditions: FindOptionsWhere<PlaceEntity> = {
+    const whereConditions = {
       place_type: '팝업',
       end_date: MoreThan(now),
     };
-    const orderType: FindOptionsOrder<PlaceEntity> = {};
+    let orderType = {};
 
     if (dto.last_id > 0) {
-      whereConditions.id = LessThan(dto.last_id);
+      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
     }
 
     if (dto.order === 'latest') {
-      orderType.start_date = 'DESC';
+      orderType = { start_date: 'DESC' };
     } else if (dto.order === 'deadline') {
-      orderType.end_date = 'ASC';
+      orderType = { end_date: 'ASC' };
     }
 
     return await this.repository.find({
