@@ -1,11 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
 import { IsOptional, IsInt, IsNotEmpty, Min, Max, IsString, IsIn } from 'class-validator';
 
 export class ApiPlacePopupGetRequestQueryDto {
   @IsOptional()
   @IsInt()
-  @Expose()
   @ApiProperty({
     example: 0,
     description: '가장 마지막으로 본 팝업 아이디',
@@ -20,15 +18,14 @@ export class ApiPlacePopupGetRequestQueryDto {
   @ApiProperty({
     example: 10,
     description: '한 번에 보여질 팝업 수',
-    required: false,
   })
-  size?: number;
+  size: number;
 
   @IsNotEmpty()
   @IsString()
   @IsIn(['latest', 'deadline'])
   @ApiProperty({
-    example: 'latest',
+    example: '"latest" or "deadline"',
     description: '정렬',
     required: false,
   })
