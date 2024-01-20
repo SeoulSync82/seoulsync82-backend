@@ -33,11 +33,7 @@ export class AuthService {
     }
   }
 
-  async googleLogin(
-    req: GoogleRequest,
-    res: Response,
-    // googleLoginAuthInputDto, // : Promise<GoogleLoginAuthOutputDto>
-  ) {
+  async googleLogin(req: GoogleRequest, res: Response) {
     try {
       req.user.nickname = req.user.firstName + req.user.lastName;
       const { user } = req;
@@ -45,17 +41,13 @@ export class AuthService {
       delete user.firstName;
       user.type = 'google';
 
-      // 유저 중복 검사
       let findUser = await this.userQueryRepository.findUser(user);
 
-      // 없는 유저면 DB에 유저정보 저장
       if (!findUser) {
         const uuid = generateUUID();
         findUser = await this.userQueryRepository.createUser(user, uuid);
       }
-      console.log(findUser);
 
-      // 구글 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
         id: findUser.id,
         uuid: findUser.uuid,
@@ -69,10 +61,7 @@ export class AuthService {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
       });
-      console.log('eid_access_token', eid_access_token);
-      console.log('eid_refresh_token', eid_refresh_token);
 
-      /* refreshToken 필드 업데이트 */
       findUser.eid_refresh_token = eid_refresh_token;
       await this.userQueryRepository.save(findUser);
 
@@ -82,13 +71,7 @@ export class AuthService {
         now.getDate() +
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
-      console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
-      // res.cookie('eid_refresh_token', eid_refresh_token, {
-      //   expires: now,
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production' ? true : false,
-      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      // });
+
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
@@ -111,20 +94,12 @@ export class AuthService {
       const { user } = req;
       user.type = 'kakao';
 
-      // 유저 중복 검사
       let findUser = await this.userQueryRepository.findUser(user);
 
-      // 없는 유저면 DB에 유저정보 저장
       if (!findUser) {
         const uuid = generateUUID();
         findUser = await this.userQueryRepository.createUser(user, uuid);
       }
-      console.log(findUser);
-      // if (findUser && findUser.provider !== Provider.Google) {
-      //   return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
-      // }
-
-      // 카카오 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
         id: findUser.id,
         uuid: findUser.uuid,
@@ -138,10 +113,7 @@ export class AuthService {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
       });
-      console.log('eid_access_token', eid_access_token);
-      console.log('eid_refresh_token', eid_refresh_token);
 
-      /* refreshToken 필드 업데이트 */
       findUser.eid_refresh_token = eid_refresh_token;
       await this.userQueryRepository.save(findUser);
 
@@ -151,14 +123,13 @@ export class AuthService {
         now.getDate() +
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
-      console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'none',
       });
-      //  sameSite: 'none' 은 secure : true 일때 정상작동
+
       return {
         ok: true,
         eid_access_token,
@@ -174,20 +145,13 @@ export class AuthService {
       const { user } = req;
       user.type = 'naver';
 
-      // 유저 중복 검사
       let findUser = await this.userQueryRepository.findUser(user);
 
-      // 없는 유저면 DB에 유저정보 저장
       if (!findUser) {
         const uuid = generateUUID();
         findUser = await this.userQueryRepository.createUser(user, uuid);
       }
-      console.log(findUser);
-      // if (findUser && findUser.provider !== Provider.Google) {
-      //   return { ok: false, error: '현재 계정으로 가입한 이메일이 존재합니다.' };
-      // }
 
-      // 네이버 가입이 되어 있는 경우 accessToken 및 refreshToken 발급
       const findUserPayload = {
         id: findUser.id,
         uuid: findUser.uuid,
@@ -201,10 +165,7 @@ export class AuthService {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
       });
-      console.log('eid_access_token', eid_access_token);
-      console.log('eid_refresh_token', eid_refresh_token);
 
-      /* refreshToken 필드 업데이트 */
       findUser.eid_refresh_token = eid_refresh_token;
       await this.userQueryRepository.save(findUser);
 
@@ -214,13 +175,7 @@ export class AuthService {
         now.getDate() +
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
-      console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
-      // res.cookie('eid_refresh_token', eid_refresh_token, {
-      //   expires: now,
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === 'production' ? true : false,
-      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      // });
+
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
@@ -238,11 +193,7 @@ export class AuthService {
 
   async silentRefresh(req: Request, res: Response): Promise<SilentRefreshAuthOutputDto> {
     try {
-      // refreshToken 유효성 검사
       const getRefreshToken = req.cookies['eid_refresh_token'];
-      console.log(req);
-      console.log('req.cookies', req.cookies);
-      console.log('getRefreshToken', getRefreshToken);
       if (isEmpty(getRefreshToken)) {
         return { ok: false };
       }
@@ -265,7 +216,6 @@ export class AuthService {
         return { ok: false, error: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
       }
 
-      // accessToken 재발급
       const payload = {
         id: loginUser.id,
         uuid: loginUser.uuid,
@@ -281,7 +231,6 @@ export class AuthService {
         eid_access_token,
       };
     } catch (error) {
-      console.log(error);
       return { ok: false, error: '로그인 연장에 실패하였습니다.' };
     }
   }
@@ -296,7 +245,6 @@ export class AuthService {
       res.clearCookie('refreshToken');
       return { ok: true };
     } catch (error) {
-      console.log(error);
       return { ok: false, error: '로그아웃을 실패하였습니다' };
     }
   }
