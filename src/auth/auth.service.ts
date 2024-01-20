@@ -215,11 +215,17 @@ export class AuthService {
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
       console.log(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE'));
+      // res.cookie('eid_refresh_token', eid_refresh_token, {
+      //   expires: now,
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production' ? true : false,
+      //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      // });
       res.cookie('eid_refresh_token', eid_refresh_token, {
         expires: now,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' ? true : false,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true,
+        sameSite: 'none',
       });
       return {
         ok: true,

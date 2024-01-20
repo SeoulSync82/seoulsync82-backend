@@ -10,17 +10,16 @@ import { ERROR } from './auth/constants/error';
 import { SwaggerModels } from './swagger';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('/home/ubuntu/letsencrypt/privkey.pem'),
-    cert: fs.readFileSync('/home/ubuntu/letsencrypt/fullchain.pem'),
-  };
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
-    logger:
-      process.env.NODE_ENV === 'production'
-        ? ['error', 'warn', 'log', 'debug']
-        : ['error', 'warn', 'log', 'verbose', 'debug'],
-  });
+  let appOptions = {};
+  if (process.env.NODE_ENV !== 'debug') {
+    appOptions = {
+      httpsOptions: {
+        key: fs.readFileSync('/home/ubuntu/letsencrypt/privkey.pem'),
+        cert: fs.readFileSync('/home/ubuntu/letsencrypt/fullchain.pem'),
+      },
+    };
+  }
+  const app = await NestFactory.create(AppModule, appOptions);
 
   app.useGlobalPipes(
     new ValidationPipe({
