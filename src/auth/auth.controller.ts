@@ -33,50 +33,38 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
   ) {}
-  //-----------------------구글 로그인-----------------------------//
+
   @Get('/user/login/google')
   @ApiOperation({
     summary: '구글 로그인',
     description: '구글 로그인',
   })
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() _req: Request, @Query('state') state: string) {
-    console.log('State:', state);
-    console.log('URL:', _req.url);
-    console.log('Headers:', _req.headers);
-    console.log('Query Parameters:', _req.query);
-    passport.authenticate('google', { state })(_req);
-  }
+  async googleAuth(@Req() _req: Request) {}
 
-  /* Get Google Auth Callback */
   @Get('/auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthCallback(
-    @Req() req: GoogleRequest,
-    @Res() res: Response,
-    @Query('state') state: string,
-  ) {
+  async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
-      // 여기서 꺼내쓰는법
       const result = await this.authService.googleLogin(req, res);
-      console.log(req.headers);
-      console.log('왜안되냐이거');
-      console.log(req.headers['host']);
-      console.log(req.headers['x-forwarded-host']);
-      console.log(state);
-      const frontendUrl =
-        req.headers['x-forwarded-host'] === 'staging.seoulsync82.com'
-          ? 'https://staging.seoulsync82.com:3457/main'
-          : 'http://localhost:3457/main';
-      console.log(req.headers['x-forwarded-host']);
-      console.log(frontendUrl);
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
     }
   }
-  //-----------------------카카오 로그인-----------------------------//
+
+  @Get('/auth/google/dev/callback')
+  @UseGuards(AuthGuard('google-dev'))
+  async googleDevAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
+    try {
+      const result = await this.authService.googleLogin(req, res);
+      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
+    } catch (error) {
+      console.error('Error parsing state:', error);
+      res.redirect('/error');
+    }
+  }
 
   @Get('/user/login/kakao')
   @ApiOperation({
@@ -86,37 +74,11 @@ export class AuthController {
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuth(@Req() _req: Request) {}
 
-  /* Get kakao Auth Callback */
   @Get('/auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
-
-      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
-    } catch (error) {
-      console.error('Error parsing state:', error);
-      res.redirect('/error');
-    }
-  }
-
-  //-----------------------네이버 로그인-----------------------------//
-
-  @Get('/user/login/naver')
-  @ApiOperation({
-    summary: '네이버 로그인',
-    description: '네이버 로그인',
-  })
-  @UseGuards(AuthGuard('naver'))
-  async naverAuth(@Req() _req: Request) {}
-
-  /* Get naver Auth Callback */
-  @Get('/auth/naver/callback')
-  @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
-    try {
-      const result = await this.authService.naverLogin(req, res);
-
       res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
@@ -124,7 +86,49 @@ export class AuthController {
     }
   }
 
-  //--------------------------------------------------------------//
+  @Get('/auth/kakao/dev/callback')
+  @UseGuards(AuthGuard('kakao-dev'))
+  async kakaoDevAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
+    try {
+      const result = await this.authService.kakaoLogin(req, res);
+      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
+    } catch (error) {
+      console.error('Error parsing state:', error);
+      res.redirect('/error');
+    }
+  }
+
+  @Get('/user/login/naver')
+  @UseGuards(AuthGuard('naver'))
+  @ApiOperation({
+    summary: '네이버 로그인',
+    description: '네이버 로그인',
+  })
+  async naverAuth(@Req() _req: Request) {}
+
+  @Get('/auth/naver/callback')
+  @UseGuards(AuthGuard('naver'))
+  async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
+    try {
+      const result = await this.authService.naverLogin(req, res);
+      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+    } catch (error) {
+      console.error('Error parsing state:', error);
+      res.redirect('/error');
+    }
+  }
+
+  @Get('/auth/naver/dev/callback')
+  @UseGuards(AuthGuard('naver-dev'))
+  async naverDevAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
+    try {
+      const result = await this.authService.naverLogin(req, res);
+      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
+    } catch (error) {
+      console.error('Error parsing state:', error);
+      res.redirect('/error');
+    }
+  }
 
   @Post('/user/refresh')
   @ApiOperation({

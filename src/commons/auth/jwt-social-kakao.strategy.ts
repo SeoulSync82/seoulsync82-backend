@@ -2,17 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-kakao';
 import { ConfigService } from 'src/config/config.service';
+import { isNotEmpty } from '../util/is/is-empty';
 
 @Injectable()
 export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private readonly configService: ConfigService) {
     super({
-      clientID: configService.get('KAKAO_ID'), //.env파일에 들어있음
-      clientSecret: configService.get('KAKAO_SECRET'), //.env파일에 들어있음
-      // callbackURL: 'http://localhost:3456/auth/kakao/callback', //.env파일에 들어있음
+      clientID: configService.get('KAKAO_ID'),
+      clientSecret: configService.get('KAKAO_SECRET'),
       callbackURL: 'https://staging.seoulsync82.com:3456/auth/kakao/callback', //.env파일에 들어있음
       // scope: ["account_email", "profile_nickname"],
     });
+  }
+
+  authenticate(req, options) {
+    const env = req.headers.referer === 'http://localhost:3457/';
+    let callbackURL;
+    if (isNotEmpty(req.headers.referer) && env === true) {
+      callbackURL = this.configService.get('KAKAO_DEV_CALLBACK');
+    } else {
+      callbackURL = this.configService.get('KAKAO_CALLBACK');
+    }
+
+    super.authenticate(req, { ...options, callbackURL });
   }
 
   async validate(

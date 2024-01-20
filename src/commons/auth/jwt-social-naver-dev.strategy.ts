@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-naver';
 import { ConfigService } from 'src/config/config.service';
-import { isNotEmpty } from '../util/is/is-empty';
 
 @Injectable()
-export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
+export class JwtNaverDevStrategy extends PassportStrategy(Strategy, 'naver-dev') {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('NAVER_ID'),
@@ -14,14 +13,7 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
   }
 
   authenticate(req, options) {
-    const env = req.headers.referer === 'http://localhost:3457/';
-    let callbackURL;
-    if (isNotEmpty(req.headers.referer) && env === true) {
-      callbackURL = this.configService.get('NAVER_DEV_CALLBACK');
-    } else {
-      callbackURL = this.configService.get('NAVER_CALLBACK');
-    }
-
+    let callbackURL = this.configService.get('NAVER_DEV_CALLBACK');
     super.authenticate(req, { ...options, callbackURL });
   }
 
@@ -32,6 +24,7 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
     done: (error: any, user?: any, info?: any) => void,
   ) {
     try {
+      console.log('naver-success');
       console.log(profile);
       const { _json } = profile;
       const user = {

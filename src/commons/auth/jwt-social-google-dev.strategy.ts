@@ -2,27 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigService } from 'src/config/config.service';
-import { isNotEmpty } from '../util/is/is-empty';
 
 @Injectable()
-export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
+export class JwtGoogleDevStrategy extends PassportStrategy(Strategy, 'google-dev') {
   constructor(private readonly configService: ConfigService) {
     super({
-      clientID: configService.get('GOOGLE_ID'),
-      clientSecret: configService.get('GOOGLE_SECRET'),
+      clientID: configService.get('GOOGLE_ID'), //.env파일에 들어있음
+      clientSecret: configService.get('GOOGLE_SECRET'), //.env파일에 들어있음
       scope: ['email', 'profile'],
     });
   }
 
   authenticate(req, options) {
-    const env = req.headers.referer === 'http://localhost:3457/';
-    let callbackURL;
-    if (isNotEmpty(req.headers.referer) && env === true) {
-      callbackURL = this.configService.get('GOOGLE_DEV_CALLBACK');
-    } else {
-      callbackURL = this.configService.get('GOOGLE_CALLBACK');
-    }
-
+    let callbackURL = this.configService.get('GOOGLE_DEV_CALLBACK');
     super.authenticate(req, { ...options, callbackURL });
   }
 
@@ -32,6 +24,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: Profile,
     done: VerifyCallback,
   ) {
+    console.log('google-success');
     console.log(profile);
     try {
       const { name, emails, photos } = profile;
