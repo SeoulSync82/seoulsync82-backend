@@ -1,14 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsInt, Min, Max, Matches, IsString, Length } from 'class-validator';
+import { IsNotEmpty, Min, Max, IsString, Length, IsNumber } from 'class-validator';
 
 export class ApiCommunityPutRequestBodyDto {
   @IsNotEmpty()
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @Max(5)
-  @Matches(/^\d(\.\d)?$/)
   @ApiProperty({
-    example: '4.0',
+    example: 4.0,
     description: '평점',
   })
   score: number;

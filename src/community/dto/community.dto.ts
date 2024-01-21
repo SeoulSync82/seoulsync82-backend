@@ -4,7 +4,7 @@ import { Expose, Transform } from 'class-transformer';
 export class CommunityPostReqDto {
   @Expose()
   @ApiProperty({
-    example: '4.0',
+    example: 4.0,
     description: '평점',
   })
   score: number;
@@ -20,7 +20,7 @@ export class CommunityPostReqDto {
 export class CommunityPutReqDto {
   @Expose()
   @ApiProperty({
-    example: '4.0',
+    example: 4.0,
     description: '평점',
   })
   score: number;
@@ -142,7 +142,7 @@ export class CommunityListResDto {
 
   @Expose()
   @ApiProperty({
-    example: '4.0',
+    example: 4.0,
     description: '평점',
   })
   score: number;

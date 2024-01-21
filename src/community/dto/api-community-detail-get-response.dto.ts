@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { CoursePlaceDto, CommunityDetailResDto } from './community.dto';
+import { CoursePlaceDto } from './community.dto';
 
 export class ApiCommunityDetailGetResponseDto {
   @Expose()
@@ -71,6 +71,13 @@ export class ApiCommunityDetailGetResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: 4.0,
+    description: '평점',
+  })
+  score: number;
+
+  @Expose()
+  @ApiProperty({
     example: true,
     description: '구독여부',
   })
@@ -115,7 +122,7 @@ export class ApiCommunityDetailGetResponseDto {
   @ApiProperty()
   place: CoursePlaceDto[];
 
-  constructor(data?: Partial<CommunityDetailResDto>) {
+  constructor(data?: Partial<ApiCommunityDetailGetResponseDto>) {
     if (data) {
       Object.assign(this, data);
     }

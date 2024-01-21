@@ -158,6 +158,7 @@ export class CommunityService {
       user_name: communityUser.name,
       user_profile_image: communityUser.profile_image,
       review: community.review,
+      score: community.score,
       isBookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
       course_name: community.course_name,
       course_image: course.course_image,

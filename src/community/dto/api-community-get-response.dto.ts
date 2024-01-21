@@ -84,7 +84,7 @@ export class ApiCommunityGetResponseDto {
 
   @Expose()
   @ApiProperty({
-    example: '4.0',
+    example: 4.0,
     description: '평점',
   })
   score: number;
