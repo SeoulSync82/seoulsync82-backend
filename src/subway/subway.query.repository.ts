@@ -39,7 +39,7 @@ export class SubwayQueryRepository {
 
   async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
     return await this.subwayStationRepository.find({
-      where: { line: dto.line },
+      where: { line_uuid: dto.line_uuid },
       order: { id: 'ASC' },
     });
   }

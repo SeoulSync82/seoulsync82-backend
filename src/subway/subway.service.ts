@@ -42,11 +42,11 @@ export class SubwayService {
 
     const apiSubwayListGetResponseDto = plainToInstance(
       ApiSubwayListGetResponseDto,
-      subwayStationList.map((item) => item.name),
+      subwayStationList,
       { excludeExtraneousValues: true },
     );
 
-    return { name: apiSubwayListGetResponseDto };
+    return { items: apiSubwayListGetResponseDto };
   }
 
   async subwayLineList() {

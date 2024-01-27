@@ -10,9 +10,11 @@ import { CourseService } from './course.service';
 import { UserModule } from 'src/user/user.module';
 import { BookmarkModule } from 'src/bookmark/bookmark.module';
 import { CommunityModule } from 'src/community/community.module';
+import { SubwayModule } from 'src/subway/subway.module';
 
 @Module({
   imports: [
+    SubwayModule,
     forwardRef(() => BookmarkModule),
     forwardRef(() => CommunityModule),
     UserModule,

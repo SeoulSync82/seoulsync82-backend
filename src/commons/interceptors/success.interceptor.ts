@@ -14,7 +14,7 @@ export class SuccessInterceptor implements NestInterceptor {
       map((data) => ({
         status_code: 200,
         status: 'SUCCESS',
-        data: { ...data, mockup: data.mockup ? data.mockup : false },
+        data: { ...data },
       })), // 여기서 data는 컨트롤러를 거친 후 응답(response)에 대한 data
     );
   }

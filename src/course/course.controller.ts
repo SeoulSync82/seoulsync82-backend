@@ -27,10 +27,10 @@ import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-ge
 import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
 import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
 import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
-import { ApiCourseSubwayCheckGetRequestQueryDto } from '../subway/dto/api-course-subway-check-get-request-query.dto';
-import { ApiCourseSubwayCheckGetResponseDto } from '../subway/dto/api-course-subway-check-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from '../subway/dto/api-course-subway-list-get-request-query.dto';
-import { ApiCourseSubwayListGetResponseDto } from '../subway/dto/api-course-subway-list-get-response.dto';
+import { ApiSubwayCheckGetRequestQueryDto } from '../subway/dto/api-subway-check-get-request-query.dto';
+import { ApiSubwayCheckGetResponseDto } from '../subway/dto/api-subway-check-get-response.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from '../subway/dto/api-subway-list-get-request-query.dto';
+import { ApiSubwayListGetResponseDto } from '../subway/dto/api-subway-list-get-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
