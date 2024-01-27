@@ -15,7 +15,7 @@ import { CourseQueryRepository } from './course.query.repository';
 import { CoursePlaceDetailDto, CoursePlaceDto } from './dto/course.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
-import { isNotEmpty } from 'src/commons/util/is/is-empty';
+import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
@@ -28,6 +28,8 @@ import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-histor
 import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-get-response.dto';
 import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
 import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from './dto/api-course-subway-list-get-request-query.dto';
+import { ApiCourseSubwayListGetResponseDto } from './dto/api-course-subway-list-get-response.dto';
 
 @Injectable()
 export class CourseService {
@@ -404,6 +406,21 @@ export class CourseService {
     });
 
     return new ApiCourseSubwayCheckGetResponseDto({ customs: [customsCheck] });
+  }
+
+  async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
+    const subwayStationList = await this.subwayQueryRepository.subwayStationList(dto);
+    if (isEmpty(subwayStationList)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const apiCourseSubwayListGetResponseDto = plainToInstance(
+      ApiCourseSubwayListGetResponseDto,
+      subwayStationList.map((item) => item.name),
+      { excludeExtraneousValues: true },
+    );
+
+    return { name: apiCourseSubwayListGetResponseDto };
   }
 
   async myCourseRecommandHistory(dto: ApiCourseMyHistoryGetRequestQueryDto, user) {

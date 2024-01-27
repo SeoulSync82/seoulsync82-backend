@@ -29,6 +29,8 @@ import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend
 import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
 import { ApiCourseSubwayCheckGetRequestQueryDto } from './dto/api-course-subway-check-get-request-query.dto';
 import { ApiCourseSubwayCheckGetResponseDto } from './dto/api-course-subway-check-get-response.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from './dto/api-course-subway-list-get-request-query.dto';
+import { ApiCourseSubwayListGetResponseDto } from './dto/api-course-subway-list-get-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -74,6 +76,23 @@ export class CourseController {
   })
   async courseRecommendNonLogin(@Query() dto: ApiCourseRecommendPostRequestBodyDto) {
     return await this.courseService.courseRecommendNonLogin(dto);
+  }
+
+  @Get('/subway')
+  @ApiOperation({
+    summary: '지하철 역 리스트 조회',
+    description: '지하철 역 리스트 조회',
+  })
+  @ApiSuccessResponse(ApiCourseSubwayListGetResponseDto, {
+    description: '지하철 역 리스트 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '조회한 지하철역 호선이 없는 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async subwayStationList(@Query() dto: ApiCourseSubwayListGetRequestQueryDto) {
+    return await this.courseService.subwayStationList(dto);
   }
 
   @Get('/subway/customs-check')
