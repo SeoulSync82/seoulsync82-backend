@@ -19,7 +19,7 @@ import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { SubwayQueryRepository } from 'src/place/subway.query.repository';
+import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { CourseService } from './course.service';
 import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
 import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-history-get-request-query.dto';
@@ -27,20 +27,17 @@ import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-ge
 import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
 import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
 import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
-import { ApiCourseSubwayCheckGetRequestQueryDto } from './dto/api-course-subway-check-get-request-query.dto';
-import { ApiCourseSubwayCheckGetResponseDto } from './dto/api-course-subway-check-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from './dto/api-course-subway-list-get-request-query.dto';
-import { ApiCourseSubwayListGetResponseDto } from './dto/api-course-subway-list-get-response.dto';
+import { ApiCourseSubwayCheckGetRequestQueryDto } from '../subway/dto/api-course-subway-check-get-request-query.dto';
+import { ApiCourseSubwayCheckGetResponseDto } from '../subway/dto/api-course-subway-check-get-response.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from '../subway/dto/api-course-subway-list-get-request-query.dto';
+import { ApiCourseSubwayListGetResponseDto } from '../subway/dto/api-course-subway-list-get-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
 @UseFilters(SeoulSync82ExceptionFilter)
 @UseInterceptors(SuccessInterceptor)
 export class CourseController {
-  constructor(
-    private readonly courseService: CourseService,
-    private readonly subwayQueryRepository: SubwayQueryRepository,
-  ) {}
+  constructor(private readonly courseService: CourseService) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
@@ -76,36 +73,6 @@ export class CourseController {
   })
   async courseRecommendNonLogin(@Query() dto: ApiCourseRecommendPostRequestBodyDto) {
     return await this.courseService.courseRecommendNonLogin(dto);
-  }
-
-  @Get('/subway')
-  @ApiOperation({
-    summary: '지하철 역 리스트 조회',
-    description: '지하철 역 리스트 조회',
-  })
-  @ApiSuccessResponse(ApiCourseSubwayListGetResponseDto, {
-    description: '지하철 역 리스트 조회 성공',
-    status: HttpStatus.OK,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '조회한 지하철역 호선이 없는 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  async subwayStationList(@Query() dto: ApiCourseSubwayListGetRequestQueryDto) {
-    return await this.courseService.subwayStationList(dto);
-  }
-
-  @Get('/subway/customs-check')
-  @ApiOperation({
-    summary: '지하철 역 커스텀 체크',
-    description: '지하철 역 커스텀 체크',
-  })
-  @ApiSuccessResponse(ApiCourseSubwayCheckGetResponseDto, {
-    description: '지하철 역 커스텀 체크 성공',
-    status: HttpStatus.OK,
-  })
-  async subwayCustomsCheck(@Query() dto: ApiCourseSubwayCheckGetRequestQueryDto) {
-    return await this.courseService.subwayCustomsCheck(dto);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -5,7 +5,7 @@ import { ApiPlaceExhibitionGetResponseDto } from './place/dto/api-place-exhibiti
 import { ApiPlacePopupGetResponseDto } from './place/dto/api-place-popup-get-response.dto';
 import { ApiPlaceDetailGetResponseDto } from './place/dto/api-place-detail-get-response.dto';
 import { ApiCourseRecommendPostResponseDto } from './course/dto/api-course-recommend-post-response.dto';
-import { ApiCourseSubwayCheckGetResponseDto } from './course/dto/api-course-subway-check-get-response.dto';
+import { ApiCourseSubwayCheckGetResponseDto } from './subway/dto/api-course-subway-check-get-response.dto';
 import { ApiCourseMyHistoryGetResponseDto } from './course/dto/api-course-my-history-get-response.dto';
 import { ApiCourseDetailGetResponseDto } from './course/dto/api-course-detail-get-response.dto';
 import { ApiCoursePlaceListGetResponseDto } from './course/dto/api-course-place-list-get-response.dto';
@@ -19,7 +19,7 @@ import { ApiSearchGetResponseDto } from './search/dto/api-search-get-response.dt
 import { ApiSearchDetailGetResponseDto } from './search/dto/api-search-detail-get-response.dto';
 import { ApiThemeListGetResponseDto } from './theme/dto/api-theme-list-get-response.dto';
 import { ApiUserProfileGetResponseDto } from './user/dto/api-user-profile-get-response.dto';
-import { ApiCourseSubwayListGetResponseDto } from './course/dto/api-course-subway-list-get-response.dto';
+import { ApiCourseSubwayListGetResponseDto } from './subway/dto/api-course-subway-list-get-response.dto';
 
 export const SwaggerModels = [
   ApiPlaceCultureGetResponseDto,

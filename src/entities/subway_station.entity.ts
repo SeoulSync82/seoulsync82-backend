@@ -10,4 +10,7 @@ export class SubwayStationEntity {
 
   @Column()
   line: string;
+
+  @Column()
+  line_uuid: string;
 }

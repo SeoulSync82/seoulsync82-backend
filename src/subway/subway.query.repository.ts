@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { assertCompositeType } from 'graphql';
-import { ApiCourseSubwayCheckGetRequestQueryDto } from 'src/course/dto/api-course-subway-check-get-request-query.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from 'src/course/dto/api-course-subway-list-get-request-query.dto';
+import { ApiCourseSubwayCheckGetRequestQueryDto } from 'src/subway/dto/api-course-subway-check-get-request-query.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from 'src/subway/dto/api-course-subway-list-get-request-query.dto';
 import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { SubwayStationEntity } from 'src/entities/subway_station.entity';

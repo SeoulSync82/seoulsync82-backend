@@ -6,7 +6,7 @@ import { SubwayStationEntity } from 'src/entities/subway_station.entity';
 import { PlaceController } from './place.controller';
 import { PlaceQueryRepository } from './place.query.repository';
 import { PlaceService } from './place.service';
-import { SubwayQueryRepository } from './subway.query.repository';
+import { SubwayQueryRepository } from '../subway/subway.query.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PlaceEntity, SubwayEntity, SubwayStationEntity])],

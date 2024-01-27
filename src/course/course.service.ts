@@ -10,7 +10,7 @@ import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { CustomListDto } from 'src/place/dto/subway.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { SubwayQueryRepository } from 'src/place/subway.query.repository';
+import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
 import { CoursePlaceDetailDto, CoursePlaceDto } from './dto/course.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
@@ -21,15 +21,15 @@ import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { ReactionEntity } from 'src/entities/reaction.entity';
 import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
-import { ApiCourseSubwayCheckGetRequestQueryDto } from './dto/api-course-subway-check-get-request-query.dto';
+import { ApiCourseSubwayCheckGetRequestQueryDto } from '../subway/dto/api-course-subway-check-get-request-query.dto';
 import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
-import { ApiCourseSubwayCheckGetResponseDto } from './dto/api-course-subway-check-get-response.dto';
+import { ApiCourseSubwayCheckGetResponseDto } from '../subway/dto/api-course-subway-check-get-response.dto';
 import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-history-get-request-query.dto';
 import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-get-response.dto';
 import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
 import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from './dto/api-course-subway-list-get-request-query.dto';
-import { ApiCourseSubwayListGetResponseDto } from './dto/api-course-subway-list-get-response.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from '../subway/dto/api-course-subway-list-get-request-query.dto';
+import { ApiCourseSubwayListGetResponseDto } from '../subway/dto/api-course-subway-list-get-response.dto';
 
 @Injectable()
 export class CourseService {
@@ -386,41 +386,6 @@ export class CourseService {
     });
 
     return DetailResponseDto.from(apiCourseRecommendPostResponseDto);
-  }
-
-  async subwayCustomsCheck(dto: ApiCourseSubwayCheckGetRequestQueryDto) {
-    const subwayCustoms = await this.subwayQueryRepository.groupByCustoms(dto);
-
-    function findCountByType(type, results) {
-      const item = results.find((item) => item.type === type);
-      return item ? parseInt(item.count, 10) : 0;
-    }
-
-    const customsCheck = new CustomListDto({
-      음식점: findCountByType('음식점', subwayCustoms),
-      카페: findCountByType('카페', subwayCustoms),
-      술집: findCountByType('술집', subwayCustoms),
-      쇼핑: findCountByType('쇼핑', subwayCustoms),
-      문화: findCountByType('전시', subwayCustoms) + findCountByType('팝업', subwayCustoms),
-      놀거리: findCountByType('놀거리', subwayCustoms),
-    });
-
-    return new ApiCourseSubwayCheckGetResponseDto({ customs: [customsCheck] });
-  }
-
-  async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
-    const subwayStationList = await this.subwayQueryRepository.subwayStationList(dto);
-    if (isEmpty(subwayStationList)) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-
-    const apiCourseSubwayListGetResponseDto = plainToInstance(
-      ApiCourseSubwayListGetResponseDto,
-      subwayStationList.map((item) => item.name),
-      { excludeExtraneousValues: true },
-    );
-
-    return { name: apiCourseSubwayListGetResponseDto };
   }
 
   async myCourseRecommandHistory(dto: ApiCourseMyHistoryGetRequestQueryDto, user) {

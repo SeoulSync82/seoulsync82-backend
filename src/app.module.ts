@@ -16,6 +16,7 @@ import { SearchModule } from './search/search.module';
 import { ThemeModule } from './theme/theme.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { CommunityModule } from './community/community.module';
+import { SubwayModule } from './subway/subway.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { CommunityModule } from './community/community.module';
     ThemeModule,
     BookmarkModule,
     CommunityModule,
+    SubwayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
