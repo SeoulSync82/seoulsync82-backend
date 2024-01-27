@@ -1,11 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { assertCompositeType } from 'graphql';
-import { ApiCourseSubwayCheckGetRequestQueryDto } from 'src/subway/dto/api-course-subway-check-get-request-query.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from 'src/subway/dto/api-course-subway-list-get-request-query.dto';
+import { ApiSubwayCheckGetRequestQueryDto } from 'src/subway/dto/api-subway-check-get-request-query.dto';
+import { ApiCourseSubwayListGetRequestQueryDto } from 'src/subway/dto/api-subway-list-get-request-query.dto';
 import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { SubwayStationEntity } from 'src/entities/subway_station.entity';
 import { Repository, In, Not } from 'typeorm';
+import { SubwayLineEntity } from 'src/entities/subway_line.entity';
 
 export class SubwayQueryRepository {
   constructor(
@@ -13,6 +14,8 @@ export class SubwayQueryRepository {
     private repository: Repository<SubwayEntity>,
     @InjectRepository(SubwayStationEntity)
     private subwayStationRepository: Repository<SubwayStationEntity>,
+    @InjectRepository(SubwayLineEntity)
+    private subwayLineRepository: Repository<SubwayLineEntity>,
   ) {}
 
   async findsubwayPlaceList(customs, dto: CourseRecommendReqDto): Promise<SubwayEntity[]> {
@@ -21,7 +24,7 @@ export class SubwayQueryRepository {
     });
   }
 
-  async groupByCustoms(dto: ApiCourseSubwayCheckGetRequestQueryDto) {
+  async groupByCustoms(dto: ApiSubwayCheckGetRequestQueryDto) {
     return await this.repository
       .createQueryBuilder('subway')
       .select('subway.place_type', 'type')
@@ -37,6 +40,12 @@ export class SubwayQueryRepository {
   async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
     return await this.subwayStationRepository.find({
       where: { line: dto.line },
+      order: { id: 'ASC' },
+    });
+  }
+
+  async findSubwayLine() {
+    return await this.subwayLineRepository.find({
       order: { id: 'ASC' },
     });
   }

@@ -7,11 +7,15 @@ import { PlaceController } from './place.controller';
 import { PlaceQueryRepository } from './place.query.repository';
 import { PlaceService } from './place.service';
 import { SubwayQueryRepository } from '../subway/subway.query.repository';
+import { SubwayModule } from 'src/subway/subway.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PlaceEntity, SubwayEntity, SubwayStationEntity])],
+  imports: [
+    SubwayModule,
+    TypeOrmModule.forFeature([PlaceEntity, SubwayEntity, SubwayStationEntity]),
+  ],
   controllers: [PlaceController],
-  providers: [PlaceService, PlaceQueryRepository, SubwayQueryRepository],
-  exports: [PlaceQueryRepository, SubwayQueryRepository],
+  providers: [PlaceService, PlaceQueryRepository],
+  exports: [PlaceQueryRepository],
 })
 export class PlaceModule {}

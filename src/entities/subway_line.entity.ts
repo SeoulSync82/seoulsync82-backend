@@ -1,9 +1,12 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'subway_' })
+@Entity({ name: 'subway_line' })
 export class SubwayLineEntity {
   @PrimaryGeneratedColumn()
-  line_uuid: string;
+  id: number;
+
+  @Column()
+  uuid: string;
 
   @Column()
   line: string;
