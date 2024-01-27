@@ -29,11 +29,4 @@ export class ThemeListDto {
     description: '테마 타입',
   })
   theme_type: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '',
-    description: '테마 이미지',
-  })
-  theme_image: string;
 }

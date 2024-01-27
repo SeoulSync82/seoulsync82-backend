@@ -13,7 +13,4 @@ export class ThemeEntity {
 
   @Column()
   theme_type: string;
-
-  @Column()
-  theme_image: string;
 }
