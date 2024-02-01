@@ -29,19 +29,10 @@ export class ApiCourseRecommendPostRequestBodyDto {
   @IsString()
   @ApiProperty({
     example: '분위기 있는🌃',
-    description: '음식점 테마',
+    description: '코스 테마',
     required: false,
   })
-  theme_restaurant?: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
-    example: '인스타 감성💫',
-    description: '카페 테마',
-    required: false,
-  })
-  theme_cafe?: string;
+  theme?: string;
 
   @IsNotEmpty()
   @IsArray()

@@ -22,11 +22,4 @@ export class ApiThemeListGetResponseDto {
     description: '테마 이름',
   })
   theme_name: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '음식점',
-    description: '테마 타입',
-  })
-  theme_type: string;
 }

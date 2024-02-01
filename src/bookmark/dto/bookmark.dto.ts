@@ -106,16 +106,9 @@ export class CourseSaveReqDto {
   @Expose()
   @ApiProperty({
     example: '분위기 있는🌃',
-    description: '음식점 테마',
+    description: '코스 테마',
   })
-  theme_restaurant?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '인스타 감성💫',
-    description: '카페 테마',
-  })
-  theme_cafe?: string;
+  theme?: string;
 
   // @Expose()
   // @ApiProperty({
@@ -157,16 +150,9 @@ export class MyCourseDetailResDto {
   @Expose()
   @ApiProperty({
     example: '분위기 있는🌃',
-    description: '음식점 테마',
+    description: '코스 테마',
   })
-  theme_restaurant?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '인스타 감성💫',
-    description: '카페 테마',
-  })
-  theme_cafe?: string;
+  theme?: string;
 
   @Expose()
   @ApiProperty({

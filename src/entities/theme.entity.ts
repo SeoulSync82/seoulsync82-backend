@@ -10,7 +10,4 @@ export class ThemeEntity {
 
   @Column()
   theme_name: string;
-
-  @Column()
-  theme_type: string;
 }

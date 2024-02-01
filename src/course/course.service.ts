@@ -53,13 +53,8 @@ export class CourseService {
 
     let placeNonSorting = [];
 
-    if (dto.theme_restaurant) {
-      customs = customs.filter((item) => item !== '음식점');
-      // 추후 subway , place_theme , place 세개 테이블 Join
-    }
-
-    if (dto.theme_cafe) {
-      customs = customs.filter((item) => item !== '카페');
+    if (dto.theme) {
+      // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
     }
 
@@ -191,8 +186,7 @@ export class CourseService {
     const themes = [];
     let course_name: string;
 
-    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
-    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+    if (dto.theme) themes.push(dto.theme);
 
     if (themes.length === 0) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
@@ -208,8 +202,7 @@ export class CourseService {
     const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
-      theme_cafe: dto.theme_cafe,
-      theme_restaurant: dto.theme_restaurant,
+      theme: dto.theme,
       course_name: course_name,
       count: dto.customs?.length ?? 0,
       place: placeSorting,
@@ -252,13 +245,8 @@ export class CourseService {
 
     let placeNonSorting = [];
 
-    if (dto.theme_restaurant) {
-      customs = customs.filter((item) => item !== '음식점');
-      // 추후 subway , place_theme , place 세개 테이블 Join
-    }
-
-    if (dto.theme_cafe) {
-      customs = customs.filter((item) => item !== '카페');
+    if (dto.theme) {
+      // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
     }
 
@@ -361,8 +349,7 @@ export class CourseService {
     const themes = [];
     let course_name: string;
 
-    if (dto.theme_restaurant) themes.push(dto.theme_restaurant);
-    if (dto.theme_cafe) themes.push(dto.theme_cafe);
+    if (dto.theme) themes.push(dto.theme);
 
     if (themes.length === 0) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
@@ -378,8 +365,7 @@ export class CourseService {
     const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
-      theme_cafe: dto.theme_cafe,
-      theme_restaurant: dto.theme_restaurant,
+      theme: dto.theme,
       course_name: course_name,
       count: dto.customs?.length ?? 0,
       place: placeSorting,
