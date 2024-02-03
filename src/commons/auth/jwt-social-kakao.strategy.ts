@@ -10,7 +10,6 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
       clientID: configService.get('KAKAO_ID'),
       clientSecret: configService.get('KAKAO_SECRET'),
-      callbackURL: 'https://staging.seoulsync82.com:3456/auth/kakao/callback', //.env파일에 들어있음
       // scope: ["account_email", "profile_nickname"],
     });
   }
