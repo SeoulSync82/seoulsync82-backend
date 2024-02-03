@@ -10,16 +10,13 @@ import { ERROR } from './auth/constants/error';
 import { SwaggerModels } from './swagger';
 
 async function bootstrap() {
-  let appOptions = {};
-  if (process.env.NODE_ENV !== 'debug') {
-    appOptions = {
-      httpsOptions: {
-        key: fs.readFileSync('/home/ubuntu/letsencrypt/privkey.pem'),
-        cert: fs.readFileSync('/home/ubuntu/letsencrypt/fullchain.pem'),
-      },
-    };
-  }
-  const app = await NestFactory.create(AppModule, appOptions);
+  const app = await NestFactory.create(AppModule, {
+    logger:
+      process.env.NODE_ENV === 'production'
+        ? ['error', 'warn', 'log', 'debug']
+        : ['error', 'warn', 'log', 'verbose', 'debug'],
+  });
+  // const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -43,18 +40,23 @@ async function bootstrap() {
     }),
   );
 
+  const configService = app.get(ConfigService);
+
   // CORS 설정 추가!
   app.use(
     cors({
-      origin: ['http://localhost:3457', 'https://staging.seoulsync82.com:3457'],
+      origin: [
+        configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL'),
+        configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING'),
+        configService.get('SEOULSYNC82_FRONTEND_LOCAL'),
+        configService.get('SEOULSYNC82_FRONTEND_STAGING'),
+      ],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     }),
   );
 
   app.use(cookieParser());
-
-  const configService = app.get(ConfigService);
 
   SwaggerModule.setup(
     'docs',

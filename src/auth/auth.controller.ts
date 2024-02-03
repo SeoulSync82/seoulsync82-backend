@@ -18,6 +18,7 @@ import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { ConfigService } from 'src/config/config.service';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { EnhancedRequest } from './dto/login-cookie-request.dto';
@@ -32,6 +33,7 @@ export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Get('/user/login/google')
@@ -47,7 +49,8 @@ export class AuthController {
   async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
-      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING');
+      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -59,7 +62,8 @@ export class AuthController {
   async googleDevAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
-      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL');
+      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -79,7 +83,8 @@ export class AuthController {
   async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
-      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING');
+      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -91,7 +96,8 @@ export class AuthController {
   async kakaoDevAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
-      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL');
+      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -111,7 +117,8 @@ export class AuthController {
   async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
-      res.redirect(`https://staging.seoulsync82.com:3457/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING');
+      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
@@ -123,7 +130,8 @@ export class AuthController {
   async naverDevAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
-      res.redirect(`http://localhost:3457/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL');
+      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
       res.redirect('/error');
