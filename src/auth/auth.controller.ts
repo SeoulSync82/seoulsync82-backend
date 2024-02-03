@@ -49,11 +49,10 @@ export class AuthController {
   async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
-      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING');
-      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
-      res.redirect('/error');
     }
   }
 
@@ -62,11 +61,10 @@ export class AuthController {
   async googleDevAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
-      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL');
-      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
-      res.redirect('/error');
     }
   }
 
@@ -83,11 +81,10 @@ export class AuthController {
   async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
-      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING');
-      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
-      res.redirect('/error');
     }
   }
 
@@ -96,11 +93,10 @@ export class AuthController {
   async kakaoDevAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
-      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL');
-      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
-      res.redirect('/error');
     }
   }
 
@@ -117,11 +113,10 @@ export class AuthController {
   async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
-      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_STAGING');
-      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
-      res.redirect('/error');
     }
   }
 
@@ -130,11 +125,10 @@ export class AuthController {
   async naverDevAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
-      const frontendUrl = this.configService.get('OLD_SEOULSYNC82_FRONTEND_LOCAL');
-      res.redirect(`${frontendUrl}/main/?token=${result.eid_access_token}`);
+      const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
+      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
-      res.redirect('/error');
     }
   }
 
