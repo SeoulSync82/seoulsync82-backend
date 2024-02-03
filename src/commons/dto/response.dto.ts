@@ -19,7 +19,6 @@ export class ResponseDataDto {
     this.last_item_id = last_item_id ?? 0;
     this.mockup = mockup ? mockup : false;
     this.cache = cache ? cache : false;
-    // this.total = total ?? 0;
   }
 
   static from(

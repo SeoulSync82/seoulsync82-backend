@@ -22,7 +22,6 @@ export class UserService {
 
   async getAccessToken(uuid): Promise<DetailResponseDto> {
     const user = await this.userQueryRepository.findOne(uuid);
-    // accessToken 재발급
     const payload = {
       id: user.id,
       uuid: user.uuid,

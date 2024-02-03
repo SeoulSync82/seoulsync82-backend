@@ -109,13 +109,6 @@ export class CourseSaveReqDto {
     description: '코스 테마',
   })
   theme?: string;
-
-  // @Expose()
-  // @ApiProperty({
-  //   example: '',
-  //   description: '장소 이미지',
-  // })
-  // place_image: string;
 }
 
 export class MyCourseDetailResDto {

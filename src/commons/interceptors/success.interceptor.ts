@@ -6,7 +6,7 @@ import { tap, map } from 'rxjs/operators';
 export class SuccessInterceptor implements NestInterceptor {
   private readonly logger = new Logger(SuccessInterceptor.name);
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    this.logger.log('Before...'); // pre-controller
+    this.logger.log('Before...');
 
     const now = Date.now();
     return next.handle().pipe(

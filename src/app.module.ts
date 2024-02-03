@@ -10,8 +10,6 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { ConfigService } from './config/config.service';
-// import { JwtAccessStrategy } from './commons/auth/jwt-access.strategy';
-// import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { SearchModule } from './search/search.module';
 import { ThemeModule } from './theme/theme.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
@@ -37,7 +35,6 @@ import { SubwayModule } from './subway/subway.module';
           keepConnectionAlive: true,
           charset: 'utf8mb4',
           timezone: 'z',
-          // timezone: 'Etc/UTC',
         } as TypeOrmModuleAsyncOptions;
       },
     }),

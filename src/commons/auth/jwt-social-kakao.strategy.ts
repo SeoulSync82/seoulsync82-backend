@@ -10,7 +10,6 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     super({
       clientID: configService.get('KAKAO_ID'),
       clientSecret: configService.get('KAKAO_SECRET'),
-      // scope: ["account_email", "profile_nickname"],
     });
   }
 

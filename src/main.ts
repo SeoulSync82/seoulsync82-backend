@@ -16,7 +16,6 @@ async function bootstrap() {
         ? ['error', 'warn', 'log', 'debug']
         : ['error', 'warn', 'log', 'verbose', 'debug'],
   });
-  // const configService = app.get(ConfigService);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -42,7 +41,6 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  // CORS 설정 추가!
   app.use(
     cors({
       origin: [

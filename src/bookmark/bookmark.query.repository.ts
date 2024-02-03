@@ -38,7 +38,7 @@ export class BookmarkQueryRepository {
 
   async findMyCourse(uuid): Promise<BookmarkEntity[]> {
     return await this.repository.find({
-      where: { course_uuid: uuid },
+      where: { course_uuid: uuid, archived_at: IsNull() },
     });
   }
 

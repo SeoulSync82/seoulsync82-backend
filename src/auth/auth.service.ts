@@ -5,7 +5,6 @@ import { UserService } from 'src/user/user.service';
 import { ValidateAuthInputDto } from './dto/validate-auth.dto';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-// import { Provider } from 'src/entites/user.entity';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 import { generateUUID } from 'src/commons/util/uuid';
@@ -65,7 +64,6 @@ export class AuthService {
       findUser.eid_refresh_token = eid_refresh_token;
       await this.userQueryRepository.save(findUser);
 
-      // 쿠키 설정
       const now = new Date();
       now.setDate(
         now.getDate() +
@@ -117,7 +115,6 @@ export class AuthService {
       findUser.eid_refresh_token = eid_refresh_token;
       await this.userQueryRepository.save(findUser);
 
-      // 쿠키 설정
       const now = new Date();
       now.setDate(
         now.getDate() +
@@ -169,7 +166,6 @@ export class AuthService {
       findUser.eid_refresh_token = eid_refresh_token;
       await this.userQueryRepository.save(findUser);
 
-      // 쿠키 설정
       const now = new Date();
       now.setDate(
         now.getDate() +

@@ -48,13 +48,11 @@ export class SeoulSync82ExceptionFilter implements ExceptionFilter {
       const exceptionResponse = exception.getResponse();
       const status = exception.getStatus();
 
-      let message = 'An error occurred'; // 기본 메시지 설정
+      let message = 'An error occurred';
       if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
-        // 'message' 속성이 있는지 안전하게 확인
         const responseObj = exceptionResponse as { message?: string };
         message = responseObj.message || 'An error occurred';
       } else if (typeof exceptionResponse === 'string') {
-        // exceptionResponse가 문자열인 경우
         message = exceptionResponse;
       }
 
