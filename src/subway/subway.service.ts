@@ -16,6 +16,7 @@ export class SubwayService {
 
   async subwayCustomsCheck(dto: ApiSubwayCheckGetRequestQueryDto) {
     const subwayCustoms = await this.subwayQueryRepository.groupByCustoms(dto);
+    const subwayCurrentCulture = await this.subwayQueryRepository.findSubwayCurrentCulture(dto);
 
     function findCountByType(type, results) {
       const item = results.find((item) => item.type === type);
@@ -27,7 +28,9 @@ export class SubwayService {
       카페: findCountByType('카페', subwayCustoms),
       술집: findCountByType('술집', subwayCustoms),
       쇼핑: findCountByType('쇼핑', subwayCustoms),
-      문화: findCountByType('전시', subwayCustoms) + findCountByType('팝업', subwayCustoms),
+      문화:
+        findCountByType('전시', subwayCurrentCulture) +
+        findCountByType('팝업', subwayCurrentCulture),
       놀거리: findCountByType('놀거리', subwayCustoms),
     });
 

@@ -41,10 +41,10 @@ export class CourseController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('/recommend')
+  @Post('/member/recommend')
   @ApiOperation({
-    summary: 'AI 코스 추천',
-    description: 'AI 코스 추천',
+    summary: 'AI 코스 추천 - 회원',
+    description: 'AI 코스 추천 - 회원',
   })
   @ApiSuccessResponse(ApiCourseRecommendPostResponseDto, {
     description: 'AI 코스 추천 완료',
@@ -58,7 +58,7 @@ export class CourseController {
     return await this.courseService.courseRecommend(user, dto);
   }
 
-  @Get('/recommend/non-login/')
+  @Get('/guest/recommend')
   @ApiOperation({
     summary: 'AI 코스 추천 - 비회원',
     description: 'AI 코스 추천 - 비회원',

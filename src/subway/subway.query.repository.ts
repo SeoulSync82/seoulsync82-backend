@@ -37,6 +37,26 @@ export class SubwayQueryRepository {
       .getRawMany();
   }
 
+  async findSubwayCurrentCulture(dto: ApiSubwayCheckGetRequestQueryDto) {
+    const now = new Date();
+
+    return await this.repository
+      .createQueryBuilder('subway')
+      .leftJoinAndSelect('place', 'p', 'p.uuid = subway.place_uuid')
+      .select('subway.place_type', 'type')
+      .addSelect('COUNT(subway.id)', 'count')
+      .where('subway.name = :name AND subway.line = :line', {
+        name: dto.subway,
+        line: dto.line,
+      })
+      .andWhere('subway.place_type IN (:...types)', {
+        types: ['팝업', '전시'],
+      })
+      .andWhere('p.end_date > :now', { now })
+      .groupBy('subway.place_type')
+      .getRawMany();
+  }
+
   async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
     return await this.subwayStationRepository.find({
       where: { line_uuid: dto.line_uuid },
