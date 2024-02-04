@@ -13,7 +13,7 @@ import { ApiSubwayLineGetResponseDto } from './dto/api-subway-line-get-response.
 import { SubwayService } from './subway.service';
 
 @ApiTags('지하철')
-@Controller('subway')
+@Controller('/api/subway')
 @UseFilters(SeoulSync82ExceptionFilter)
 @UseInterceptors(SuccessInterceptor)
 export class SubwayController {
