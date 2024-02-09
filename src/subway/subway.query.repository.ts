@@ -69,4 +69,10 @@ export class SubwayQueryRepository {
       order: { id: 'ASC' },
     });
   }
+
+  async findSubway(subway: string) {
+    return await this.subwayStationRepository.find({
+      where: { name: subway },
+    });
+  }
 }

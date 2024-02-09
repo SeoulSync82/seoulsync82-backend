@@ -43,7 +43,7 @@ export class CourseService {
     private readonly reactionQueryRepository: ReactionQueryRepository,
   ) {}
 
-  async courseRecommend(user, dto: ApiCourseRecommendPostRequestBodyDto) {
+  async courseMemberRecommend(user, dto: ApiCourseRecommendPostRequestBodyDto) {
     let customs: string[] = dto.customs;
 
     const countCustoms = dto.customs.reduce((acc, type) => {
@@ -199,9 +199,12 @@ export class CourseService {
       course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
     }
 
+    const subway = await this.subwayQueryRepository.findSubway(dto.subway);
+
     const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
+      line: subway.map((item) => item.line),
       theme: dto.theme,
       course_name: course_name,
       count: dto.customs?.length ?? 0,
@@ -235,7 +238,7 @@ export class CourseService {
     return apiCourseRecommendPostResponseDto;
   }
 
-  async courseRecommendNonLogin(dto: ApiCourseRecommendPostRequestBodyDto) {
+  async courseGuestRecommend(dto: ApiCourseRecommendPostRequestBodyDto) {
     let customs: string[] = dto.customs;
 
     const countCustoms = dto.customs.reduce((acc, type) => {
@@ -362,9 +365,12 @@ export class CourseService {
       course_name = `${dto.subway}역 ${themeText} 코스 일정 ${themeEmoji}`;
     }
 
+    const subway = await this.subwayQueryRepository.findSubway(dto.subway);
+
     const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
+      line: subway.map((item) => item.line),
       theme: dto.theme,
       course_name: course_name,
       count: dto.customs?.length ?? 0,

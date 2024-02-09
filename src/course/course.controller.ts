@@ -54,8 +54,11 @@ export class CourseController {
     description: '선택한 지하철역에 custom이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseRecommend(@CurrentUser() user, @Body() dto: ApiCourseRecommendPostRequestBodyDto) {
-    return await this.courseService.courseRecommend(user, dto);
+  async courseMemberRecommend(
+    @CurrentUser() user,
+    @Body() dto: ApiCourseRecommendPostRequestBodyDto,
+  ) {
+    return await this.courseService.courseMemberRecommend(user, dto);
   }
 
   @Get('/guest/recommend')
@@ -71,8 +74,8 @@ export class CourseController {
     description: '선택한 지하철역에 custom이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseRecommendNonLogin(@Query() dto: ApiCourseRecommendPostRequestBodyDto) {
-    return await this.courseService.courseRecommendNonLogin(dto);
+  async courseGuestRecommend(@Query() dto: ApiCourseRecommendPostRequestBodyDto) {
+    return await this.courseService.courseGuestRecommend(dto);
   }
 
   @UseGuards(JwtAuthGuard)

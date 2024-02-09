@@ -19,6 +19,13 @@ export class ApiCourseRecommendPostResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: ['2호선', '7호선'],
+    description: '지하철 호선',
+  })
+  line: string[];
+
+  @Expose()
+  @ApiProperty({
     example: '분위기 있는🌃',
     description: '코스 테마',
   })
@@ -89,7 +96,7 @@ export class ApiCourseRecommendPostResponseDto {
   })
   place: CoursePlaceDto[];
 
-  constructor(data?: Partial<CourseRecommendResDto>) {
+  constructor(data?: Partial<ApiCourseRecommendPostResponseDto>) {
     if (data) {
       Object.assign(this, data);
     }
