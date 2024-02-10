@@ -36,7 +36,7 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Get('/user/login/google')
+  @Get('/api/user/login/google')
   @ApiOperation({
     summary: '구글 로그인',
     description: '구글 로그인',
@@ -44,7 +44,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() _req: Request) {}
 
-  @Get('/auth/google/callback')
+  @Get('/api/auth/google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
@@ -56,7 +56,7 @@ export class AuthController {
     }
   }
 
-  @Get('/auth/google/dev/callback')
+  @Get('/api/auth/google/dev/callback')
   @UseGuards(AuthGuard('google-dev'))
   async googleDevAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
@@ -68,7 +68,7 @@ export class AuthController {
     }
   }
 
-  @Get('/user/login/kakao')
+  @Get('/api/user/login/kakao')
   @ApiOperation({
     summary: '카카오 로그인',
     description: '카카오 로그인',
@@ -76,7 +76,7 @@ export class AuthController {
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuth(@Req() _req: Request) {}
 
-  @Get('/auth/kakao/callback')
+  @Get('/api/auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
@@ -88,7 +88,7 @@ export class AuthController {
     }
   }
 
-  @Get('/auth/kakao/dev/callback')
+  @Get('/api/auth/kakao/dev/callback')
   @UseGuards(AuthGuard('kakao-dev'))
   async kakaoDevAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
@@ -100,7 +100,7 @@ export class AuthController {
     }
   }
 
-  @Get('/user/login/naver')
+  @Get('/api/user/login/naver')
   @UseGuards(AuthGuard('naver'))
   @ApiOperation({
     summary: '네이버 로그인',
@@ -108,7 +108,7 @@ export class AuthController {
   })
   async naverAuth(@Req() _req: Request) {}
 
-  @Get('/auth/naver/callback')
+  @Get('/api/auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
   async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
@@ -120,7 +120,7 @@ export class AuthController {
     }
   }
 
-  @Get('/auth/naver/dev/callback')
+  @Get('/api/auth/naver/dev/callback')
   @UseGuards(AuthGuard('naver-dev'))
   async naverDevAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
@@ -132,7 +132,7 @@ export class AuthController {
     }
   }
 
-  @Post('/user/refresh')
+  @Post('/api/user/refresh')
   @ApiOperation({
     summary: '로그인 연장',
     description: '로그인 연장',
@@ -143,7 +143,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('user/logout')
+  @Post('/api/user/logout')
   @ApiOperation({
     summary: '로그아웃',
     description: '로그아웃',
