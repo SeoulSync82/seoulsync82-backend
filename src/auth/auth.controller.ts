@@ -50,7 +50,7 @@ export class AuthController {
     try {
       const result = await this.authService.googleLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
     }
@@ -62,7 +62,7 @@ export class AuthController {
     try {
       const result = await this.authService.googleLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
     }
@@ -82,7 +82,7 @@ export class AuthController {
     try {
       const result = await this.authService.kakaoLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
     }
@@ -94,7 +94,7 @@ export class AuthController {
     try {
       const result = await this.authService.kakaoLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
     }
@@ -114,7 +114,7 @@ export class AuthController {
     try {
       const result = await this.authService.naverLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
     }
@@ -126,7 +126,7 @@ export class AuthController {
     try {
       const result = await this.authService.naverLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
-      res.redirect(`${frontendUrl}/?token=${result.eid_access_token}`);
+      res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
       console.error('Error parsing state:', error);
     }

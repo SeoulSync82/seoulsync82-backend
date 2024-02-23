@@ -28,11 +28,11 @@ export class UserService {
       nickname: user.name,
       profile_image: user.profile_image,
     };
-    const eid_access_token = jwt.sign(payload, this.configService.get('JWT_SECRET'), {
+    const access_token = jwt.sign(payload, this.configService.get('JWT_SECRET'), {
       expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
     });
 
-    const result = Object.assign(payload, { eid_access_token: eid_access_token });
+    const result = Object.assign(payload, { access_token: access_token });
 
     return DetailResponseDto.from(result);
   }

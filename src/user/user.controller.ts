@@ -49,12 +49,12 @@ export class UserController {
 
   @Get('/token/:uuid')
   @ApiOperation({
-    summary: 'Test - eid_access_token 발급',
-    description: 'Test - eid_access_token 발급',
+    summary: 'Test - access_token 발급',
+    description: 'Test - access_token 발급',
   })
   @ApiResponse({
     status: 200,
-    description: 'Test - eid_access_token 발급',
+    description: 'Test - access_token 발급',
     type: DetailResponseDto,
   })
   @ApiParam({

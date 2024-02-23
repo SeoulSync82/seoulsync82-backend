@@ -27,7 +27,7 @@ export class UserEntity {
   archived: number;
 
   @Column()
-  eid_refresh_token: string;
+  refresh_token: string;
 
   @Column('datetime', {
     name: 'created_at',

@@ -53,15 +53,15 @@ export class AuthService {
         nickname: findUser.name,
         profile_image: findUser.profile_image,
       };
-      const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
+      const access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });
-      const eid_refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
+      const refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
       });
 
-      findUser.eid_refresh_token = eid_refresh_token;
+      findUser.refresh_token = refresh_token;
       await this.userQueryRepository.save(findUser);
 
       const now = new Date();
@@ -70,7 +70,7 @@ export class AuthService {
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
 
-      res.cookie('eid_refresh_token', eid_refresh_token, {
+      res.cookie('refresh_token', refresh_token, {
         expires: now,
         httpOnly: true,
         secure: true,
@@ -79,7 +79,7 @@ export class AuthService {
 
       return {
         ok: true,
-        eid_access_token,
+        access_token,
       };
     } catch (error) {
       return { ok: false, error: '구글 로그인 인증을 실패 하였습니다.' };
@@ -104,15 +104,15 @@ export class AuthService {
         nickname: findUser.name,
         profile_image: findUser.profile_image,
       };
-      const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
+      const access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });
-      const eid_refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
+      const refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
       });
 
-      findUser.eid_refresh_token = eid_refresh_token;
+      findUser.refresh_token = refresh_token;
       await this.userQueryRepository.save(findUser);
 
       const now = new Date();
@@ -120,7 +120,7 @@ export class AuthService {
         now.getDate() +
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
-      res.cookie('eid_refresh_token', eid_refresh_token, {
+      res.cookie('refresh_token', refresh_token, {
         expires: now,
         httpOnly: true,
         secure: true,
@@ -129,7 +129,7 @@ export class AuthService {
 
       return {
         ok: true,
-        eid_access_token,
+        access_token,
       };
     } catch (error) {
       return { ok: false, error: '카카오 로그인 인증을 실패 하였습니다.' };
@@ -155,15 +155,15 @@ export class AuthService {
         nickname: findUser.name,
         profile_image: findUser.profile_image,
       };
-      const eid_access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
+      const access_token = jwt.sign(findUserPayload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });
-      const eid_refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
+      const refresh_token = jwt.sign({}, this.configService.get('JWT_REFRESH_KEY'), {
         expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
         audience: String(findUser.id),
       });
 
-      findUser.eid_refresh_token = eid_refresh_token;
+      findUser.refresh_token = refresh_token;
       await this.userQueryRepository.save(findUser);
 
       const now = new Date();
@@ -172,7 +172,7 @@ export class AuthService {
           parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_DATE')) / 1000,
       );
 
-      res.cookie('eid_refresh_token', eid_refresh_token, {
+      res.cookie('refresh_token', refresh_token, {
         expires: now,
         httpOnly: true,
         secure: true,
@@ -180,7 +180,7 @@ export class AuthService {
       });
       return {
         ok: true,
-        eid_access_token,
+        access_token,
       };
     } catch (error) {
       return { ok: false, error: '네이버 로그인 인증을 실패 하였습니다.' };
@@ -189,7 +189,7 @@ export class AuthService {
 
   async silentRefresh(req: Request, res: Response): Promise<SilentRefreshAuthOutputDto> {
     try {
-      const getRefreshToken = req.cookies['eid_refresh_token'];
+      const getRefreshToken = req.cookies['refresh_token'];
       if (isEmpty(getRefreshToken)) {
         return { ok: false };
       }
@@ -199,16 +199,18 @@ export class AuthService {
         this.configService.get('JWT_REFRESH_KEY'),
         (err: jwt.VerifyErrors | null, decoded: jwt.JwtPayload | undefined) => {
           if (err) {
-            res.clearCookie('eid_refresh_token');
+            res.clearCookie('refresh_token');
             return { ok: false, error: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
           }
           userId = decoded.aud;
+          // 이벤트 루프를 거치면 null이다 !
+          // 왜냐면 콜백이다.
         },
       );
 
       // 로그아웃 후에는 Silent Refresh를 무시
       const loginUser = await this.userQueryRepository.findId(+userId);
-      if (loginUser.eid_refresh_token !== getRefreshToken) {
+      if (loginUser.refresh_token !== getRefreshToken) {
         return { ok: false, error: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
       }
 
@@ -218,13 +220,13 @@ export class AuthService {
         nickname: loginUser.name,
         profile_image: loginUser.profile_image,
       };
-      const eid_access_token = jwt.sign(payload, this.configService.get('JWT_SECRET'), {
+      const access_token = jwt.sign(payload, this.configService.get('JWT_SECRET'), {
         expiresIn: this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
       });
 
       return {
         ok: true,
-        eid_access_token,
+        access_token,
       };
     } catch (error) {
       return { ok: false, error: '로그인 연장에 실패하였습니다.' };
@@ -236,7 +238,7 @@ export class AuthService {
       if (isEmpty(user.id)) return { ok: false, error: '접근 권한을 가지고 있지 않습니다' };
 
       const loginUser = await this.userQueryRepository.findId(user.id);
-      loginUser.eid_refresh_token = null;
+      loginUser.refresh_token = null;
       await this.userQueryRepository.save(loginUser);
       res.clearCookie('refreshToken');
       return { ok: true };
