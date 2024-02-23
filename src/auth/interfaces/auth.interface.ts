@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { ValidateAuthOutputDto } from '../dto/validate-auth.dto';
+import { ValidateAuthOutputDto } from '../dto/api-auth-validate.dto';
 
 /* Local Login Strategy */
 export type RequestWithUserData = Request & { user: ValidateAuthOutputDto };

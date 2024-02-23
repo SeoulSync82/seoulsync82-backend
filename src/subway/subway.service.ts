@@ -3,18 +3,18 @@ import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { CustomListDto } from 'src/place/dto/subway.dto';
-import { ApiSubwayCheckGetRequestQueryDto } from './dto/api-subway-check-get-request-query.dto';
-import { ApiSubwayCheckGetResponseDto } from './dto/api-subway-check-get-response.dto';
-import { ApiSubwayLineGetResponseDto } from './dto/api-subway-line-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from './dto/api-subway-list-get-request-query.dto';
-import { ApiSubwayListGetResponseDto } from './dto/api-subway-list-get-response.dto';
+import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
+import { ApiSubwayGetCheckResponseDto } from './dto/api-subway-get-check-response.dto';
+import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
+import { ApiSubwayGetListRequestQueryDto } from './dto/api-subway-get-list-request-query.dto';
+import { ApiSubwayGetListResponseDto } from './dto/api-subway-get-list-response.dto';
 import { SubwayQueryRepository } from './subway.query.repository';
 
 @Injectable()
 export class SubwayService {
   constructor(private readonly subwayQueryRepository: SubwayQueryRepository) {}
 
-  async subwayCustomsCheck(dto: ApiSubwayCheckGetRequestQueryDto) {
+  async subwayCustomsCheck(dto: ApiSubwayGetCheckRequestQueryDto) {
     const subwayCustoms = await this.subwayQueryRepository.groupByCustoms(dto);
     const subwayCurrentCulture = await this.subwayQueryRepository.findSubwayCurrentCulture(dto);
 
@@ -34,17 +34,17 @@ export class SubwayService {
       놀거리: findCountByType('놀거리', subwayCustoms),
     });
 
-    return new ApiSubwayCheckGetResponseDto({ customs: [customsCheck] });
+    return new ApiSubwayGetCheckResponseDto({ customs: [customsCheck] });
   }
 
-  async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
+  async subwayStationList(dto: ApiSubwayGetListRequestQueryDto) {
     const subwayStationList = await this.subwayQueryRepository.subwayStationList(dto);
     if (isEmpty(subwayStationList)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
     const apiSubwayListGetResponseDto = plainToInstance(
-      ApiSubwayListGetResponseDto,
+      ApiSubwayGetListResponseDto,
       subwayStationList,
       { excludeExtraneousValues: true },
     );
@@ -56,7 +56,7 @@ export class SubwayService {
     const subwayLine = await this.subwayQueryRepository.findSubwayLine();
 
     const apiSubwayLineGetResponseDto = plainToInstance(
-      ApiSubwayLineGetResponseDto,
+      ApiSubwayGetLineResponseDto,
       { subway: subwayLine.map((item) => ({ uuid: item.uuid, line: item.line })) },
       { excludeExtraneousValues: true },
     );

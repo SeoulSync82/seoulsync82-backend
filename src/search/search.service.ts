@@ -7,7 +7,7 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { ApiSearchDetailGetResponseDto } from './dto/api-search-detail-get-response.dto';
+import { ApiSearchGetDetailResponseDto } from './dto/api-search-get-detail-response.dto';
 import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
 import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
 import { SearchDetailDto } from './dto/search.dto';
@@ -56,7 +56,7 @@ export class SearchService {
     }
 
     const apiSearchDetailGetResponseDto: SearchDetailDto = plainToInstance(
-      ApiSearchDetailGetResponseDto,
+      ApiSearchGetDetailResponseDto,
       searchDetail,
       {
         excludeExtraneousValues: true,

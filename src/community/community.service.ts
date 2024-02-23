@@ -16,11 +16,11 @@ import { CommunityPutReqDto } from './dto/community.dto';
 import { ReactionQueryRepository } from './reaction.query.repository';
 import { CourseEntity } from 'src/entities/course.entity';
 import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
-import { ApiCommunityMyCourseGetRequestQueryDto } from './dto/api-community-my-course-get-request-query.dto';
-import { ApiCommunityMyCourseGetResponseDto } from './dto/api-community-my-course-get-response.dto';
+import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
+import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
 import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
 import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
-import { ApiCommunityDetailGetResponseDto } from './dto/api-community-detail-get-response.dto';
+import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 
 @Injectable()
@@ -57,7 +57,7 @@ export class CommunityService {
     return DetailResponseDto.uuid(communityEntity.uuid);
   }
 
-  async communityMyCourseList(dto: ApiCommunityMyCourseGetRequestQueryDto, user) {
+  async communityMyCourseList(dto: ApiCommunityGetMyCourseRequestQueryDto, user) {
     const myCourseList: CourseEntity[] = await this.courseQueryRepository.findMyCourse(dto, user);
     if (myCourseList.length === 0) {
       return { items: [] };
@@ -66,7 +66,7 @@ export class CommunityService {
     const myCommunity: CommunityEntity[] = await this.communityQueryRepository.myCommunity(user);
 
     const apiCommunityMyCourseGetResponseDto = plainToInstance(
-      ApiCommunityMyCourseGetResponseDto,
+      ApiCommunityGetMyCourseResponseDto,
       myCourseList,
       {
         excludeExtraneousValues: true,
@@ -151,7 +151,7 @@ export class CommunityService {
       await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
     const communityUser: UserEntity = await this.userQueryRepository.findOne(community.user_uuid);
 
-    const apiCommunityDetailGetResponseDto = new ApiCommunityDetailGetResponseDto({
+    const apiCommunityDetailGetResponseDto = new ApiCommunityGetDetailResponseDto({
       uuid: uuid,
       course_uuid: community.course_uuid,
       user_uuid: communityUser.uuid,

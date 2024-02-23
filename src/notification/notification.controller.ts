@@ -18,8 +18,8 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { ApiNotificationListGetRequestQueryDto } from './dto/api-notification-list-get-request-query.dto';
-import { ApiNotificationListGetResponseDto } from './dto/api-notification-list-get-response.dto';
+import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
+import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
 import { NotificationService } from './notification.service';
 
 @ApiTags('알림')
@@ -36,11 +36,11 @@ export class NotificationController {
     summary: '알림 목록',
     description: '알림 목록',
   })
-  @ApiArraySuccessResponse(ApiNotificationListGetResponseDto, {
+  @ApiArraySuccessResponse(ApiNotificationGetListResponseDto, {
     description: '알림 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async notificationList(@Query() dto: ApiNotificationListGetRequestQueryDto, @CurrentUser() user) {
+  async notificationList(@Query() dto: ApiNotificationGetListRequestQueryDto, @CurrentUser() user) {
     return await this.notificationService.notificationList(dto, user);
   }
 

@@ -15,7 +15,7 @@ export class SuccessInterceptor implements NestInterceptor {
         status_code: 200,
         status: 'SUCCESS',
         data: { ...data },
-      })), // 여기서 data는 컨트롤러를 거친 후 응답(response)에 대한 data
+      })),
     );
   }
 }

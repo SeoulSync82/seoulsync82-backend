@@ -3,8 +3,8 @@ import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { ApiNotificationListGetRequestQueryDto } from './dto/api-notification-list-get-request-query.dto';
-import { ApiNotificationListGetResponseDto } from './dto/api-notification-list-get-response.dto';
+import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
+import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
 import { NotificationQueryRepository } from './notification.query.repository';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class NotificationService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async notificationList(dto: ApiNotificationListGetRequestQueryDto, user) {
+  async notificationList(dto: ApiNotificationGetListRequestQueryDto, user) {
     const notificationList = await this.notificationQueryRepository.findList(dto, user);
     if (notificationList.length === 0) {
       return { items: [] };
@@ -25,7 +25,7 @@ export class NotificationService {
     );
 
     const apiNotificationListGetResponseDto = plainToInstance(
-      ApiNotificationListGetResponseDto,
+      ApiNotificationGetListResponseDto,
       notificationList,
       {
         excludeExtraneousValues: true,

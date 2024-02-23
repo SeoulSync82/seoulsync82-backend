@@ -20,7 +20,7 @@ import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
-import { ApiSearchDetailGetResponseDto } from './dto/api-search-detail-get-response.dto';
+import { ApiSearchGetDetailResponseDto } from './dto/api-search-get-detail-response.dto';
 import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
 import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
 import { SearchService } from './search.service';
@@ -52,7 +52,7 @@ export class SearchController {
     summary: '검색 상세',
     description: '검색 상세',
   })
-  @ApiSuccessResponse(ApiSearchDetailGetResponseDto, {
+  @ApiSuccessResponse(ApiSearchGetDetailResponseDto, {
     description: '검색 상세 조회 성공',
     status: HttpStatus.OK,
   })

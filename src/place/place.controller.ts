@@ -14,14 +14,14 @@ import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-respo
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { ApiPlaceCultureDetailGetResponseDto } from './dto/api-place-culture-detail-get-response.dto';
-import { ApiPlaceCultureGetRequestQueryDto } from './dto/api-place-culture-get-request-query.dto';
-import { ApiPlaceCultureGetResponseDto } from './dto/api-place-culture-get-response.dto';
-import { ApiPlaceDetailGetResponseDto } from './dto/api-place-detail-get-response.dto';
-import { ApiPlaceExhibitionGetRequestQueryDto } from './dto/api-place-exhibition-get-request-query.dto';
-import { ApiPlaceExhibitionGetResponseDto } from './dto/api-place-exhibition-get-response.dto';
-import { ApiPlacePopupGetRequestQueryDto } from './dto/api-place-popup-get-request-query.dto';
-import { ApiPlacePopupGetResponseDto } from './dto/api-place-popup-get-response.dto';
+import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';
+import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
+import { ApiPlaceGetCultureResponseDto } from './dto/api-place-get-culture-response.dto';
+import { ApiPlaceGetDetailResponseDto } from './dto/api-place-get-detail-response.dto';
+import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
+import { ApiPlaceGetExhibitionResponseDto } from './dto/api-place-get-exhibition-response.dto';
+import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
+import { ApiPlaceGetPopupResponseDto } from './dto/api-place-get-popup-response.dto';
 
 import { PlaceService } from './place.service';
 
@@ -37,11 +37,11 @@ export class PlaceController {
     summary: '전시/팝업 간편 목록',
     description: '전시/팝업 간편 목록',
   })
-  @ApiArraySuccessResponse(ApiPlaceCultureGetResponseDto, {
+  @ApiArraySuccessResponse(ApiPlaceGetCultureResponseDto, {
     description: '전시/팝업 간편 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async findCultureList(@Query() dto: ApiPlaceCultureGetRequestQueryDto) {
+  async findCultureList(@Query() dto: ApiPlaceGetCultureRequestQueryDto) {
     return await this.placeService.findCultureList(dto);
   }
 
@@ -50,7 +50,7 @@ export class PlaceController {
     summary: '전시/팝업 상세',
     description: '전시/팝업 상세',
   })
-  @ApiSuccessResponse(ApiPlaceCultureDetailGetResponseDto, {
+  @ApiSuccessResponse(ApiPlaceGetCultureDetailResponseDto, {
     description: '전시/팝업 상세 조회 성공',
     status: HttpStatus.OK,
   })
@@ -66,7 +66,7 @@ export class PlaceController {
   })
   async findCultureDetail(
     @Param('uuid') uuid: string,
-  ): Promise<ApiPlaceCultureDetailGetResponseDto> {
+  ): Promise<ApiPlaceGetCultureDetailResponseDto> {
     return await this.placeService.findCultureDetail(uuid);
   }
 
@@ -75,11 +75,11 @@ export class PlaceController {
     summary: '전시소개 목록',
     description: '전시소개 목록',
   })
-  @ApiArraySuccessResponse(ApiPlaceExhibitionGetResponseDto, {
+  @ApiArraySuccessResponse(ApiPlaceGetExhibitionResponseDto, {
     description: '전시소개 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async findExhibitionList(@Query() dto: ApiPlaceExhibitionGetRequestQueryDto) {
+  async findExhibitionList(@Query() dto: ApiPlaceGetExhibitionRequestQueryDto) {
     return await this.placeService.findExhibitionList(dto);
   }
 
@@ -88,11 +88,11 @@ export class PlaceController {
     summary: '팝업소개 목록',
     description: '팝업소개 목록',
   })
-  @ApiArraySuccessResponse(ApiPlacePopupGetResponseDto, {
+  @ApiArraySuccessResponse(ApiPlaceGetPopupResponseDto, {
     description: '팝업소개 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async findPopupList(@Query() dto: ApiPlacePopupGetRequestQueryDto) {
+  async findPopupList(@Query() dto: ApiPlaceGetPopupRequestQueryDto) {
     return await this.placeService.findPopupList(dto);
   }
 
@@ -101,7 +101,7 @@ export class PlaceController {
     summary: '장소 상세',
     description: '장소 상세',
   })
-  @ApiSuccessResponse(ApiPlaceDetailGetResponseDto, {
+  @ApiSuccessResponse(ApiPlaceGetDetailResponseDto, {
     description: '장소 상세 조회 성공',
     status: HttpStatus.OK,
   })
@@ -115,7 +115,7 @@ export class PlaceController {
     required: false,
     description: '장소 uuid',
   })
-  async findPlaceDetail(@Param('uuid') uuid: string): Promise<ApiPlaceDetailGetResponseDto> {
+  async findPlaceDetail(@Param('uuid') uuid: string): Promise<ApiPlaceGetDetailResponseDto> {
     return await this.placeService.findPlaceDetail(uuid);
   }
 }

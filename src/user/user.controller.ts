@@ -19,7 +19,7 @@ import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
-import { ApiUserUpdatePutRequestBodyDto } from './dto/api-user-update-put-request-body.dto';
+import { ApiUserPutUpdateRequestBodyDto } from './dto/api-user-put-update-request-body.dto';
 import { UserService } from './user.service';
 
 @ApiTags('사용자')
@@ -41,7 +41,7 @@ export class UserController {
     status: HttpStatus.NO_CONTENT,
   })
   async profileUpdate(
-    @Body(BadWordsPipe) dto: ApiUserUpdatePutRequestBodyDto,
+    @Body(BadWordsPipe) dto: ApiUserPutUpdateRequestBodyDto,
     @CurrentUser() user,
   ) {
     return await this.userService.profileUpdate(dto, user);

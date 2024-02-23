@@ -3,28 +3,28 @@ import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { ApiPlaceCultureDetailGetResponseDto } from './dto/api-place-culture-detail-get-response.dto';
-import { ApiPlaceCultureGetRequestQueryDto } from './dto/api-place-culture-get-request-query.dto';
-import { ApiPlaceCultureGetResponseDto } from './dto/api-place-culture-get-response.dto';
-import { ApiPlaceDetailGetResponseDto } from './dto/api-place-detail-get-response.dto';
-import { ApiPlaceExhibitionGetRequestQueryDto } from './dto/api-place-exhibition-get-request-query.dto';
-import { ApiPlaceExhibitionGetResponseDto } from './dto/api-place-exhibition-get-response.dto';
-import { ApiPlacePopupGetRequestQueryDto } from './dto/api-place-popup-get-request-query.dto';
-import { ApiPlacePopupGetResponseDto } from './dto/api-place-popup-get-response.dto';
+import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';
+import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
+import { ApiPlaceGetCultureResponseDto } from './dto/api-place-get-culture-response.dto';
+import { ApiPlaceGetDetailResponseDto } from './dto/api-place-get-detail-response.dto';
+import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
+import { ApiPlaceGetExhibitionResponseDto } from './dto/api-place-get-exhibition-response.dto';
+import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
+import { ApiPlaceGetPopupResponseDto } from './dto/api-place-get-popup-response.dto';
 import { PlaceQueryRepository } from './place.query.repository';
 
 @Injectable()
 export class PlaceService {
   constructor(private readonly placeQueryRepository: PlaceQueryRepository) {}
 
-  async findCultureList(dto: ApiPlaceCultureGetRequestQueryDto) {
+  async findCultureList(dto: ApiPlaceGetCultureRequestQueryDto) {
     const cultureList: PlaceEntity[] = await this.placeQueryRepository.findList(dto);
     if (!cultureList || cultureList.length === 0) {
       return { items: [] };
     }
 
-    const apiPlaceCultureGetResponseDto: ApiPlaceCultureGetResponseDto[] = plainToInstance(
-      ApiPlaceCultureGetResponseDto,
+    const apiPlaceCultureGetResponseDto: ApiPlaceGetCultureResponseDto[] = plainToInstance(
+      ApiPlaceGetCultureResponseDto,
       cultureList,
       {
         excludeExtraneousValues: true,
@@ -43,22 +43,22 @@ export class PlaceService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const apiPlaceCultureDetailGetResponseDto: ApiPlaceCultureDetailGetResponseDto =
-      plainToInstance(ApiPlaceCultureDetailGetResponseDto, culture, {
+    const apiPlaceCultureDetailGetResponseDto: ApiPlaceGetCultureDetailResponseDto =
+      plainToInstance(ApiPlaceGetCultureDetailResponseDto, culture, {
         excludeExtraneousValues: true,
       });
 
     return apiPlaceCultureDetailGetResponseDto;
   }
 
-  async findExhibitionList(dto: ApiPlaceExhibitionGetRequestQueryDto) {
+  async findExhibitionList(dto: ApiPlaceGetExhibitionRequestQueryDto) {
     const exhibitionList: PlaceEntity[] = await this.placeQueryRepository.findExhibitionList(dto);
     if (!exhibitionList || exhibitionList.length === 0) {
       return { items: [] };
     }
 
-    const apiPlaceExhibitionGetResponseDto: ApiPlaceExhibitionGetResponseDto[] = plainToInstance(
-      ApiPlaceExhibitionGetResponseDto,
+    const apiPlaceExhibitionGetResponseDto: ApiPlaceGetExhibitionResponseDto[] = plainToInstance(
+      ApiPlaceGetExhibitionResponseDto,
       exhibitionList,
       {
         excludeExtraneousValues: true,
@@ -71,14 +71,14 @@ export class PlaceService {
     return { items: apiPlaceExhibitionGetResponseDto, last_item_id };
   }
 
-  async findPopupList(dto: ApiPlacePopupGetRequestQueryDto) {
+  async findPopupList(dto: ApiPlaceGetPopupRequestQueryDto) {
     const popupList: PlaceEntity[] = await this.placeQueryRepository.findPopupList(dto);
     if (!popupList || popupList.length === 0) {
       return { items: [] };
     }
 
-    const apiPlacePopupGetResponseDto: ApiPlacePopupGetResponseDto[] = plainToInstance(
-      ApiPlacePopupGetResponseDto,
+    const apiPlacePopupGetResponseDto: ApiPlaceGetPopupResponseDto[] = plainToInstance(
+      ApiPlaceGetPopupResponseDto,
       popupList,
       {
         excludeExtraneousValues: true,
@@ -96,8 +96,8 @@ export class PlaceService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const apiPlaceDetailGetResponseDto: ApiPlaceDetailGetResponseDto = plainToInstance(
-      ApiPlaceDetailGetResponseDto,
+    const apiPlaceDetailGetResponseDto: ApiPlaceGetDetailResponseDto = plainToInstance(
+      ApiPlaceGetDetailResponseDto,
       placeDetail,
       {
         excludeExtraneousValues: true,

@@ -5,11 +5,11 @@ import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-respo
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { ApiSubwayCheckGetRequestQueryDto } from 'src/subway/dto/api-subway-check-get-request-query.dto';
-import { ApiSubwayCheckGetResponseDto } from 'src/subway/dto/api-subway-check-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from 'src/subway/dto/api-subway-list-get-request-query.dto';
-import { ApiSubwayListGetResponseDto } from 'src/subway/dto/api-subway-list-get-response.dto';
-import { ApiSubwayLineGetResponseDto } from './dto/api-subway-line-get-response.dto';
+import { ApiSubwayGetCheckRequestQueryDto } from 'src/subway/dto/api-subway-get-check-request-query.dto';
+import { ApiSubwayGetCheckResponseDto } from 'src/subway/dto/api-subway-get-check-response.dto';
+import { ApiSubwayGetListRequestQueryDto } from 'src/subway/dto/api-subway-get-list-request-query.dto';
+import { ApiSubwayGetListResponseDto } from 'src/subway/dto/api-subway-get-list-response.dto';
+import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
 import { SubwayService } from './subway.service';
 
 @ApiTags('지하철')
@@ -24,7 +24,7 @@ export class SubwayController {
     summary: '지하철 역 리스트 조회',
     description: '지하철 역 리스트 조회',
   })
-  @ApiSuccessResponse(ApiSubwayListGetResponseDto, {
+  @ApiSuccessResponse(ApiSubwayGetListResponseDto, {
     description: '지하철 역 리스트 조회 성공',
     status: HttpStatus.OK,
   })
@@ -32,7 +32,7 @@ export class SubwayController {
     description: '조회한 지하철역 호선이 없는 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async subwayStationList(@Query() dto: ApiCourseSubwayListGetRequestQueryDto) {
+  async subwayStationList(@Query() dto: ApiSubwayGetListRequestQueryDto) {
     return await this.subwayService.subwayStationList(dto);
   }
 
@@ -41,7 +41,7 @@ export class SubwayController {
     summary: '지하철 역 호선 조회',
     description: '지하철 역 호선 조회',
   })
-  @ApiSuccessResponse(ApiSubwayLineGetResponseDto, {
+  @ApiSuccessResponse(ApiSubwayGetLineResponseDto, {
     description: '지하철 역 호선 조회 성공',
     status: HttpStatus.OK,
   })
@@ -54,11 +54,11 @@ export class SubwayController {
     summary: '지하철 역 커스텀 체크',
     description: '지하철 역 커스텀 체크',
   })
-  @ApiSuccessResponse(ApiSubwayCheckGetResponseDto, {
+  @ApiSuccessResponse(ApiSubwayGetCheckResponseDto, {
     description: '지하철 역 커스텀 체크 성공',
     status: HttpStatus.OK,
   })
-  async subwayCustomsCheck(@Query() dto: ApiSubwayCheckGetRequestQueryDto) {
+  async subwayCustomsCheck(@Query() dto: ApiSubwayGetCheckRequestQueryDto) {
     return await this.subwayService.subwayCustomsCheck(dto);
   }
 }

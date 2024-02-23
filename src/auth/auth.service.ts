@@ -2,15 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from 'src/config/config.service';
 import { UserService } from 'src/user/user.service';
-import { ValidateAuthInputDto } from './dto/validate-auth.dto';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 import { generateUUID } from 'src/commons/util/uuid';
-import { SilentRefreshAuthOutputDto } from './dto/silent-refresh-auth.dto';
+import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
 import { isEmpty } from 'class-validator';
-import { LogoutAuthOutputDto } from './dto/logout.dto';
+import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,17 +19,6 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
-
-  async validateUser(validateAuthInputDto: ValidateAuthInputDto) {
-    try {
-      const { email } = validateAuthInputDto;
-      const user = await this.userService.getUser({ email });
-      if (!user) return { ok: false, error: '존재하지 않는 이메일 계정입니다.' };
-      return { ok: true, data: user };
-    } catch (error) {
-      return { ok: false, error: '로그인 인증에 실패하였습니다.' };
-    }
-  }
 
   async googleLogin(req: GoogleRequest, res: Response) {
     try {
@@ -187,7 +175,7 @@ export class AuthService {
     }
   }
 
-  async silentRefresh(req: Request, res: Response): Promise<SilentRefreshAuthOutputDto> {
+  async silentRefresh(req: Request, res: Response): Promise<ApiAuthPostUserRefreshResponseDto> {
     try {
       const getRefreshToken = req.cookies['refresh_token'];
       if (isEmpty(getRefreshToken)) {
@@ -203,8 +191,6 @@ export class AuthService {
             return { ok: false, error: '토큰이 유효하지 않습니다. 로그인이 필요합니다' };
           }
           userId = decoded.aud;
-          // 이벤트 루프를 거치면 null이다 !
-          // 왜냐면 콜백이다.
         },
       );
 
@@ -233,7 +219,7 @@ export class AuthService {
     }
   }
 
-  async logout(user, res): Promise<LogoutAuthOutputDto> {
+  async logout(user, res): Promise<ApiAuthPostUserLogoutResponseDto> {
     try {
       if (isEmpty(user.id)) return { ok: false, error: '접근 권한을 가지고 있지 않습니다' };
 

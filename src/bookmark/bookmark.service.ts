@@ -12,7 +12,7 @@ import { UserQueryRepository } from 'src/user/user.query.repository';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
 import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
-import { ApiBookmarkDetailGetResponseDto } from './dto/api-bookmark-detail-get-response.dto';
+import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
 
 @Injectable()
 export class BookmarkService {
@@ -55,7 +55,7 @@ export class BookmarkService {
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
 
-    const myCourseDetailResDto = new ApiBookmarkDetailGetResponseDto({
+    const myCourseDetailResDto = new ApiBookmarkGetDetailResponseDto({
       course_uuid: course.course_uuid,
       my_course_uuid: course.uuid,
       my_course_name: course.course_name,

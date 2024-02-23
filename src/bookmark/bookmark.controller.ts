@@ -21,7 +21,7 @@ import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BookmarkService } from './bookmark.service';
-import { ApiBookmarkDetailGetResponseDto } from './dto/api-bookmark-detail-get-response.dto';
+import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
 import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
 
@@ -53,7 +53,7 @@ export class BookmarkController {
     description: '북마크 상세',
     deprecated: true,
   })
-  @ApiSuccessResponse(ApiBookmarkDetailGetResponseDto, {
+  @ApiSuccessResponse(ApiBookmarkGetDetailResponseDto, {
     description: '북마크 상세 조회 성공',
     status: HttpStatus.OK,
   })

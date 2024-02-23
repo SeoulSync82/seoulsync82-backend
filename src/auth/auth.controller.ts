@@ -21,8 +21,8 @@ import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor
 import { ConfigService } from 'src/config/config.service';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { EnhancedRequest } from './dto/login-cookie-request.dto';
-import { LogoutAuthOutputDto } from './dto/logout.dto';
+import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
+import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
 @ApiTags('계정')
@@ -137,7 +137,10 @@ export class AuthController {
     summary: '로그인 연장',
     description: '로그인 연장',
   })
-  async silentRefresh(@Req() req: EnhancedRequest, @Res({ passthrough: true }) res: Response) {
+  async silentRefresh(
+    @Req() req: ApiAuthPostUserRefreshRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     return await this.authService.silentRefresh(req, res);
   }
 
@@ -151,7 +154,7 @@ export class AuthController {
   async logout(
     @Res({ passthrough: true }) res: Response,
     @CurrentUser() user,
-  ): Promise<LogoutAuthOutputDto> {
+  ): Promise<ApiAuthPostUserLogoutResponseDto> {
     return await this.authService.logout(user, res);
   }
 }

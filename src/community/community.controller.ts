@@ -26,11 +26,11 @@ import { NotificationInterceptor } from 'src/commons/interceptors/notification.i
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { CommunityService } from './community.service';
-import { ApiCommunityDetailGetResponseDto } from './dto/api-community-detail-get-response.dto';
+import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
 import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
 import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
-import { ApiCommunityMyCourseGetRequestQueryDto } from './dto/api-community-my-course-get-request-query.dto';
-import { ApiCommunityMyCourseGetResponseDto } from './dto/api-community-my-course-get-response.dto';
+import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
+import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
 import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
 import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
 
@@ -81,12 +81,12 @@ export class CommunityController {
     summary: '커뮤니티 글쓰기 - 내 코스 추천내역',
     description: '커뮤니티 글쓰기 - 내 코스 추천내역',
   })
-  @ApiArraySuccessResponse(ApiCommunityMyCourseGetResponseDto, {
+  @ApiArraySuccessResponse(ApiCommunityGetMyCourseResponseDto, {
     description: '커뮤니티 글쓰기 - 내 코스 추천내역 조회 성공',
     status: HttpStatus.OK,
   })
   async communityMyCourseList(
-    @Query() dto: ApiCommunityMyCourseGetRequestQueryDto,
+    @Query() dto: ApiCommunityGetMyCourseRequestQueryDto,
     @CurrentUser() user,
   ) {
     return await this.communityService.communityMyCourseList(dto, user);
@@ -114,7 +114,7 @@ export class CommunityController {
     summary: '커뮤니티 상세',
     description: '커뮤니티 상세',
   })
-  @ApiSuccessResponse(ApiCommunityDetailGetResponseDto, {
+  @ApiSuccessResponse(ApiCommunityGetDetailResponseDto, {
     description: '커뮤니티 상세 조회 성공',
     status: HttpStatus.OK,
   })

@@ -21,16 +21,16 @@ import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exce
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { CourseService } from './course.service';
-import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
-import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-history-get-request-query.dto';
-import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-get-response.dto';
-import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
-import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
-import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
-import { ApiSubwayCheckGetRequestQueryDto } from '../subway/dto/api-subway-check-get-request-query.dto';
-import { ApiSubwayCheckGetResponseDto } from '../subway/dto/api-subway-check-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from '../subway/dto/api-subway-list-get-request-query.dto';
-import { ApiSubwayListGetResponseDto } from '../subway/dto/api-subway-list-get-response.dto';
+import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
+import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
+import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-history-response.dto';
+import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
+import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
+import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
+import { ApiSubwayGetCheckRequestQueryDto } from '../subway/dto/api-subway-get-check-request-query.dto';
+import { ApiSubwayGetCheckResponseDto } from '../subway/dto/api-subway-get-check-response.dto';
+import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-list-request-query.dto';
+import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -46,7 +46,7 @@ export class CourseController {
     summary: 'AI 코스 추천 - 회원',
     description: 'AI 코스 추천 - 회원',
   })
-  @ApiSuccessResponse(ApiCourseRecommendPostResponseDto, {
+  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
     description: 'AI 코스 추천 완료',
     status: HttpStatus.CREATED,
   })
@@ -56,7 +56,7 @@ export class CourseController {
   })
   async courseMemberRecommend(
     @CurrentUser() user,
-    @Body() dto: ApiCourseRecommendPostRequestBodyDto,
+    @Body() dto: ApiCoursePostRecommendRequestBodyDto,
   ) {
     return await this.courseService.courseMemberRecommend(user, dto);
   }
@@ -66,7 +66,7 @@ export class CourseController {
     summary: 'AI 코스 추천 - 비회원',
     description: 'AI 코스 추천 - 비회원',
   })
-  @ApiSuccessResponse(ApiCourseRecommendPostResponseDto, {
+  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
     description: 'AI 코스 추천 완료',
     status: HttpStatus.OK,
   })
@@ -74,7 +74,7 @@ export class CourseController {
     description: '선택한 지하철역에 custom이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseGuestRecommend(@Query() dto: ApiCourseRecommendPostRequestBodyDto) {
+  async courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
     return await this.courseService.courseGuestRecommend(dto);
   }
 
@@ -85,12 +85,12 @@ export class CourseController {
     summary: '내 코스 추천내역',
     description: '내 코스 추천내역',
   })
-  @ApiArraySuccessResponse(ApiCourseMyHistoryGetResponseDto, {
+  @ApiArraySuccessResponse(ApiCourseGetMyHistoryResponseDto, {
     description: '내 코스 추천내역 조회 성공',
     status: HttpStatus.OK,
   })
   async myCourseRecommandHistory(
-    @Query() dto: ApiCourseMyHistoryGetRequestQueryDto,
+    @Query() dto: ApiCourseGetMyHistoryRequestQueryDto,
     @CurrentUser() user,
   ) {
     return await this.courseService.myCourseRecommandHistory(dto, user);
@@ -103,7 +103,7 @@ export class CourseController {
     summary: '코스 상세',
     description: '코스 상세',
   })
-  @ApiSuccessResponse(ApiCourseDetailGetResponseDto, {
+  @ApiSuccessResponse(ApiCourseGetDetailResponseDto, {
     description: '코스 상세 조회 성공',
     status: HttpStatus.OK,
   })
@@ -126,7 +126,7 @@ export class CourseController {
     summary: '코스 장소별 목록',
     description: '코스 장소별 목록',
   })
-  @ApiSuccessResponse(ApiCoursePlaceListGetResponseDto, {
+  @ApiSuccessResponse(ApiCourseGetPlaceListResponseDto, {
     description: '코스 장소별 목록 조회 성공',
     status: HttpStatus.OK,
   })

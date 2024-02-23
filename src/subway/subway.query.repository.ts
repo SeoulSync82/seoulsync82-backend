@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { assertCompositeType } from 'graphql';
-import { ApiSubwayCheckGetRequestQueryDto } from 'src/subway/dto/api-subway-check-get-request-query.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from 'src/subway/dto/api-subway-list-get-request-query.dto';
+import { ApiSubwayGetCheckRequestQueryDto } from 'src/subway/dto/api-subway-get-check-request-query.dto';
+import { ApiSubwayGetListRequestQueryDto } from 'src/subway/dto/api-subway-get-list-request-query.dto';
 import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { SubwayStationEntity } from 'src/entities/subway_station.entity';
@@ -24,7 +24,7 @@ export class SubwayQueryRepository {
     });
   }
 
-  async groupByCustoms(dto: ApiSubwayCheckGetRequestQueryDto) {
+  async groupByCustoms(dto: ApiSubwayGetCheckRequestQueryDto) {
     return await this.repository
       .createQueryBuilder('subway')
       .select('subway.place_type', 'type')
@@ -37,7 +37,7 @@ export class SubwayQueryRepository {
       .getRawMany();
   }
 
-  async findSubwayCurrentCulture(dto: ApiSubwayCheckGetRequestQueryDto) {
+  async findSubwayCurrentCulture(dto: ApiSubwayGetCheckRequestQueryDto) {
     const now = new Date();
 
     return await this.repository
@@ -57,7 +57,7 @@ export class SubwayQueryRepository {
       .getRawMany();
   }
 
-  async subwayStationList(dto: ApiCourseSubwayListGetRequestQueryDto) {
+  async subwayStationList(dto: ApiSubwayGetListRequestQueryDto) {
     return await this.subwayStationRepository.find({
       where: { line_uuid: dto.line_uuid },
       order: { id: 'ASC' },

@@ -20,16 +20,16 @@ import { CommunityQueryRepository } from 'src/community/community.query.reposito
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { ReactionEntity } from 'src/entities/reaction.entity';
-import { ApiCourseRecommendPostRequestBodyDto } from './dto/api-course-recommend-post-request-body.dto';
-import { ApiSubwayCheckGetRequestQueryDto } from '../subway/dto/api-subway-check-get-request-query.dto';
-import { ApiCourseRecommendPostResponseDto } from './dto/api-course-recommend-post-response.dto';
-import { ApiSubwayCheckGetResponseDto } from '../subway/dto/api-subway-check-get-response.dto';
-import { ApiCourseMyHistoryGetRequestQueryDto } from './dto/api-course-my-history-get-request-query.dto';
-import { ApiCourseMyHistoryGetResponseDto } from './dto/api-course-my-history-get-response.dto';
-import { ApiCourseDetailGetResponseDto } from './dto/api-course-detail-get-response.dto';
-import { ApiCoursePlaceListGetResponseDto } from './dto/api-course-place-list-get-response.dto';
-import { ApiCourseSubwayListGetRequestQueryDto } from '../subway/dto/api-subway-list-get-request-query.dto';
-import { ApiSubwayListGetResponseDto } from '../subway/dto/api-subway-list-get-response.dto';
+import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
+import { ApiSubwayGetCheckRequestQueryDto } from '../subway/dto/api-subway-get-check-request-query.dto';
+import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
+import { ApiSubwayGetCheckResponseDto } from '../subway/dto/api-subway-get-check-response.dto';
+import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
+import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-history-response.dto';
+import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
+import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
+import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-list-request-query.dto';
+import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
 
 @Injectable()
 export class CourseService {
@@ -43,7 +43,7 @@ export class CourseService {
     private readonly reactionQueryRepository: ReactionQueryRepository,
   ) {}
 
-  async courseMemberRecommend(user, dto: ApiCourseRecommendPostRequestBodyDto) {
+  async courseMemberRecommend(user, dto: ApiCoursePostRecommendRequestBodyDto) {
     let customs: string[] = dto.customs;
 
     const countCustoms = dto.customs.reduce((acc, type) => {
@@ -201,7 +201,7 @@ export class CourseService {
 
     const subway = await this.subwayQueryRepository.findSubway(dto.subway);
 
-    const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
+    const apiCourseRecommendPostResponseDto = new ApiCoursePostRecommendResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
       line: subway.map((item) => item.line),
@@ -238,7 +238,7 @@ export class CourseService {
     return apiCourseRecommendPostResponseDto;
   }
 
-  async courseGuestRecommend(dto: ApiCourseRecommendPostRequestBodyDto) {
+  async courseGuestRecommend(dto: ApiCoursePostRecommendRequestBodyDto) {
     let customs: string[] = dto.customs;
 
     const countCustoms = dto.customs.reduce((acc, type) => {
@@ -367,7 +367,7 @@ export class CourseService {
 
     const subway = await this.subwayQueryRepository.findSubway(dto.subway);
 
-    const apiCourseRecommendPostResponseDto = new ApiCourseRecommendPostResponseDto({
+    const apiCourseRecommendPostResponseDto = new ApiCoursePostRecommendResponseDto({
       uuid: generateUUID(),
       subway: dto.subway,
       line: subway.map((item) => item.line),
@@ -380,7 +380,7 @@ export class CourseService {
     return DetailResponseDto.from(apiCourseRecommendPostResponseDto);
   }
 
-  async myCourseRecommandHistory(dto: ApiCourseMyHistoryGetRequestQueryDto, user) {
+  async myCourseRecommandHistory(dto: ApiCourseGetMyHistoryRequestQueryDto, user) {
     const courseList = await this.courseQueryRepository.findMyCourse(dto, user);
     if (courseList.length === 0) {
       return { items: [] };
@@ -391,7 +391,7 @@ export class CourseService {
     );
 
     const apiCourseMyHistoryGetResponseDto = plainToInstance(
-      ApiCourseMyHistoryGetResponseDto,
+      ApiCourseGetMyHistoryResponseDto,
       courseList,
       {
         excludeExtraneousValues: true,
@@ -425,7 +425,7 @@ export class CourseService {
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
-    const apiCourseDetailGetResponseDto = new ApiCourseDetailGetResponseDto({
+    const apiCourseDetailGetResponseDto = new ApiCourseGetDetailResponseDto({
       course_uuid: uuid,
       course_name: course.course_name,
       subway: course.subway,
@@ -458,7 +458,7 @@ export class CourseService {
     }
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
-    const apiCoursePlaceListGetResponseDto = new ApiCoursePlaceListGetResponseDto({
+    const apiCoursePlaceListGetResponseDto = new ApiCourseGetPlaceListResponseDto({
       course_uuid: uuid,
       course_name: course.course_name,
       place: plainToInstance(

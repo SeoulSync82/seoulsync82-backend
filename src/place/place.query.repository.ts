@@ -1,12 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApiCourseRecommendPostRequestBodyDto } from 'src/course/dto/api-course-recommend-post-request-body.dto';
+import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-post-recommend-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
 import { LessThan, MoreThan, Repository, Like, In } from 'typeorm';
-import { ApiPlaceCultureGetRequestQueryDto } from './dto/api-place-culture-get-request-query.dto';
-import { ApiPlaceExhibitionGetRequestQueryDto } from './dto/api-place-exhibition-get-request-query.dto';
-import { ApiPlacePopupGetRequestQueryDto } from './dto/api-place-popup-get-request-query.dto';
+import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
+import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
+import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
 
 export class PlaceQueryRepository {
   constructor(
@@ -16,7 +16,7 @@ export class PlaceQueryRepository {
     private subwayRepository: Repository<SubwayEntity>,
   ) {}
 
-  async findList(dto: ApiPlaceCultureGetRequestQueryDto): Promise<PlaceEntity[]> {
+  async findList(dto: ApiPlaceGetCultureRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
 
     const q = await this.repository
@@ -36,7 +36,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findExhibitionList(dto: ApiPlaceExhibitionGetRequestQueryDto): Promise<PlaceEntity[]> {
+  async findExhibitionList(dto: ApiPlaceGetExhibitionRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
     const whereConditions = { place_type: '전시', end_date: MoreThan(now) };
     let orderType = {};
@@ -58,7 +58,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findPopupList(dto: ApiPlacePopupGetRequestQueryDto): Promise<PlaceEntity[]> {
+  async findPopupList(dto: ApiPlaceGetPopupRequestQueryDto): Promise<PlaceEntity[]> {
     const now = new Date();
     const whereConditions = {
       place_type: '팝업',
@@ -110,7 +110,7 @@ export class PlaceQueryRepository {
 
   async findSubwayPlaceList(
     customs,
-    dto: ApiCourseRecommendPostRequestBodyDto,
+    dto: ApiCoursePostRecommendRequestBodyDto,
   ): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
@@ -122,7 +122,7 @@ export class PlaceQueryRepository {
       .getMany();
   }
 
-  async findSubwayCultureList(dto: ApiCourseRecommendPostRequestBodyDto): Promise<PlaceEntity[]> {
+  async findSubwayCultureList(dto: ApiCoursePostRecommendRequestBodyDto): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')

@@ -6,7 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { isEmpty } from 'class-validator';
 import { ERROR } from 'src/auth/constants/error';
 import { plainToInstance } from 'class-transformer';
-import { ApiUserProfileGetResponseDto } from './dto/api-user-profile-get-response.dto';
+import { ApiUserGetProfileResponseDto } from './dto/api-user-get-profile-response.dto';
 
 @Injectable()
 export class UserService {
@@ -54,7 +54,7 @@ export class UserService {
     }
 
     const apiUserProfileGetResponseDto = plainToInstance(
-      ApiUserProfileGetResponseDto,
+      ApiUserGetProfileResponseDto,
       userProfile,
       { excludeExtraneousValues: true },
     );
