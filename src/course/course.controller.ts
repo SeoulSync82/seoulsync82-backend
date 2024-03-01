@@ -31,6 +31,8 @@ import { ApiSubwayGetCheckRequestQueryDto } from '../subway/dto/api-subway-get-c
 import { ApiSubwayGetCheckResponseDto } from '../subway/dto/api-subway-get-check-response.dto';
 import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-list-request-query.dto';
 import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
+import { ApiCourseGetRecommendRequestBodyDto } from './dto/api-course-get-recommend-request-body.dto';
+import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -39,12 +41,29 @@ import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-r
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
+  @Get('/guest/recommend')
+  @ApiOperation({
+    summary: 'AI 코스 추천 - 비회원',
+    description: 'AI 코스 추천 - 비회원',
+  })
+  @ApiSuccessResponse(ApiCourseGetRecommendResponseDto, {
+    description: 'AI 코스 추천 완료',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async courseRecommend(@Query() dto: ApiCourseGetRecommendRequestBodyDto) {
+    return await this.courseService.courseGuestRecommend(dto);
+  }
+
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('/member/recommend')
+  @Post('/member/recommend/deprecated')
   @ApiOperation({
-    summary: 'AI 코스 추천 - 회원',
-    description: 'AI 코스 추천 - 회원',
+    summary: '#deprecated AI 코스 추천 - 회원',
+    description: '#deprecated AI 코스 추천 - 회원',
     deprecated: true,
   })
   @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
@@ -59,13 +78,13 @@ export class CourseController {
     @CurrentUser() user,
     @Body() dto: ApiCoursePostRecommendRequestBodyDto,
   ) {
-    return await this.courseService.courseMemberRecommend(user, dto);
+    return await this.courseService.old_courseMemberRecommend(user, dto);
   }
 
-  @Get('/guest/recommend')
+  @Get('/guest/recommend/deprecated')
   @ApiOperation({
-    summary: 'AI 코스 추천 - 비회원',
-    description: 'AI 코스 추천 - 비회원',
+    summary: '#deprecated AI 코스 추천 - 비회원',
+    description: '#deprecated AI 코스 추천 - 비회원',
     deprecated: true,
   })
   @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
@@ -77,7 +96,7 @@ export class CourseController {
     status: HttpStatus.NOT_FOUND,
   })
   async courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
-    return await this.courseService.courseGuestRecommend(dto);
+    return await this.courseService.old_courseGuestRecommend(dto);
   }
 
   @UseGuards(JwtAuthGuard)

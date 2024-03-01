@@ -1,4 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApiCourseGetRecommendRequestBodyDto } from 'src/course/dto/api-course-get-recommend-request-body.dto';
 import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-post-recommend-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
@@ -108,7 +109,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findSubwayPlaceList(
+  async old_findSubwayPlaceList(
     customs,
     dto: ApiCoursePostRecommendRequestBodyDto,
   ): Promise<PlaceEntity[]> {
@@ -118,6 +119,16 @@ export class PlaceQueryRepository {
       .where('s.line = :line', { line: dto.line })
       .andWhere('s.name = :name', { name: dto.subway })
       .andWhere('s.place_type IN (:...types)', { types: customs })
+      .andWhere('s.kakao_rating = :rating', { rating: 1 })
+      .getMany();
+  }
+
+  async findSubwayPlaceList(dto: ApiCourseGetRecommendRequestBodyDto): Promise<PlaceEntity[]> {
+    return await this.repository
+      .createQueryBuilder('p')
+      .innerJoinAndSelect('p.subways', 's')
+      .andWhere('s.name = :name', { name: dto.subway })
+      .andWhere('s.place_type IN (:...types)', { types: ['음식점', '카페', '술집'] })
       .andWhere('s.kakao_rating = :rating', { rating: 1 })
       .getMany();
   }
