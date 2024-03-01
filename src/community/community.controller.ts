@@ -33,6 +33,7 @@ import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-
 import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
 import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
 import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
@@ -68,7 +69,7 @@ export class CommunityController {
   })
   async communityPost(
     @Param('uuid') uuid: string,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommunityPostRequestBodyDto,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityPost(uuid, user, dto);
@@ -87,7 +88,7 @@ export class CommunityController {
   })
   async communityMyCourseList(
     @Query() dto: ApiCommunityGetMyCourseRequestQueryDto,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
   ) {
     return await this.communityService.communityMyCourseList(dto, user);
   }
@@ -103,7 +104,7 @@ export class CommunityController {
     description: '커뮤니티 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async communityList(@Query() dto: ApiCommunityGetRequestQueryDto, @CurrentUser() user) {
+  async communityList(@Query() dto: ApiCommunityGetRequestQueryDto, @CurrentUser() user: UserDto) {
     return await this.communityService.communityList(dto, user);
   }
 
@@ -154,7 +155,7 @@ export class CommunityController {
     description: '커뮤니티 uuid',
   })
   async communityPut(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommunityPutRequestBodyDto,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
@@ -183,7 +184,7 @@ export class CommunityController {
     description: '커뮤니티 uuid',
   })
   async communityDelete(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityDelete(user, uuid);
@@ -216,7 +217,7 @@ export class CommunityController {
   })
   @UseInterceptors(NotificationInterceptor)
   async communityReaction(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
     @Req() req,
   ): Promise<DetailResponseDto> {
@@ -251,7 +252,7 @@ export class CommunityController {
     description: '커뮤니티 uuid',
   })
   async communityReactionDelete(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
     return await this.communityService.communityReactionDelete(user, uuid);

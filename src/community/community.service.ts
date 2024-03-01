@@ -22,6 +22,7 @@ import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-
 import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
 import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class CommunityService {
@@ -33,7 +34,7 @@ export class CommunityService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async communityPost(uuid, user, dto: ApiCommunityPostRequestBodyDto) {
+  async communityPost(uuid, user: UserDto, dto: ApiCommunityPostRequestBodyDto) {
     const course = await this.courseQueryRepository.findOne(uuid);
     if (isEmpty(course)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -57,7 +58,7 @@ export class CommunityService {
     return DetailResponseDto.uuid(communityEntity.uuid);
   }
 
-  async communityMyCourseList(dto: ApiCommunityGetMyCourseRequestQueryDto, user) {
+  async communityMyCourseList(dto: ApiCommunityGetMyCourseRequestQueryDto, user: UserDto) {
     const myCourseList: CourseEntity[] = await this.courseQueryRepository.findMyCourse(dto, user);
     if (myCourseList.length === 0) {
       return { items: [] };
@@ -182,7 +183,7 @@ export class CommunityService {
     return apiCommunityDetailGetResponseDto;
   }
 
-  async communityPut(user, dto: CommunityPutReqDto, uuid) {
+  async communityPut(user: UserDto, dto: CommunityPutReqDto, uuid) {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community) || community.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -196,7 +197,7 @@ export class CommunityService {
     return DetailResponseDto.uuid(uuid);
   }
 
-  async communityDelete(user, uuid) {
+  async communityDelete(user: UserDto, uuid) {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (!community || community.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -209,7 +210,7 @@ export class CommunityService {
     return DetailResponseDto.uuid(uuid);
   }
 
-  async communityReaction(user, uuid) {
+  async communityReaction(user: UserDto, uuid) {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -243,7 +244,7 @@ export class CommunityService {
     return DetailResponseDto.notification({ uuid }, notification);
   }
 
-  async communityReactionDelete(user, uuid) {
+  async communityReactionDelete(user: UserDto, uuid) {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);

@@ -13,6 +13,7 @@ import { isEmpty } from 'src/commons/util/is/is-empty';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
 import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
 import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class BookmarkService {
@@ -23,7 +24,7 @@ export class BookmarkService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async bookmarkList(dto: ApiBookmarkGetRequestQueryDto, user) {
+  async bookmarkList(dto: ApiBookmarkGetRequestQueryDto, user: UserDto) {
     const courseList = await this.bookmarkQueryRepository.find(dto, user);
     if (courseList.length === 0) {
       return { items: [] };
@@ -77,7 +78,7 @@ export class BookmarkService {
     return myCourseDetailResDto;
   }
 
-  async bookmarkSave(user, uuid) {
+  async bookmarkSave(user: UserDto, uuid) {
     const course = await this.courseQueryRepository.findCourse(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);

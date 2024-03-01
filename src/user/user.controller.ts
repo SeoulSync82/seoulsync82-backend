@@ -20,6 +20,7 @@ import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exce
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { ApiUserPutUpdateRequestBodyDto } from './dto/api-user-put-update-request-body.dto';
+import { UserDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('사용자')
@@ -42,7 +43,7 @@ export class UserController {
   })
   async profileUpdate(
     @Body(BadWordsPipe) dto: ApiUserPutUpdateRequestBodyDto,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
   ) {
     return await this.userService.profileUpdate(dto, user);
   }
@@ -83,7 +84,7 @@ export class UserController {
     description: '유저 uuid가 없을 경우' || '해당 유저 정보가 없을 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async getProfile(@CurrentUser() user) {
+  async getProfile(@CurrentUser() user: UserDto) {
     return await this.userService.getProfile(user);
   }
 }

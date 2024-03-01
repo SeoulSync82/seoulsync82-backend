@@ -7,6 +7,7 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 import { ApiSearchGetDetailResponseDto } from './dto/api-search-get-detail-response.dto';
 import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
 import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
@@ -22,7 +23,7 @@ export class SearchService {
     private readonly searchQueryLogRepository: SearchQueryLogRepository,
   ) {}
 
-  async searchPlace(dto: ApiSearchGetRequestQueryDto, user) {
+  async searchPlace(dto: ApiSearchGetRequestQueryDto, user: UserDto) {
     const searchLog: SearchLogEntity[] = await this.searchQueryLogRepository.findLog(
       dto.search,
       user,
@@ -71,7 +72,7 @@ export class SearchService {
     return { items: result };
   }
 
-  async searchRecent(user) {
+  async searchRecent(user: UserDto) {
     const searchLog = await this.searchQueryLogRepository.find(user);
     if (searchLog.length === 0) {
       return ResponseDataDto.from([], null, 0);
@@ -80,7 +81,7 @@ export class SearchService {
     return ResponseDataDto.from(searchLog, null, 0);
   }
 
-  async deleteSearchLog(uuid, user) {
+  async deleteSearchLog(uuid, user: UserDto) {
     const userSearchLog = await this.searchQueryLogRepository.findUserSearchLog(uuid, user);
     if (isEmpty(userSearchLog)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -91,7 +92,7 @@ export class SearchService {
     return DetailResponseDto.uuid(uuid);
   }
 
-  async deleteAllSearchLog(user) {
+  async deleteAllSearchLog(user: UserDto) {
     const userAllSearchLog: SearchLogEntity[] =
       await this.searchQueryLogRepository.findUserSearchLogList(user);
     if (userAllSearchLog.length === 0) {

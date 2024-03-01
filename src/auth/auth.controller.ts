@@ -24,6 +24,7 @@ import { AuthService } from './auth.service';
 import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
 import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('계정')
 @Controller()
@@ -153,7 +154,7 @@ export class AuthController {
   })
   async logout(
     @Res({ passthrough: true }) res: Response,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
   ): Promise<ApiAuthPostUserLogoutResponseDto> {
     return await this.authService.logout(user, res);
   }

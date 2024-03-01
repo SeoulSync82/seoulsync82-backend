@@ -36,6 +36,7 @@ import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend
 import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
 import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
 import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -44,29 +45,12 @@ import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-plac
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
-  @Get('/guest/recommend')
-  @ApiOperation({
-    summary: 'AI 코스 추천 - 비회원',
-    description: 'AI 코스 추천 - 비회원',
-  })
-  @ApiSuccessResponse(ApiCourseGetRecommendResponseDto, {
-    description: 'AI 코스 추천 완료',
-    status: HttpStatus.OK,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  async courseGuestRecommend(@Query() dto: ApiCourseGetRecommendRequestQueryDto) {
-    return await this.courseService.courseGuestRecommend(dto);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Get('/member/recommend')
+  @UseGuards(JwtOptionalAuthGuard)
+  @Get('/recommend')
   @ApiOperation({
-    summary: 'AI 코스 추천 - 회원',
-    description: 'AI 코스 추천 - 회원',
+    summary: 'AI 코스 추천',
+    description: 'AI 코스 추천',
   })
   @ApiSuccessResponse(ApiCourseGetRecommendResponseDto, {
     description: 'AI 코스 추천 완료',
@@ -76,11 +60,11 @@ export class CourseController {
     description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseMemberRecommend(
-    @CurrentUser() user,
+  async courseRecommend(
     @Query() dto: ApiCourseGetRecommendRequestQueryDto,
+    @CurrentUser() user?: UserDto,
   ) {
-    return await this.courseService.courseMemberRecommend(user, dto);
+    return await this.courseService.courseRecommend(dto, user);
   }
 
   @Get('/guest/place/customize')
@@ -116,7 +100,7 @@ export class CourseController {
     status: HttpStatus.NOT_FOUND,
   })
   async courseMemberPlaceCustomize(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
   ) {
     return await this.courseService.courseMemberPlaceCustomize(user, dto);
@@ -135,7 +119,7 @@ export class CourseController {
   })
   async myCourseRecommandHistory(
     @Query() dto: ApiCourseGetMyHistoryRequestQueryDto,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
   ) {
     return await this.courseService.myCourseRecommandHistory(dto, user);
   }
@@ -161,7 +145,7 @@ export class CourseController {
     required: false,
     description: '코스 uuid',
   })
-  async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user) {
+  async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user: UserDto) {
     return await this.courseService.courseDetail(uuid, user);
   }
 
@@ -205,7 +189,7 @@ export class CourseController {
     status: HttpStatus.NOT_FOUND,
   })
   async old_courseMemberRecommend(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Body() dto: ApiCoursePostRecommendRequestBodyDto,
   ) {
     return await this.courseService.old_courseMemberRecommend(user, dto);

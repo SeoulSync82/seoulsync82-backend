@@ -20,6 +20,7 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { UserDto } from 'src/user/dto/user.dto';
 import { BookmarkService } from './bookmark.service';
 import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
@@ -43,7 +44,7 @@ export class BookmarkController {
     description: '북마크 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async bookmarkList(@Query() dto: ApiBookmarkGetRequestQueryDto, @CurrentUser() user) {
+  async bookmarkList(@Query() dto: ApiBookmarkGetRequestQueryDto, @CurrentUser() user: UserDto) {
     return await this.bookmarkService.bookmarkList(dto, user);
   }
 
@@ -94,7 +95,10 @@ export class BookmarkController {
     required: false,
     description: '코스 uuid',
   })
-  async bookmarkSave(@CurrentUser() user, @Param('uuid') uuid: string): Promise<DetailResponseDto> {
+  async bookmarkSave(
+    @CurrentUser() user: UserDto,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
     return await this.bookmarkService.bookmarkSave(user, uuid);
   }
 
@@ -118,7 +122,7 @@ export class BookmarkController {
     description: '코스 uuid',
   })
   async bookmarkDelete(
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<DetailResponseDto> {
     return await this.bookmarkService.bookmarkDelete(user, uuid);

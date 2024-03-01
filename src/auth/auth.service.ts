@@ -10,6 +10,7 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
 import { isEmpty } from 'class-validator';
 import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -219,7 +220,7 @@ export class AuthService {
     }
   }
 
-  async logout(user, res): Promise<ApiAuthPostUserLogoutResponseDto> {
+  async logout(user: UserDto, res): Promise<ApiAuthPostUserLogoutResponseDto> {
     try {
       if (isEmpty(user.id)) return { ok: false, error: '접근 권한을 가지고 있지 않습니다' };
 

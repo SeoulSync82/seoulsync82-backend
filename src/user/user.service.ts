@@ -7,6 +7,7 @@ import { isEmpty } from 'class-validator';
 import { ERROR } from 'src/auth/constants/error';
 import { plainToInstance } from 'class-transformer';
 import { ApiUserGetProfileResponseDto } from './dto/api-user-get-profile-response.dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -37,14 +38,14 @@ export class UserService {
     return DetailResponseDto.from(result);
   }
 
-  async profileUpdate(dto, user) {
+  async profileUpdate(dto, user: UserDto) {
     if (dto.name || dto.profile_image) {
       const updateUser = await this.userQueryRepository.updateUser(dto, user);
     }
     return DetailResponseDto.uuid(user.uuid);
   }
 
-  async getProfile(user) {
+  async getProfile(user: UserDto) {
     if (isEmpty(user.uuid)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }

@@ -18,6 +18,7 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { UserDto } from 'src/user/dto/user.dto';
 import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
 import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
 import { NotificationService } from './notification.service';
@@ -40,7 +41,10 @@ export class NotificationController {
     description: '알림 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async notificationList(@Query() dto: ApiNotificationGetListRequestQueryDto, @CurrentUser() user) {
+  async notificationList(
+    @Query() dto: ApiNotificationGetListRequestQueryDto,
+    @CurrentUser() user: UserDto,
+  ) {
     return await this.notificationService.notificationList(dto, user);
   }
 
@@ -66,7 +70,7 @@ export class NotificationController {
   })
   async notificationRead(
     @Param('uuid') uuid: string,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
   ): Promise<DetailResponseDto> {
     return await this.notificationService.notificationRead(uuid, user);
   }

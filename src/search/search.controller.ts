@@ -20,6 +20,7 @@ import { ResponseDto, ResponseDataDto, DetailResponseDto } from 'src/commons/dto
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
+import { UserDto } from 'src/user/dto/user.dto';
 import { ApiSearchGetDetailResponseDto } from './dto/api-search-get-detail-response.dto';
 import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
 import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
@@ -43,7 +44,10 @@ export class SearchController {
     description: '검색 성공',
     status: HttpStatus.OK,
   })
-  async searchPlace(@Query(BadWordsPipe) dto: ApiSearchGetRequestQueryDto, @CurrentUser() user) {
+  async searchPlace(
+    @Query(BadWordsPipe) dto: ApiSearchGetRequestQueryDto,
+    @CurrentUser() user: UserDto,
+  ) {
     return await this.searchService.searchPlace(dto, user);
   }
 
@@ -95,7 +99,7 @@ export class SearchController {
     description: '최근 검색어 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async searchRecent(@CurrentUser() user): Promise<ResponseDataDto> {
+  async searchRecent(@CurrentUser() user: UserDto): Promise<ResponseDataDto> {
     return await this.searchService.searchRecent(user);
   }
 
@@ -116,7 +120,7 @@ export class SearchController {
   })
   async deleteSearchLog(
     @Param('uuid') uuid: string,
-    @CurrentUser() user,
+    @CurrentUser() user: UserDto,
   ): Promise<DetailResponseDto> {
     return await this.searchService.deleteSearchLog(uuid, user);
   }
@@ -136,7 +140,7 @@ export class SearchController {
     description: '최근 검색어가 하나도 존재하지 않을 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async deleteAllSearchLog(@CurrentUser() user) {
+  async deleteAllSearchLog(@CurrentUser() user: UserDto) {
     return await this.searchService.deleteAllSearchLog(user);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
 import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
@@ -14,7 +15,7 @@ export class NotificationService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async notificationList(dto: ApiNotificationGetListRequestQueryDto, user) {
+  async notificationList(dto: ApiNotificationGetListRequestQueryDto, user: UserDto) {
     const notificationList = await this.notificationQueryRepository.findList(dto, user);
     if (notificationList.length === 0) {
       return { items: [] };
@@ -43,7 +44,7 @@ export class NotificationService {
     return { items: apiNotificationListGetResponseDto, last_item_id };
   }
 
-  async notificationRead(uuid, user) {
+  async notificationRead(uuid, user: UserDto) {
     const notification = await this.notificationQueryRepository.findNotification(uuid);
     if (!notification || notification.target_user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
