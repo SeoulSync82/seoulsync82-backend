@@ -8,7 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class ApiCourseGetRecommendRequestBodyDto {
+export class ApiCourseGetRecommendRequestQueryDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({

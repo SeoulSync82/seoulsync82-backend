@@ -22,6 +22,7 @@ import { ApiUserGetProfileResponseDto } from './user/dto/api-user-get-profile-re
 import { ApiSubwayGetListResponseDto } from './subway/dto/api-subway-get-list-response.dto';
 import { ApiSubwayGetLineResponseDto } from './subway/dto/api-subway-get-line-response.dto';
 import { ApiCourseGetRecommendResponseDto } from './course/dto/api-course-get-recommend-response.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from './course/dto/api-course-get-place-customize-response.dto';
 
 export const SwaggerModels = [
   ApiPlaceGetCultureResponseDto,
@@ -47,4 +48,5 @@ export const SwaggerModels = [
   ApiSubwayGetListResponseDto,
   ApiSubwayGetLineResponseDto,
   ApiCourseGetRecommendResponseDto,
+  ApiCourseGetPlaceCustomizeResponseDto,
 ];

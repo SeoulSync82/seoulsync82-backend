@@ -31,9 +31,11 @@ import { ApiSubwayGetCheckRequestQueryDto } from '../subway/dto/api-subway-get-c
 import { ApiSubwayGetCheckResponseDto } from '../subway/dto/api-subway-get-check-response.dto';
 import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-list-request-query.dto';
 import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
-import { ApiCourseGetRecommendRequestBodyDto } from './dto/api-course-get-recommend-request-body.dto';
+import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
 import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
 import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
+import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -55,7 +57,7 @@ export class CourseController {
     description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseGuestRecommend(@Query() dto: ApiCourseGetRecommendRequestBodyDto) {
+  async courseGuestRecommend(@Query() dto: ApiCourseGetRecommendRequestQueryDto) {
     return await this.courseService.courseGuestRecommend(dto);
   }
 
@@ -76,50 +78,26 @@ export class CourseController {
   })
   async courseMemberRecommend(
     @CurrentUser() user,
-    @Query() dto: ApiCourseGetRecommendRequestBodyDto,
+    @Query() dto: ApiCourseGetRecommendRequestQueryDto,
   ) {
     return await this.courseService.courseMemberRecommend(user, dto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @Post('/member/recommend/deprecated')
+  @Get('/guest/place/customize')
   @ApiOperation({
-    summary: '#deprecated AI 코스 추천 - 회원',
-    description: '#deprecated AI 코스 추천 - 회원',
-    deprecated: true,
+    summary: 'AI 코스 장소 추가 - 비회원',
+    description: 'AI 코스 장소 추가 - 비회원',
   })
-  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
-    description: 'AI 코스 추천 완료',
-    status: HttpStatus.CREATED,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 custom이 부족한 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  async old_courseMemberRecommend(
-    @CurrentUser() user,
-    @Body() dto: ApiCoursePostRecommendRequestBodyDto,
-  ) {
-    return await this.courseService.old_courseMemberRecommend(user, dto);
-  }
-
-  @Get('/guest/recommend/deprecated')
-  @ApiOperation({
-    summary: '#deprecated AI 코스 추천 - 비회원',
-    description: '#deprecated AI 코스 추천 - 비회원',
-    deprecated: true,
-  })
-  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
-    description: 'AI 코스 추천 완료',
+  @ApiSuccessResponse(ApiCourseGetPlaceCustomizeResponseDto, {
+    description: 'AI 코스 장소 추가 완료',
     status: HttpStatus.OK,
   })
   @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 custom이 부족한 경우',
+    description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async old_courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
-    return await this.courseService.old_courseGuestRecommend(dto);
+  async courseGuestPlaceCustomize(@Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto) {
+    return await this.courseService.courseGuestPlaceCustomize(dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -186,5 +164,46 @@ export class CourseController {
   })
   async coursePlaceList(@Param('uuid') uuid: string) {
     return await this.courseService.coursePlaceList(uuid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Post('/member/recommend/deprecated')
+  @ApiOperation({
+    summary: '#deprecated AI 코스 추천 - 회원',
+    description: '#deprecated AI 코스 추천 - 회원',
+    deprecated: true,
+  })
+  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
+    description: 'AI 코스 추천 완료',
+    status: HttpStatus.CREATED,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '선택한 지하철역에 custom이 부족한 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async old_courseMemberRecommend(
+    @CurrentUser() user,
+    @Body() dto: ApiCoursePostRecommendRequestBodyDto,
+  ) {
+    return await this.courseService.old_courseMemberRecommend(user, dto);
+  }
+
+  @Get('/guest/recommend/deprecated')
+  @ApiOperation({
+    summary: '#deprecated AI 코스 추천 - 비회원',
+    description: '#deprecated AI 코스 추천 - 비회원',
+    deprecated: true,
+  })
+  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
+    description: 'AI 코스 추천 완료',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '선택한 지하철역에 custom이 부족한 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async old_courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
+    return await this.courseService.old_courseGuestRecommend(dto);
   }
 }

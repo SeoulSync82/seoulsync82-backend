@@ -1,5 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApiCourseGetRecommendRequestBodyDto } from 'src/course/dto/api-course-get-recommend-request-body.dto';
+import { ApiCourseGetPlaceCustomizeRequestQueryDto } from 'src/course/dto/api-course-get-place-customize-request-query.dto';
+import { ApiCourseGetRecommendRequestQueryDto } from 'src/course/dto/api-course-get-recommend-request-query.dto';
 import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-post-recommend-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
@@ -123,7 +124,7 @@ export class PlaceQueryRepository {
       .getMany();
   }
 
-  async findSubwayPlaceList(dto: ApiCourseGetRecommendRequestBodyDto): Promise<PlaceEntity[]> {
+  async findSubwayPlaceList(dto: ApiCourseGetRecommendRequestQueryDto): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
@@ -141,6 +142,18 @@ export class PlaceQueryRepository {
       .andWhere('s.name = :name', { name: dto.subway })
       .andWhere('s.place_type IN (:...types)', { types: ['전시', '팝업'] })
       .andWhere('p.end_date > :now', { now: new Date() })
+      .getMany();
+  }
+
+  async findSubwayPlaceCustomizeList(
+    dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
+  ): Promise<PlaceEntity[]> {
+    return await this.repository
+      .createQueryBuilder('p')
+      .innerJoinAndSelect('p.subways', 's')
+      .andWhere('s.name = :name', { name: dto.subway })
+      .andWhere('s.place_type = :type', { type: dto.place_type })
+      .andWhere('s.kakao_rating = :rating', { rating: 1 })
       .getMany();
   }
 }
