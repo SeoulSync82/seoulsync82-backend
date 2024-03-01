@@ -67,29 +67,12 @@ export class CourseController {
     return await this.courseService.courseRecommend(dto, user);
   }
 
-  @Get('/guest/place/customize')
-  @ApiOperation({
-    summary: 'AI 코스 장소 추가 - 비회원',
-    description: 'AI 코스 장소 추가 - 비회원',
-  })
-  @ApiSuccessResponse(ApiCourseGetPlaceCustomizeResponseDto, {
-    description: 'AI 코스 장소 추가 완료',
-    status: HttpStatus.OK,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 장소가 부족한 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  async courseGuestPlaceCustomize(@Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto) {
-    return await this.courseService.courseGuestPlaceCustomize(dto);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
-  @Get('/member/place/customize')
+  @UseGuards(JwtOptionalAuthGuard)
+  @Get('/place/customize')
   @ApiOperation({
-    summary: 'AI 코스 장소 추가 - 회원',
-    description: 'AI 코스 장소 추가 - 회원',
+    summary: 'AI 코스 장소 추가',
+    description: 'AI 코스 장소 추가',
   })
   @ApiSuccessResponse(ApiCourseGetPlaceCustomizeResponseDto, {
     description: 'AI 코스 장소 추가 완료',
@@ -100,10 +83,10 @@ export class CourseController {
     status: HttpStatus.NOT_FOUND,
   })
   async courseMemberPlaceCustomize(
-    @CurrentUser() user: UserDto,
     @Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
+    @CurrentUser() user?: UserDto,
   ) {
-    return await this.courseService.courseMemberPlaceCustomize(user, dto);
+    return await this.courseService.courseMemberPlaceCustomize(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)

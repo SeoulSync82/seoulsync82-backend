@@ -59,7 +59,7 @@ export class CourseService {
       // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
     }
-    console.log(user);
+
     let userHistoryCourse: CourseDetailEntity[];
     if (isNotEmpty(user)) {
       userHistoryCourse = await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
@@ -600,10 +600,16 @@ export class CourseService {
     return apiCoursePlaceListGetResponseDto;
   }
 
-  async courseGuestPlaceCustomize(dto: ApiCourseGetPlaceCustomizeRequestQueryDto) {
+  async courseMemberPlaceCustomize(dto: ApiCourseGetPlaceCustomizeRequestQueryDto, user?: UserDto) {
     if (dto.theme) {
       // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
+    }
+
+    let userHistoryCourse: CourseDetailEntity[];
+    if (isNotEmpty(user)) {
+      const userHistoryCourse: CourseDetailEntity[] =
+        await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
     }
 
     const subwayPlaceCustomizeList: PlaceEntity[] =
@@ -616,84 +622,10 @@ export class CourseService {
 
     function calculateWeight(customPlace) {
       let weight = customPlace.score * Math.log(customPlace.review_count + 1);
-      return weight;
-    }
-
-    function getTopWeight(customPlace, topN) {
-      const weightedPlace = customPlace.map((item) => ({
-        ...item,
-        weight: calculateWeight(item),
-      }));
-
-      return weightedPlace.sort((a, b) => b.weight - a.weight).slice(0, topN);
-    }
-    /** 가중치 평균 방식으로 측정해 상위 N개 추출 */
-    const topWeightPlaces = getTopWeight(filteredPlaceList, 10);
-
-    function getRandomElements(topWeightPlaces, n) {
-      const placeListArray = [...topWeightPlaces];
-      const result = [];
-
-      for (let i = 0; i < n && placeListArray.length > 0; i++) {
-        const randomIndex = Math.floor(Math.random() * placeListArray.length);
-        result.push(placeListArray[randomIndex]);
-        /** 선택된 장소 제거: 같은 커스텀 여러개 골랐을 case 중복 장소 안나오게 */
-        placeListArray.splice(randomIndex, 1);
-      }
-      return result;
-    }
-    /** 상위 N개중 랜덤한 값 추출 */
-    const selectedplace = getRandomElements(topWeightPlaces, 1);
-
-    if (isEmpty(selectedplace)) {
-      /** AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리 */
-      throw new NotFoundException(
-        `${dto.subway}역에는 '${dto.place_type}'에 해당하는 핫플레이스가 부족해요...`,
-      );
-    }
-    const apiCourseGetPlaceCustomizeResponseDto = plainToInstance(
-      ApiCourseGetPlaceCustomizeResponseDto,
-      selectedplace[0],
-      {
-        excludeExtraneousValues: true,
-      },
-    );
-
-    const placeDetailMapping = {
-      음식점: selectedplace[0].cate_name_depth2,
-      카페: selectedplace[0].brandname,
-      술집: selectedplace[0].brandname,
-      쇼핑: selectedplace[0].cate_name_depth1,
-      전시: selectedplace[0].top_level_address,
-      팝업: selectedplace[0].mainbrand,
-      놀거리: selectedplace[0].cate_name_depth1,
-    };
-    apiCourseGetPlaceCustomizeResponseDto.place_detail = placeDetailMapping[dto.place_type];
-
-    return apiCourseGetPlaceCustomizeResponseDto;
-  }
-
-  async courseMemberPlaceCustomize(user: UserDto, dto: ApiCourseGetPlaceCustomizeRequestQueryDto) {
-    if (dto.theme) {
-      // customs = customs.filter((item) => item !== '음식점');
-      // 추후 subway , place_theme , place 세개 테이블 Join
-    }
-
-    const userHistoryCourse: CourseDetailEntity[] =
-      await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
-
-    const subwayPlaceCustomizeList: PlaceEntity[] =
-      await this.placeQueryRepository.findSubwayPlaceCustomizeList(dto);
-
-    const placeUuidsSet = new Set(dto.place_uuids);
-    const filteredPlaceList = subwayPlaceCustomizeList.filter(
-      (place) => !placeUuidsSet.has(place.uuid),
-    );
-
-    function calculateWeight(customPlace) {
-      let weight = customPlace.score * Math.log(customPlace.review_count + 1);
-      if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
-        weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
+      if (isNotEmpty(userHistoryCourse)) {
+        if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
+          weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
+        }
       }
       return weight;
     }
