@@ -45,6 +45,7 @@ export class CourseController {
   @ApiOperation({
     summary: 'AI 코스 추천 - 회원',
     description: 'AI 코스 추천 - 회원',
+    deprecated: true,
   })
   @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
     description: 'AI 코스 추천 완료',
@@ -65,6 +66,7 @@ export class CourseController {
   @ApiOperation({
     summary: 'AI 코스 추천 - 비회원',
     description: 'AI 코스 추천 - 비회원',
+    deprecated: true,
   })
   @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
     description: 'AI 코스 추천 완료',
