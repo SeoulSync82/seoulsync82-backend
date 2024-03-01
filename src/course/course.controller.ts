@@ -33,6 +33,7 @@ import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-li
 import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
 import { ApiCourseGetRecommendRequestBodyDto } from './dto/api-course-get-recommend-request-body.dto';
 import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
+import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -54,8 +55,30 @@ export class CourseController {
     description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseRecommend(@Query() dto: ApiCourseGetRecommendRequestBodyDto) {
+  async courseGuestRecommend(@Query() dto: ApiCourseGetRecommendRequestBodyDto) {
     return await this.courseService.courseGuestRecommend(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/member/recommend')
+  @ApiOperation({
+    summary: 'AI 코스 추천 - 회원',
+    description: 'AI 코스 추천 - 회원',
+  })
+  @ApiSuccessResponse(ApiCourseGetRecommendResponseDto, {
+    description: 'AI 코스 추천 완료',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  async courseMemberRecommend(
+    @CurrentUser() user,
+    @Query() dto: ApiCourseGetRecommendRequestBodyDto,
+  ) {
+    return await this.courseService.courseMemberRecommend(user, dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -74,7 +97,7 @@ export class CourseController {
     description: '선택한 지하철역에 custom이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseMemberRecommend(
+  async old_courseMemberRecommend(
     @CurrentUser() user,
     @Body() dto: ApiCoursePostRecommendRequestBodyDto,
   ) {
@@ -95,7 +118,7 @@ export class CourseController {
     description: '선택한 지하철역에 custom이 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
+  async old_courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
     return await this.courseService.old_courseGuestRecommend(dto);
   }
 

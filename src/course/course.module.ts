@@ -11,9 +11,11 @@ import { UserModule } from 'src/user/user.module';
 import { BookmarkModule } from 'src/bookmark/bookmark.module';
 import { CommunityModule } from 'src/community/community.module';
 import { SubwayModule } from 'src/subway/subway.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     SubwayModule,
     forwardRef(() => BookmarkModule),
     forwardRef(() => CommunityModule),

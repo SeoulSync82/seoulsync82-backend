@@ -156,6 +156,121 @@ export class CourseService {
     return apiCourseGetRecommendResponseDto;
   }
 
+  async courseMemberRecommend(user, dto: ApiCourseGetRecommendRequestBodyDto) {
+    let defaultCustoms = ['음식점', '카페', '술집'];
+    let placeNonSorting = [];
+
+    if (dto.theme) {
+      // customs = customs.filter((item) => item !== '음식점');
+      // 추후 subway , place_theme , place 세개 테이블 Join
+    }
+
+    const userHistoryCourse: CourseDetailEntity[] =
+      await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
+
+    const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(dto);
+    for (const custom of defaultCustoms) {
+      const customPlace: PlaceEntity[] = subwayPlaceList.filter(
+        (item) => item.place_type === custom,
+      );
+      function calculateWeight(customPlace) {
+        let weight = customPlace.score * Math.log(customPlace.review_count + 1);
+        if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
+          weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
+        }
+        return weight;
+      }
+
+      function getTopWeight(customPlace, topN) {
+        const weightedPlace = customPlace.map((item) => ({
+          ...item,
+          weight: calculateWeight(item),
+        }));
+
+        return weightedPlace.sort((a, b) => b.weight - a.weight).slice(0, topN);
+      }
+      /** 가중치 평균 방식으로 측정해 상위 N개 추출 */
+      const topWeightPlaces = getTopWeight(customPlace, 10);
+      function getRandomElements(topWeightPlaces, n) {
+        const placeListArray = [...topWeightPlaces];
+        const result = [];
+
+        for (let i = 0; i < n && placeListArray.length > 0; i++) {
+          const randomIndex = Math.floor(Math.random() * placeListArray.length);
+          result.push(placeListArray[randomIndex]);
+          /** 선택된 장소 제거: 같은 커스텀 여러개 골랐을 case 중복 장소 안나오게 */
+          placeListArray.splice(randomIndex, 1);
+        }
+        return result;
+      }
+      /** 상위 N개중 랜덤한 값 추출 */
+      const randomplaces = getRandomElements(topWeightPlaces, 1);
+      placeNonSorting.push(...randomplaces);
+    }
+
+    const placeSorting: PlaceDetailDto[] = [];
+    for (const [index, place_type] of defaultCustoms.entries()) {
+      let customSortingPlace = placeNonSorting.find((item) => item.place_type === place_type);
+
+      placeNonSorting = placeNonSorting.filter((item) => item !== customSortingPlace);
+
+      if (isEmpty(customSortingPlace)) {
+        /** AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리 */
+        throw new NotFoundException(
+          `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
+        );
+      }
+      const placeDetailDto = plainToInstance(PlaceDetailDto, customSortingPlace, {
+        excludeExtraneousValues: true,
+      });
+      placeDetailDto.sort = index + 1;
+
+      const placeDetailMapping = {
+        음식점: customSortingPlace.cate_name_depth2,
+        카페: customSortingPlace.brandname,
+        술집: customSortingPlace.brandname,
+        쇼핑: customSortingPlace.cate_name_depth1,
+        전시: customSortingPlace.top_level_address,
+        팝업: customSortingPlace.mainbrand,
+        놀거리: customSortingPlace.cate_name_depth1,
+      };
+      placeDetailDto.place_detail = placeDetailMapping[place_type];
+      placeSorting.push(placeDetailDto);
+    }
+
+    const themes = [];
+    let course_name: string;
+    let course_sub_name: string;
+
+    if (dto.theme) themes.push(dto.theme);
+
+    if (themes.length === 0) {
+      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
+      course_name = `${dto.subway}역, 주변 코스 일정 ${randomEmoji}`;
+      course_sub_name = `주변 코스 일정 ${randomEmoji}`;
+    } else {
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
+      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
+      course_name = `${dto.subway}역, ${themeText} 코스 일정 ${themeEmoji}`;
+      course_sub_name = `${themeText} 코스 일정 ${themeEmoji}`;
+    }
+
+    const subway = await this.subwayQueryRepository.findSubway(dto.subway);
+
+    const apiCourseGetRecommendResponseDto = new ApiCourseGetRecommendResponseDto({
+      subway: `${dto.subway}역`,
+      line: subway.map((item) => item.line),
+      theme: dto.theme,
+      course_name: course_name,
+      course_sub_name: course_sub_name,
+      place: placeSorting,
+    });
+
+    return apiCourseGetRecommendResponseDto;
+  }
+
   async old_courseMemberRecommend(user, dto: ApiCoursePostRecommendRequestBodyDto) {
     let customs: string[] = dto.customs;
 
@@ -185,7 +300,7 @@ export class CourseService {
         }
         return weight;
       }
-
+      /** 가중치 평균 방식으로 측정해 상위 N개 추출 */
       function getTopWeight(subwayCultureList, topN) {
         const weightedPlace = subwayCultureList.map((item) => ({
           ...item,
@@ -205,7 +320,7 @@ export class CourseService {
           const randomIndex = Math.floor(Math.random() * tempArray.length);
           result.push(tempArray[randomIndex]);
           tempArray.splice(randomIndex, 1);
-          // 선택된 요소 제거 - 코스에 같은 type 여러개 있는 case 고려
+          /** 선택된 장소 제거: 같은 커스텀 여러개 골랐을 case 중복 장소 안나오게 */
         }
         return result;
       }
@@ -242,7 +357,7 @@ export class CourseService {
           }
 
           const topWeightPlaces = getTopWeight(customPlace, 10);
-          // 가중치 평균을 측정해 상위 N개 추출
+          /** 가중치 평균 방식으로 측정해 상위 N개 추출 */
 
           function getRandomElements(topWeightPlaces, n) {
             const tempArray = [...topWeightPlaces];
@@ -252,13 +367,13 @@ export class CourseService {
               const randomIndex = Math.floor(Math.random() * tempArray.length);
               result.push(tempArray[randomIndex]);
               tempArray.splice(randomIndex, 1);
-              // 선택된 요소 제거 - 코스에 같은 type 여러개 있는 case 고려
+              /** 선택된 장소 제거: 같은 커스텀 여러개 골랐을 case 중복 장소 안나오게 */
             }
             return result;
           }
 
           const randomplaces = getRandomElements(topWeightPlaces, countCustoms[custom]);
-          // 상위 N개중 랜덤한 값 추출
+          /** 상위 N개중 랜덤한 값 추출 */
           placeNonSorting.push(...randomplaces);
         }
       }
@@ -275,13 +390,12 @@ export class CourseService {
         customSortingPlace = placeNonSorting.filter((item) => item.place_type === place_type);
       }
       placeNonSorting = placeNonSorting.filter((item) => item !== customSortingPlace[0]);
-      // sorting한 장소는 기존 placeNonSorting에서 제거
 
       if (!customSortingPlace[0]) {
+        /** AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리 */
         throw new NotFoundException(
           `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
         );
-        // AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리
       }
       const coursePlaceDto: CoursePlaceDto = plainToInstance(
         CoursePlaceDto,
@@ -376,7 +490,6 @@ export class CourseService {
           const randomIndex = Math.floor(Math.random() * tempArray.length);
           result.push(tempArray[randomIndex]);
           tempArray.splice(randomIndex, 1);
-          // 선택된 요소 제거 - 코스에 같은 type 여러개 있는 case 고려
         }
         return result;
       }
@@ -409,7 +522,7 @@ export class CourseService {
         }
 
         const topWeightPlaces = getTopWeight(customPlace, 10);
-        // 가중치 평균을 측정해 상위 N개 추출
+        /** 가중치 평균 방식으로 측정해 상위 N개 추출 */
 
         function getRandomElements(topWeightPlaces, n) {
           const tempArray = [...topWeightPlaces];
@@ -419,7 +532,7 @@ export class CourseService {
             const randomIndex = Math.floor(Math.random() * tempArray.length);
             result.push(tempArray[randomIndex]);
             tempArray.splice(randomIndex, 1);
-            // 선택된 요소 제거 - 코스에 같은 type 여러개 있는 case 고려
+            /** 선택된 장소 제거: 같은 커스텀 여러개 골랐을 case 중복 장소 안나오게 */
           }
           return result;
         }
@@ -441,13 +554,12 @@ export class CourseService {
         customSortingPlace = placeNonSorting.filter((item) => item.place_type === place_type);
       }
       placeNonSorting = placeNonSorting.filter((item) => item !== customSortingPlace[0]);
-      // sorting한 장소는 기존 placeNonSorting에서 제거
 
       if (!customSortingPlace[0]) {
+        /** AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리 */
         throw new NotFoundException(
           `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
         );
-        // AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리
       }
       const coursePlaceDto: CoursePlaceDto = plainToInstance(
         CoursePlaceDto,
