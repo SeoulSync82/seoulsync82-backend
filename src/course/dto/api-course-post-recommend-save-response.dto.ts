@@ -2,7 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { CoursePlaceDto, CourseRecommendResDto } from './course.dto';
 
-export class ApiCourseGetRecommendResponseDto {
+export class ApiCoursePostRecommendSaveResponseDto {
+  @Expose()
+  @ApiProperty({
+    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    description: '코스 uuid',
+  })
+  uuid: string;
+
   @Expose()
   @ApiProperty({
     example: '성수역',
@@ -19,24 +26,17 @@ export class ApiCourseGetRecommendResponseDto {
 
   @Expose()
   @ApiProperty({
-    example: '분위기 있는🌃',
+    example: '분위기 있는 🌃',
     description: '코스 테마',
   })
   theme?: string;
 
   @Expose()
   @ApiProperty({
-    example: '잠실나루역 주변 코스 일정🔥',
+    example: '잠실나루역, 주변 코스 일정 🔥',
     description: '코스 이름',
   })
   course_name: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '주변 코스 일정🔥',
-    description: '코스 서브 이름',
-  })
-  course_sub_name: string;
 
   @Expose()
   @ApiProperty({
@@ -56,9 +56,9 @@ export class ApiCourseGetRecommendResponseDto {
         thumbnail:
           'https://cf-templates-1gyolugg9zn9q-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/store/b4d678db%2C701e%2C482e%2C8a18%2C4b4a4f7a352f',
         address: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
-        latitude: 27.0319456,
-        longitude: 37.5070434,
-        score: 4.0,
+        latitude: '27.0319456',
+        longitude: '37.5070434',
+        score: '4.0',
         review_count: 30,
         place_detail: '도미노 피자',
       },
@@ -70,18 +70,18 @@ export class ApiCourseGetRecommendResponseDto {
         thumbnail:
           'https://cf-templates-1gyolugg9zn9q-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/store/b4d678db%2C701e%2C482e%2C8a18%2C4b4a4f7a352f',
         address: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
-        latitude: 27.0319456,
-        longitude: 37.5070434,
-        score: 4.0,
+        latitude: '27.0319456',
+        longitude: '37.5070434',
+        score: '4.0',
         review_count: 30,
         place_detail: '도미노 피자',
       },
     ],
     description: '장소 상세',
   })
-  places: PlaceDetailDto[];
+  place: PlaceDetailDto[];
 
-  constructor(data?: Partial<ApiCourseGetRecommendResponseDto>) {
+  constructor(data?: Partial<ApiCoursePostRecommendSaveResponseDto>) {
     if (data) {
       Object.assign(this, data);
     }
@@ -134,24 +134,24 @@ export class PlaceDetailDto {
 
   @Expose()
   @ApiProperty({
-    example: 27.0319456,
+    example: '27.0319456',
     description: '위도',
   })
-  latitude: number;
+  latitude: string;
 
   @Expose()
   @ApiProperty({
-    example: 37.5070434,
+    example: '37.5070434',
     description: '경도',
   })
-  longitude: number;
+  longitude: string;
 
   @Expose()
   @ApiProperty({
-    example: 4.0,
+    example: '4.0',
     description: '평점',
   })
-  score?: number;
+  score?: string;
 
   @Expose()
   @ApiProperty({

@@ -37,6 +37,8 @@ import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
 import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
 import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
+import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
+import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -87,6 +89,24 @@ export class CourseController {
     @CurrentUser() user?: UserDto,
   ) {
     return await this.courseService.courseMemberPlaceCustomize(dto, user);
+  }
+
+  @ApiBearerAuth('access-token')
+  @UseGuards(JwtAuthGuard)
+  @Post('/recommend/save')
+  @ApiOperation({
+    summary: 'AI 코스 추천 완료',
+    description: 'AI 코스 추천 완료',
+  })
+  @ApiSuccessResponse(ApiCoursePostRecommendSaveResponseDto, {
+    description: 'AI 코스 추천 저장 완료',
+    status: HttpStatus.OK,
+  })
+  async courseRecommendSave(
+    @Body() dto: ApiCoursePostRecommendSaveRequestBodyDto,
+    @CurrentUser() user: UserDto,
+  ) {
+    return await this.courseService.courseRecommendSave(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)

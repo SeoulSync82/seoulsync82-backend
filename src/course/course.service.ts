@@ -38,6 +38,8 @@ import {
 import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
 import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
+import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
+import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
 
 @Injectable()
 export class CourseService {
@@ -165,7 +167,7 @@ export class CourseService {
       theme: dto.theme,
       course_name: course_name,
       course_sub_name: course_sub_name,
-      place: placeSorting,
+      places: placeSorting,
     });
 
     return apiCourseGetRecommendResponseDto;
@@ -529,6 +531,46 @@ export class CourseService {
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
     return { items: apiCourseMyHistoryGetResponseDto, last_item_id };
+  }
+
+  async courseRecommendSave(dto: ApiCoursePostRecommendSaveRequestBodyDto, user: UserDto) {
+    const subway = await this.subwayQueryRepository.findSubway(dto.subway);
+
+    const apiCoursePostRecommendSaveResponseDto = new ApiCoursePostRecommendSaveResponseDto({
+      uuid: generateUUID(),
+      subway: dto.subway,
+      line: subway.map((sub) => sub.line),
+      theme: dto.theme,
+      course_name: dto.course_name,
+      count: dto.places.length,
+      place: dto.places,
+    });
+
+    const courseEntity = new CourseEntity();
+    courseEntity.uuid = apiCoursePostRecommendSaveResponseDto.uuid;
+    courseEntity.line = apiCoursePostRecommendSaveResponseDto.line.join(', ');
+    courseEntity.subway = dto.subway;
+    courseEntity.course_name = dto.course_name;
+    courseEntity.user_uuid = user.uuid;
+    courseEntity.user_name = user.nickname;
+    courseEntity.count = dto.places.length;
+    courseEntity.customs = dto.places.map((place) => place.place_type).join(', ');
+
+    await this.courseQueryRepository.saveCourse(courseEntity);
+
+    const courseDetailEntity = apiCoursePostRecommendSaveResponseDto.place.map((place) => {
+      const courseDetail = new CourseDetailEntity();
+      courseDetail.course_uuid = apiCoursePostRecommendSaveResponseDto.uuid;
+      courseDetail.sort = place.sort;
+      courseDetail.place_uuid = place.uuid;
+      courseDetail.place_name = place.place_name;
+      courseDetail.place_type = place.place_type;
+      return courseDetail;
+    });
+
+    await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
+
+    return apiCoursePostRecommendSaveResponseDto;
   }
 
   async courseDetail(uuid, user: UserDto) {
