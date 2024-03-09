@@ -42,10 +42,10 @@ export class CourseQueryRepository {
     });
   }
 
-  async findPlace(courseUuid: string): Promise<any[]> {
+  async findPlace(courseUuid: string): Promise<CourseDetailEntity[]> {
     return await this.detailRepository
       .createQueryBuilder('courseDetail')
-      .innerJoinAndSelect('courseDetail.place', 'place')
+      .leftJoinAndSelect('courseDetail.place', 'place')
       .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
       .select(['courseDetail', 'place'])
       .getMany();

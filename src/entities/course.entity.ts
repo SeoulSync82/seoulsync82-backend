@@ -33,6 +33,9 @@ export class CourseEntity {
   count: number;
 
   @Column()
+  theme: string;
+
+  @Column()
   customs: string;
 
   @Column('datetime', {

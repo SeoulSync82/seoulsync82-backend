@@ -8,7 +8,6 @@ import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { CustomListDto } from 'src/place/dto/subway.dto';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { CourseQueryRepository } from './course.query.repository';
@@ -19,17 +18,11 @@ import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
-import { ReactionEntity } from 'src/entities/reaction.entity';
 import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
-import { ApiSubwayGetCheckRequestQueryDto } from '../subway/dto/api-subway-get-check-request-query.dto';
 import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
-import { ApiSubwayGetCheckResponseDto } from '../subway/dto/api-subway-get-check-response.dto';
 import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
 import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-history-response.dto';
-import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
 import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
-import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-list-request-query.dto';
-import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
 import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
 import {
   ApiCourseGetRecommendResponseDto,
@@ -40,6 +33,11 @@ import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-plac
 import { UserDto } from 'src/user/dto/user.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
 import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
+import {
+  ApiCourseGetDetailResponseDto,
+  CourseWithPlaceDetailDto,
+} from './dto/api-course-get-detail-response.dto';
+import { customPlaceDetailFunction } from 'src/commons/function/get-place-detail-function';
 
 @Injectable()
 export class CourseService {
@@ -127,17 +125,7 @@ export class CourseService {
         excludeExtraneousValues: true,
       });
       placeDetailDto.sort = index + 1;
-
-      const placeDetailMapping = {
-        음식점: customSortingPlace.cate_name_depth2,
-        카페: customSortingPlace.brandname,
-        술집: customSortingPlace.brandname,
-        쇼핑: customSortingPlace.cate_name_depth1,
-        전시: customSortingPlace.top_level_address,
-        팝업: customSortingPlace.mainbrand,
-        놀거리: customSortingPlace.cate_name_depth1,
-      };
-      placeDetailDto.place_detail = placeDetailMapping[place_type];
+      placeDetailDto.place_detail = customPlaceDetailFunction(customSortingPlace, place_type);
       placeSorting.push(placeDetailDto);
     }
 
@@ -554,6 +542,7 @@ export class CourseService {
     courseEntity.user_uuid = user.uuid;
     courseEntity.user_name = user.nickname;
     courseEntity.count = dto.places.length;
+    courseEntity.theme = dto.theme;
     courseEntity.customs = dto.places.map((place) => place.place_type).join(', ');
 
     await this.courseQueryRepository.saveCourse(courseEntity);
@@ -575,7 +564,7 @@ export class CourseService {
 
   async courseDetail(uuid, user: UserDto) {
     const course = await this.courseQueryRepository.findOne(uuid);
-    if (!course) {
+    if (isEmpty(course)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
@@ -587,25 +576,25 @@ export class CourseService {
       uuid,
       user,
     );
-    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
     const apiCourseDetailGetResponseDto = new ApiCourseGetDetailResponseDto({
-      course_uuid: uuid,
-      course_name: course.course_name,
+      uuid: uuid,
       subway: course.subway,
+      line: [course.line],
+      theme: course.theme,
+      course_name: course.course_name,
       count: coursePlaces.length,
-      customs: course.customs,
       isBookmarked: isNotEmpty(bookmark),
       isPosted: isNotEmpty(community),
-      isLiked: isNotEmpty(reaction),
       created_at: course.created_at,
-      place: plainToInstance(
-        CoursePlaceDto,
-        coursePlaces.map((coursePlace) => ({
-          ...coursePlace.place,
-          sort: coursePlace.sort,
-          uuid: coursePlace.place_uuid,
+      places: plainToInstance(
+        CourseWithPlaceDetailDto,
+        coursePlaces.map((place) => ({
+          ...place.place,
+          sort: place.sort,
+          uuid: place.place_uuid,
+          place_detail: customPlaceDetailFunction(place.place, place.place_type),
         })),
         {
           excludeExtraneousValues: true,
@@ -642,7 +631,7 @@ export class CourseService {
     return apiCoursePlaceListGetResponseDto;
   }
 
-  async courseMemberPlaceCustomize(dto: ApiCourseGetPlaceCustomizeRequestQueryDto, user?: UserDto) {
+  async coursePlaceCustomize(dto: ApiCourseGetPlaceCustomizeRequestQueryDto, user?: UserDto) {
     if (dto.theme) {
       // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
@@ -712,16 +701,10 @@ export class CourseService {
       },
     );
 
-    const placeDetailMapping = {
-      음식점: selectedplace[0].cate_name_depth2,
-      카페: selectedplace[0].brandname,
-      술집: selectedplace[0].brandname,
-      쇼핑: selectedplace[0].cate_name_depth1,
-      전시: selectedplace[0].top_level_address,
-      팝업: selectedplace[0].mainbrand,
-      놀거리: selectedplace[0].cate_name_depth1,
-    };
-    apiCourseGetPlaceCustomizeResponseDto.place_detail = placeDetailMapping[dto.place_type];
+    apiCourseGetPlaceCustomizeResponseDto.place_detail = customPlaceDetailFunction(
+      selectedplace[0],
+      dto.place_type,
+    );
 
     return apiCourseGetPlaceCustomizeResponseDto;
   }

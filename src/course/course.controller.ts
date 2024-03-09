@@ -19,7 +19,6 @@ import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
-import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { CourseService } from './course.service';
 import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
 import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
@@ -27,10 +26,6 @@ import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-histor
 import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
 import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
 import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
-import { ApiSubwayGetCheckRequestQueryDto } from '../subway/dto/api-subway-get-check-request-query.dto';
-import { ApiSubwayGetCheckResponseDto } from '../subway/dto/api-subway-get-check-response.dto';
-import { ApiSubwayGetListRequestQueryDto } from '../subway/dto/api-subway-get-list-request-query.dto';
-import { ApiSubwayGetListResponseDto } from '../subway/dto/api-subway-get-list-response.dto';
 import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
 import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
 import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
@@ -84,11 +79,11 @@ export class CourseController {
     description: '선택한 지하철역에 장소가 부족한 경우',
     status: HttpStatus.NOT_FOUND,
   })
-  async courseMemberPlaceCustomize(
+  async coursePlaceCustomize(
     @Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
     @CurrentUser() user?: UserDto,
   ) {
-    return await this.courseService.courseMemberPlaceCustomize(dto, user);
+    return await this.courseService.coursePlaceCustomize(dto, user);
   }
 
   @ApiBearerAuth('access-token')

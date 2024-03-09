@@ -1,4 +1,3 @@
-import { CoursePlaceDto } from './course/dto/course.dto';
 import { ApiPlaceGetCultureResponseDto } from './place/dto/api-place-get-culture-response.dto';
 import { ApiPlaceGetCultureDetailResponseDto } from './place/dto/api-place-get-culture-detail-response.dto';
 import { ApiPlaceGetExhibitionResponseDto } from './place/dto/api-place-get-exhibition-response.dto';

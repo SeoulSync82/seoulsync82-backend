@@ -75,6 +75,9 @@ export class PlaceEntity {
   brandname: string;
 
   @Column()
+  mainbrand: string;
+
+  @Column()
   hashtag: string;
 
   @Column()
