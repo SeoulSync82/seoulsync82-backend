@@ -30,9 +30,9 @@ import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recom
 import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
 import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
 import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
-import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
 import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
 
 @ApiTags('코스')

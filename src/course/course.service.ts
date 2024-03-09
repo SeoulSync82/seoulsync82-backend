@@ -558,8 +558,7 @@ export class CourseService {
     });
 
     await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
-
-    return apiCoursePostRecommendSaveResponseDto;
+    return { uuid: apiCoursePostRecommendSaveResponseDto.uuid };
   }
 
   async courseDetail(uuid, user: UserDto) {
