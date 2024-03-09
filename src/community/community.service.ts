@@ -134,7 +134,6 @@ export class CommunityService {
 
     const last_item_id =
       communityList.length === dto.size ? communityList[communityList.length - 1].id : 0;
-
     return { items: apiCommunityGetResponseDto, last_item_id };
   }
 
