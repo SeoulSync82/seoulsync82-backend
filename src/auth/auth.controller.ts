@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Req,
   Res,
   UseFilters,
@@ -13,18 +12,17 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import passport from 'passport';
 import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { ConfigService } from 'src/config/config.service';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
 import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
+import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
-import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('계정')
 @Controller()

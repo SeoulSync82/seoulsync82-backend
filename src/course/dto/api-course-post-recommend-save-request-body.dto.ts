@@ -44,7 +44,6 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
         latitude: '27.0319456',
         longitude: '37.5070434',
         score: '4.0',
-        review_count: 30,
         place_detail: '도미노 피자',
       },
       {
@@ -58,7 +57,6 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
         latitude: '27.0319456',
         longitude: '37.5070434',
         score: '4.0',
-        review_count: 30,
         place_detail: '도미노 피자',
       },
     ],
@@ -140,14 +138,6 @@ export class PlaceDetailDto {
     description: '평점',
   })
   score?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty({
-    example: 30,
-    description: '리뷰수',
-  })
-  review_count?: number;
 
   @IsOptional()
   @IsString()

@@ -79,7 +79,6 @@ export class ApiCourseGetDetailResponseDto {
         latitude: '27.0319456',
         longitude: '37.5070434',
         score: '4.0',
-        review_count: 30,
         place_detail: '도미노 피자',
       },
       {
@@ -93,7 +92,6 @@ export class ApiCourseGetDetailResponseDto {
         latitude: '27.0319456',
         longitude: '37.5070434',
         score: '4.0',
-        review_count: 30,
         place_detail: '도미노 피자',
       },
     ],
@@ -172,13 +170,6 @@ export class CourseWithPlaceDetailDto {
     description: '평점',
   })
   score?: string;
-
-  @Expose()
-  @ApiProperty({
-    example: 30,
-    description: '리뷰수',
-  })
-  review_count?: number;
 
   @Expose()
   @ApiProperty({

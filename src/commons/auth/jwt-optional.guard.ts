@@ -1,11 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import * as JWT from 'jsonwebtoken';
 import { FastifyRequest } from 'fastify';
-import { isNotEmpty } from '../util/is/is-empty';
-import { ConfigDto } from 'src/config/dto/config.dto';
-import { Payload } from './jwt.payload';
+import * as JWT from 'jsonwebtoken';
 import { ERROR } from 'src/auth/constants/error';
 import { ConfigService } from 'src/config/config.service';
+import { isNotEmpty } from '../util/is/is-empty';
+import { Payload } from './jwt.payload';
 
 const BEARER_AUTH_SCHEME = 'bearer';
 const re = /(\S+)\s+(\S+)/;

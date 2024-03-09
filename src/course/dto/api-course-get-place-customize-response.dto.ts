@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { CoursePlaceDto, CourseRecommendResDto } from './course.dto';
 
 export class ApiCourseGetPlaceCustomizeResponseDto {
   @Expose()
@@ -59,13 +58,6 @@ export class ApiCourseGetPlaceCustomizeResponseDto {
     description: '평점',
   })
   score?: number;
-
-  @Expose()
-  @ApiProperty({
-    example: 30,
-    description: '리뷰수',
-  })
-  review_count?: number;
 
   @Expose()
   @ApiProperty({

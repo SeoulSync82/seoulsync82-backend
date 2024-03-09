@@ -1,7 +1,7 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import { ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator';
 
 export function IsStrictDecimal(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isStrictDecimal',
       target: object.constructor,

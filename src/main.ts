@@ -1,12 +1,11 @@
+import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import * as fs from 'fs';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { ConfigService } from './config/config.service';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
-import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
 import { ERROR } from './auth/constants/error';
+import { ConfigService } from './config/config.service';
 import { SwaggerModels } from './swagger';
 
 async function bootstrap() {

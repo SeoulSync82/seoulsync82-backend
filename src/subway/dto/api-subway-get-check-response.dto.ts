@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { CustomListDto, SubwayCustomCheckResDto } from 'src/place/dto/subway.dto';
+import { CustomListDto } from 'src/place/dto/subway.dto';
 
 export class ApiSubwayGetCheckResponseDto {
   @Expose()
