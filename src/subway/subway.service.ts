@@ -34,7 +34,7 @@ export class SubwayService {
       놀거리: findCountByType('놀거리', subwayCustoms),
     });
 
-    return new ApiSubwayGetCheckResponseDto({ customs: [customsCheck] });
+    return new ApiSubwayGetCheckResponseDto({ items: [customsCheck] });
   }
 
   async subwayStationList(dto: ApiSubwayGetListRequestQueryDto) {
@@ -60,10 +60,10 @@ export class SubwayService {
 
     const apiSubwayLineGetResponseDto = plainToInstance(
       ApiSubwayGetLineResponseDto,
-      { subway: subwayLine.map((item) => ({ uuid: item.uuid, line: item.line })) },
+      { items: subwayLine.map((item) => ({ uuid: item.uuid, line: item.line })) },
       { excludeExtraneousValues: true },
     );
 
-    return { items: apiSubwayLineGetResponseDto };
+    return apiSubwayLineGetResponseDto;
   }
 }

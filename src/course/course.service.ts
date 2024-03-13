@@ -158,7 +158,7 @@ export class CourseService {
       places: placeSorting,
     });
 
-    return apiCourseGetRecommendResponseDto;
+    return { items: apiCourseGetRecommendResponseDto };
   }
 
   async old_courseMemberRecommend(user: UserDto, dto: ApiCoursePostRecommendRequestBodyDto) {
@@ -558,7 +558,7 @@ export class CourseService {
     });
 
     await this.courseQueryRepository.saveCourseDetail(courseDetailEntity);
-    return { uuid: apiCoursePostRecommendSaveResponseDto.uuid };
+    return { items: apiCoursePostRecommendSaveResponseDto.uuid };
   }
 
   async courseDetail(uuid, user: UserDto) {
@@ -601,7 +601,7 @@ export class CourseService {
       ),
     });
 
-    return apiCourseDetailGetResponseDto;
+    return { items: apiCourseDetailGetResponseDto };
   }
 
   async coursePlaceList(uuid) {
@@ -705,6 +705,6 @@ export class CourseService {
       dto.place_type,
     );
 
-    return apiCourseGetPlaceCustomizeResponseDto;
+    return { items: apiCourseGetPlaceCustomizeResponseDto };
   }
 }

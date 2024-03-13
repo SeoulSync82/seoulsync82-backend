@@ -12,9 +12,9 @@ export class SuccessInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => this.logger.log(`After... ${Date.now() - now}ms`)), // post-request
       map((data) => ({
-        status_code: 200,
+        // status_code: 200,
         status: 'SUCCESS',
-        data: { ...data },
+        ...data,
       })),
     );
   }

@@ -14,7 +14,7 @@ export class ApiSubwayGetLineResponseDto {
     ],
     description: '지하철역 호선',
   })
-  subway: SubwaylineDto[];
+  items: SubwaylineDto[];
 }
 
 export class SubwaylineDto {
