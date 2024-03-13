@@ -6,7 +6,6 @@ import { CustomListDto } from 'src/place/dto/subway.dto';
 import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
 import { ApiSubwayGetCheckResponseDto } from './dto/api-subway-get-check-response.dto';
 import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
-import { ApiSubwayGetListRequestQueryDto } from './dto/api-subway-get-list-request-query.dto';
 import { ApiSubwayGetListResponseDto } from './dto/api-subway-get-list-response.dto';
 import { SubwayQueryRepository } from './subway.query.repository';
 
@@ -37,8 +36,8 @@ export class SubwayService {
     return new ApiSubwayGetCheckResponseDto({ items: [customsCheck] });
   }
 
-  async subwayStationList(dto: ApiSubwayGetListRequestQueryDto) {
-    const subwayStationList = await this.subwayQueryRepository.subwayStationList(dto);
+  async subwayStationList(uuid: string) {
+    const subwayStationList = await this.subwayQueryRepository.subwayStationList(uuid);
     if (isEmpty(subwayStationList)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
@@ -54,7 +53,6 @@ export class SubwayService {
 
   async subwayLineList() {
     const subwayLine = await this.subwayQueryRepository.findSubwayLine();
-
     const apiSubwayLineGetResponseDto = plainToInstance(
       ApiSubwayGetLineResponseDto,
       { items: subwayLine.map((item) => ({ uuid: item.uuid, line: item.line })) },
