@@ -43,16 +43,13 @@ export class SubwayService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const stationNames = subwayStationList.map((station) => station.name);
-    const line = subwayStationList[0].line;
-
     const apiSubwayListGetResponseDto = plainToInstance(
       ApiSubwayGetListResponseDto,
-      { line: line, name: stationNames },
+      { items: subwayStationList.map((station) => station.name) },
       { excludeExtraneousValues: true },
     );
 
-    return { items: apiSubwayListGetResponseDto };
+    return apiSubwayListGetResponseDto;
   }
 
   async subwayLineList() {
