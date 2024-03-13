@@ -14,7 +14,7 @@ export class SuccessInterceptor implements NestInterceptor {
       map((data) => ({
         // status_code: 200,
         status: 'SUCCESS',
-        ...data,
+        data: { ...data },
       })),
     );
   }
