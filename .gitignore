@@ -38,3 +38,6 @@ lerna-debug.log*
 .env.debug
 .env.staging
 .env.production
+
+# config
+src/config/
