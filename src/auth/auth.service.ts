@@ -26,7 +26,7 @@ export class AuthService {
       delete user.firstName;
       user.type = 'google';
 
-      const access_token = this.getOrCreateUserAuthFunction(user, res);
+      const access_token = await this.getOrCreateUserAuthFunction(user, res);
 
       return {
         ok: true,
@@ -43,7 +43,7 @@ export class AuthService {
       const { user } = req;
       user.type = 'kakao';
 
-      const access_token = this.getOrCreateUserAuthFunction(user, res);
+      const access_token = await this.getOrCreateUserAuthFunction(user, res);
 
       return {
         ok: true,
@@ -60,7 +60,7 @@ export class AuthService {
       const { user } = req;
       user.type = 'naver';
 
-      const access_token = this.getOrCreateUserAuthFunction(user, res);
+      const access_token = await this.getOrCreateUserAuthFunction(user, res);
 
       return {
         ok: true,
