@@ -2,9 +2,11 @@
 import {
   Controller,
   Get,
+  HttpStatus,
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -23,6 +25,8 @@ import { AuthService } from './auth.service';
 import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
 import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
+import { ERROR } from './constants/error';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 
 @ApiTags('계정')
 @Controller()
@@ -45,25 +49,33 @@ export class AuthController {
 
   @Get('/api/auth/google/callback')
   @UseGuards(AuthGuard('google'))
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '구글 로그인 실패',
+    status: HttpStatus.UNAUTHORIZED,
+  })
   async googleAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
-      console.error('Error parsing state:', error);
+      throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
 
   @Get('/api/auth/google/dev/callback')
   @UseGuards(AuthGuard('google-dev'))
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '구글 로그인 실패',
+    status: HttpStatus.UNAUTHORIZED,
+  })
   async googleDevAuthCallback(@Req() req: GoogleRequest, @Res() res: Response) {
     try {
       const result = await this.authService.googleLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
-      console.error('Error parsing state:', error);
+      throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
 
@@ -77,25 +89,33 @@ export class AuthController {
 
   @Get('/api/auth/kakao/callback')
   @UseGuards(AuthGuard('kakao'))
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '카카오 로그인 실패',
+    status: HttpStatus.UNAUTHORIZED,
+  })
   async kakaoAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
-      console.error('Error parsing state:', error);
+      throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
 
   @Get('/api/auth/kakao/dev/callback')
   @UseGuards(AuthGuard('kakao-dev'))
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '카카오 로그인 실패',
+    status: HttpStatus.UNAUTHORIZED,
+  })
   async kakaoDevAuthCallback(@Req() req: KakaoRequest, @Res() res: Response) {
     try {
       const result = await this.authService.kakaoLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
-      console.error('Error parsing state:', error);
+      throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
 
@@ -109,25 +129,33 @@ export class AuthController {
 
   @Get('/api/auth/naver/callback')
   @UseGuards(AuthGuard('naver'))
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '네이버 로그인 실패',
+    status: HttpStatus.UNAUTHORIZED,
+  })
   async naverAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_STAGING');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
-      console.error('Error parsing state:', error);
+      throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
 
   @Get('/api/auth/naver/dev/callback')
   @UseGuards(AuthGuard('naver-dev'))
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '네이버 로그인 실패',
+    status: HttpStatus.UNAUTHORIZED,
+  })
   async naverDevAuthCallback(@Req() req: NaverRequest, @Res() res: Response) {
     try {
       const result = await this.authService.naverLogin(req, res);
       const frontendUrl = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (error) {
-      console.error('Error parsing state:', error);
+      throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
 
@@ -135,6 +163,10 @@ export class AuthController {
   @ApiOperation({
     summary: '로그인 연장',
     description: '로그인 연장',
+  })
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '로그인 연장 실패',
+    status: HttpStatus.UNAUTHORIZED,
   })
   async silentRefresh(
     @Req() req: ApiAuthPostUserRefreshRequestDto,
@@ -149,6 +181,10 @@ export class AuthController {
   @ApiOperation({
     summary: '로그아웃',
     description: '로그아웃',
+  })
+  @ApiExceptionResponse([ERROR.AUTHENTICATION], {
+    description: '로그아웃 실패',
+    status: HttpStatus.UNAUTHORIZED,
   })
   async logout(
     @Res({ passthrough: true }) res: Response,
