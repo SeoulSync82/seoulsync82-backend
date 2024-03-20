@@ -39,6 +39,19 @@ export class SubwayController {
     return await this.subwayService.subwayLineList();
   }
 
+  @Get('/customs-check')
+  @ApiOperation({
+    summary: '지하철 역 커스텀 체크',
+    description: '지하철 역 커스텀 체크',
+  })
+  @ApiSuccessResponse(ApiSubwayGetCheckResponseDto, {
+    description: '지하철 역 커스텀 체크 성공',
+    status: HttpStatus.OK,
+  })
+  async subwayCustomsCheck(@Query() dto: ApiSubwayGetCheckRequestQueryDto) {
+    return await this.subwayService.subwayCustomsCheck(dto);
+  }
+
   @Get('/:uuid')
   @ApiOperation({
     summary: '지하철 역 리스트 조회',
@@ -55,18 +68,5 @@ export class SubwayController {
   @ApiParam({ name: 'uuid', type: 'string', description: '지하철 역의 uuid' })
   async subwayStationList(@Param('uuid') uuid: string) {
     return await this.subwayService.subwayStationList(uuid);
-  }
-
-  @Get('/customs-check')
-  @ApiOperation({
-    summary: '지하철 역 커스텀 체크',
-    description: '지하철 역 커스텀 체크',
-  })
-  @ApiSuccessResponse(ApiSubwayGetCheckResponseDto, {
-    description: '지하철 역 커스텀 체크 성공',
-    status: HttpStatus.OK,
-  })
-  async subwayCustomsCheck(@Query() dto: ApiSubwayGetCheckRequestQueryDto) {
-    return await this.subwayService.subwayCustomsCheck(dto);
   }
 }
