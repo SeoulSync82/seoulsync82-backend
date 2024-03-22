@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Emojis } from 'src/auth/constants/emoji';
+import { Emojis } from 'src/commons/enum/emoji';
 import { ERROR } from 'src/auth/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { generateUUID } from 'src/commons/util/uuid';

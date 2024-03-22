@@ -6,6 +6,9 @@ export class SubwayStationEntity {
   id: number;
 
   @Column()
+  uuid: string;
+
+  @Column()
   name: string;
 
   @Column()

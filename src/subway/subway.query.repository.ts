@@ -3,8 +3,8 @@ import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { SubwayLineEntity } from 'src/entities/subway_line.entity';
 import { SubwayStationEntity } from 'src/entities/subway_station.entity';
-import { ApiSubwayGetCheckRequestQueryDto } from 'src/subway/dto/api-subway-get-check-request-query.dto';
 import { In, Not, Repository } from 'typeorm';
+import { StationInfo } from './interfaces/subway.interfaces';
 
 export class SubwayQueryRepository {
   constructor(
@@ -22,20 +22,20 @@ export class SubwayQueryRepository {
     });
   }
 
-  async groupByCustoms(dto: ApiSubwayGetCheckRequestQueryDto) {
+  async groupByCustoms(stationInfo: StationInfo) {
     return await this.repository
       .createQueryBuilder('subway')
       .select('subway.place_type', 'type')
       .addSelect('COUNT(subway.id)', 'count')
       .where('subway.name = :name AND subway.line = :line', {
-        name: dto.subway,
-        line: dto.line,
+        name: stationInfo.station,
+        line: stationInfo.line,
       })
       .groupBy('subway.place_type')
       .getRawMany();
   }
 
-  async findSubwayCurrentCulture(dto: ApiSubwayGetCheckRequestQueryDto) {
+  async findSubwayCurrentCulture(stationInfo: StationInfo) {
     const now = new Date();
 
     return await this.repository
@@ -44,8 +44,8 @@ export class SubwayQueryRepository {
       .select('subway.place_type', 'type')
       .addSelect('COUNT(subway.id)', 'count')
       .where('subway.name = :name AND subway.line = :line', {
-        name: dto.subway,
-        line: dto.line,
+        name: stationInfo.station,
+        line: stationInfo.line,
       })
       .andWhere('subway.place_type IN (:...types)', {
         types: ['팝업', '전시'],
@@ -72,5 +72,13 @@ export class SubwayQueryRepository {
     return await this.subwayStationRepository.find({
       where: { name: subway },
     });
+  }
+
+  async findLineAndStation(line_uuid: string, station_uuid: string) {
+    const result = await this.subwayStationRepository.findOne({
+      where: { uuid: station_uuid, line_uuid: line_uuid },
+    });
+
+    return { line: result.line, station: result.name };
   }
 }

@@ -7,42 +7,42 @@ export class CustomListDto {
     example: '100',
     description: '커스텀 갯수',
   })
-  음식점: number;
+  RESTAURANT: number;
 
   @Expose()
   @ApiProperty({
     example: '100',
     description: '커스텀 갯수',
   })
-  카페: number;
+  CAFE: number;
 
   @Expose()
   @ApiProperty({
     example: '100',
     description: '커스텀 갯수',
   })
-  술집: number;
+  BAR: number;
 
   @Expose()
   @ApiProperty({
     example: '100',
     description: '커스텀 갯수',
   })
-  쇼핑: number;
+  SHOPPING: number;
 
   @Expose()
   @ApiProperty({
     example: '100',
     description: '커스텀 갯수',
   })
-  문화: number;
+  CULTURE: number;
 
   @Expose()
   @ApiProperty({
     example: '100',
     description: '커스텀 갯수',
   })
-  놀거리: number;
+  ENTERTAINMENT: number;
 
   constructor(data?: Partial<CustomListDto>) {
     if (data) {

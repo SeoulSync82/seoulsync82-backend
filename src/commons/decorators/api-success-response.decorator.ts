@@ -16,10 +16,10 @@ export const ApiSuccessResponse = <TModel extends Type<unknown>>(
         allOf: [
           {
             properties: {
-              status_code: {
-                type: 'number',
-                default: 1,
-              },
+              // status_code: {
+              //   type: 'number',
+              //   default: 1,
+              // },
               status: {
                 type: 'string',
                 default: 'SUCCESS',
