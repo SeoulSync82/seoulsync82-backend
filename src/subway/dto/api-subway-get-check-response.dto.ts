@@ -6,7 +6,7 @@ export class ApiSubwayGetCheckResponseDto {
   @Expose()
   @Type(() => CustomListDto)
   @ApiProperty({
-    example: { 음식점: 12, 카페: 3, 술집: 24, 쇼핑: 3, 문화: 0, 놀거리: 1 },
+    example: { RESTAURANT: 12, CAFE: 3, BAR: 24, SHOPPING: 3, CULTURE: 0, ENTERTAINMENT: 1 },
     description: '커스텀',
   })
   items: CustomListDto[];

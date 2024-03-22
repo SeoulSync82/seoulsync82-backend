@@ -43,15 +43,17 @@ export class SubwayService {
     return new ApiSubwayGetCheckResponseDto({ items: [customsCheck] });
   }
 
-  async subwayStationList(uuid: string) {
-    const subwayStationList = await this.subwayQueryRepository.subwayStationList(uuid);
+  async subwayStationList(line_uuid: string) {
+    const subwayStationList = await this.subwayQueryRepository.subwayStationList(line_uuid);
     if (isEmpty(subwayStationList)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
     const apiSubwayListGetResponseDto = plainToInstance(
       ApiSubwayGetListResponseDto,
-      { items: subwayStationList.map((station) => station.name) },
+      {
+        items: subwayStationList.map((station) => ({ uuid: station.uuid, station: station.name })),
+      },
       { excludeExtraneousValues: true },
     );
 

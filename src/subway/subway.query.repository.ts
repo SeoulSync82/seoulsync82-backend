@@ -55,9 +55,9 @@ export class SubwayQueryRepository {
       .getRawMany();
   }
 
-  async subwayStationList(uuid) {
+  async subwayStationList(line_uuid: string) {
     return await this.subwayStationRepository.find({
-      where: { line_uuid: uuid },
+      where: { line_uuid: line_uuid },
       order: { id: 'ASC' },
     });
   }

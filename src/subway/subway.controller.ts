@@ -30,6 +30,24 @@ export class SubwayController {
     return await this.subwayService.subwayLineList();
   }
 
+  @Get('/:line_uuid')
+  @ApiOperation({
+    summary: '지하철 호선 별 역 리스트 조회',
+    description: '지하철 호선 별 역 리스트 조회',
+  })
+  @ApiSuccessResponse(ApiSubwayGetListResponseDto, {
+    description: '지하철 역 리스트 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '조회한 지하철역 호선이 없는 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiParam({ name: 'line_uuid', type: 'string', description: '지하철 호선 uuid' })
+  async subwayStationList(@Param('line_uuid') line_uuid: string) {
+    return await this.subwayService.subwayStationList(line_uuid);
+  }
+
   @Get('/:line_uuid/:station_uuid/customs-check')
   @ApiOperation({
     summary: '지하철 역 커스텀 체크',
@@ -46,23 +64,5 @@ export class SubwayController {
     @Param('station_uuid') station_uuid: string,
   ) {
     return await this.subwayService.subwayCustomsCheck(line_uuid, station_uuid);
-  }
-
-  @Get('/:uuid')
-  @ApiOperation({
-    summary: '지하철 역 리스트 조회',
-    description: '지하철 역 리스트 조회',
-  })
-  @ApiSuccessResponse(ApiSubwayGetListResponseDto, {
-    description: '지하철 역 리스트 조회 성공',
-    status: HttpStatus.OK,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '조회한 지하철역 호선이 없는 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  @ApiParam({ name: 'uuid', type: 'string', description: '지하철 호선 uuid' })
-  async subwayStationList(@Param('uuid') uuid: string) {
-    return await this.subwayService.subwayStationList(uuid);
   }
 }
