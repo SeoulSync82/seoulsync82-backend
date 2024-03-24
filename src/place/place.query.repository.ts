@@ -124,11 +124,14 @@ export class PlaceQueryRepository {
       .getMany();
   }
 
-  async findSubwayPlaceList(dto: ApiCourseGetRecommendRequestQueryDto): Promise<PlaceEntity[]> {
+  async findSubwayPlaceList(
+    dto: ApiCourseGetRecommendRequestQueryDto,
+    subwayStation_name: string,
+  ): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
-      .andWhere('s.name = :name', { name: dto.subway })
+      .andWhere('s.name = :name', { name: subwayStation_name })
       .andWhere('s.place_type IN (:...types)', { types: ['음식점', '카페', '술집'] })
       .andWhere('s.kakao_rating = :rating', { rating: 1 })
       .getMany();

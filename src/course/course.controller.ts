@@ -54,7 +54,8 @@ export class CourseController {
     status: HttpStatus.OK,
   })
   @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우',
+    description:
+      '선택한 지하철역에 음식점, 카페, 술집이 부족한 경우 or 지하철 역, 테마 uuid가 존재하지 않는 경우',
     status: HttpStatus.NOT_FOUND,
   })
   async courseRecommend(
@@ -151,6 +152,7 @@ export class CourseController {
   @ApiOperation({
     summary: '코스 장소별 목록',
     description: '코스 장소별 목록',
+    deprecated: true,
   })
   @ApiSuccessResponse(ApiCourseGetPlaceListResponseDto, {
     description: '코스 장소별 목록 조회 성공',

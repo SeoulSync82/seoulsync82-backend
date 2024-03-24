@@ -11,4 +11,10 @@ export class ThemeQueryRepository {
   async findList(): Promise<ThemeEntity[]> {
     return await this.repository.find();
   }
+
+  async findThemeUuid(theme_uuid: string): Promise<ThemeEntity> {
+    return await this.repository.findOne({
+      where: { uuid: theme_uuid },
+    });
+  }
 }

@@ -19,8 +19,8 @@ export class SubwayController {
 
   @Get('/line')
   @ApiOperation({
-    summary: '지하철 역 호선 조회',
-    description: '지하철 역 호선 조회',
+    summary: '지하철 호선 리스트',
+    description: '지하철 호선 리스트',
   })
   @ApiSuccessResponse(ApiSubwayGetLineResponseDto, {
     description: '지하철 역 호선 조회 성공',

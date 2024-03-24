@@ -9,5 +9,6 @@ import { ThemeService } from './theme.service';
   imports: [TypeOrmModule.forFeature([ThemeEntity])],
   controllers: [ThemeController],
   providers: [ThemeService, ThemeQueryRepository],
+  exports: [ThemeQueryRepository],
 })
 export class ThemeModule {}

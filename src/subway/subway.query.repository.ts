@@ -81,4 +81,10 @@ export class SubwayQueryRepository {
 
     return { line: result.line, station: result.name };
   }
+
+  async findSubwayStationUuid(subway_uuid: string) {
+    return await this.subwayStationRepository.findOne({
+      where: { uuid: subway_uuid },
+    });
+  }
 }

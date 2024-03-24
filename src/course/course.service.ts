@@ -38,6 +38,8 @@ import {
   CourseWithPlaceDetailDto,
 } from './dto/api-course-get-detail-response.dto';
 import { customPlaceDetailFunction } from 'src/commons/function/get-place-detail-function';
+import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
+import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 
 @Injectable()
 export class CourseService {
@@ -49,13 +51,19 @@ export class CourseService {
     private readonly bookmarkQueryRepository: BookmarkQueryRepository,
     private readonly communityQueryRepository: CommunityQueryRepository,
     private readonly reactionQueryRepository: ReactionQueryRepository,
+    private readonly themeQueryRepository: ThemeQueryRepository,
   ) {}
 
   async courseRecommend(dto: ApiCourseGetRecommendRequestQueryDto, user?: UserDto) {
-    let defaultCustoms = ['음식점', '카페', '술집'];
-    let placeNonSorting = [];
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway_uuid);
+    if (isEmpty(subwayStation)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
 
-    if (dto.theme) {
+    let theme;
+
+    if (isNotEmpty(dto.theme_uuid)) {
+      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
       // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
     }
@@ -65,7 +73,14 @@ export class CourseService {
       userHistoryCourse = await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
     }
 
-    const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(dto);
+    const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(
+      dto,
+      subwayStation.name,
+    );
+
+    let defaultCustoms = ['음식점', '카페', '술집'];
+    let placeNonSorting = [];
+
     for (const custom of defaultCustoms) {
       const customPlace: PlaceEntity[] = subwayPlaceList.filter(
         (item) => item.place_type === custom,
@@ -75,7 +90,8 @@ export class CourseService {
         let weight = customPlace.score * Math.log(customPlace.review_count + 1);
         if (isNotEmpty(userHistoryCourse)) {
           if (userHistoryCourse.map((item) => item.place_uuid).includes(customPlace.uuid)) {
-            weight = weight / 2; // 최근 7일내에 추천된 장소면 가중치 감소
+            /** 최근 7일내에 추천된 장소면 가중치 감소 */
+            weight = weight / 2;
           }
         }
         return weight;
@@ -117,44 +133,53 @@ export class CourseService {
 
       if (isEmpty(customSortingPlace)) {
         /** AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리 */
-        throw new NotFoundException(
-          `${dto.subway}역에는 '${place_type}'에 해당하는 핫플레이스가 부족해요...`,
-        );
+        throw new NotFoundException(ERROR.NOT_EXIST_DATA);
       }
+
       const placeDetailDto = plainToInstance(PlaceDetailDto, customSortingPlace, {
         excludeExtraneousValues: true,
       });
       placeDetailDto.sort = index + 1;
+      placeDetailDto.place_type = Object.entries(PLACE_TYPE).find(
+        ([key, val]) => val === placeDetailDto.place_type,
+      )[0];
       placeDetailDto.place_detail = customPlaceDetailFunction(customSortingPlace, place_type);
       placeSorting.push(placeDetailDto);
     }
 
-    const themes = [];
     let course_name: string;
     let course_sub_name: string;
 
-    if (dto.theme) themes.push(dto.theme);
+    // if (dto.theme) themes.push(dto.theme);
 
-    if (themes.length === 0) {
+    if (isEmpty(dto.theme_uuid)) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
-      course_name = `${dto.subway}역, 주변 코스 일정 ${randomEmoji}`;
-      course_sub_name = `주변 코스 일정 ${randomEmoji}`;
+      course_name = `주변 코스 일정 ${randomEmoji}`;
     } else {
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-      const themeText = randomTheme.substring(0, randomTheme.length - 2).trim();
-      const themeEmoji = randomTheme.substring(randomTheme.length - 2);
-      course_name = `${dto.subway}역, ${themeText} 코스 일정 ${themeEmoji}`;
-      course_sub_name = `${themeText} 코스 일정 ${themeEmoji}`;
+      const themeText = theme.theme_name.substring(0, theme.theme_name.length - 2).trim();
+      const themeEmoji = theme.theme_name.substring(theme.theme_name.length - 2);
+      course_name = `${themeText} 코스 일정 ${themeEmoji}`;
     }
 
-    const subway = await this.subwayQueryRepository.findSubway(dto.subway);
+    const subway = await this.subwayQueryRepository.findSubway(subwayStation.name);
 
     const apiCourseGetRecommendResponseDto = new ApiCourseGetRecommendResponseDto({
-      subway: `${dto.subway}역`,
-      line: subway.map((item) => item.line),
-      theme: dto.theme,
+      course_uuid: generateUUID(),
       course_name: course_name,
-      course_sub_name: course_sub_name,
+      subway: {
+        uuid: subwayStation.uuid,
+        station: subwayStation.name,
+      },
+      line: subway.map((subwayLine) => ({
+        uuid: subwayLine.uuid,
+        line: subwayLine.line,
+      })),
+      theme: theme
+        ? {
+            uuid: theme.uuid,
+            theme: theme.theme_name,
+          }
+        : undefined,
       places: placeSorting,
     });
 

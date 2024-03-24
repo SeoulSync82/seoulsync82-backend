@@ -12,6 +12,7 @@ import { BookmarkModule } from 'src/bookmark/bookmark.module';
 import { CommunityModule } from 'src/community/community.module';
 import { SubwayModule } from 'src/subway/subway.module';
 import { ConfigModule } from 'src/config/config.module';
+import { ThemeModule } from 'src/theme/theme.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from 'src/config/config.module';
     forwardRef(() => BookmarkModule),
     forwardRef(() => CommunityModule),
     UserModule,
+    ThemeModule,
     PlaceModule,
     TypeOrmModule.forFeature([CourseEntity, CourseDetailEntity, BookmarkEntity]),
   ],
