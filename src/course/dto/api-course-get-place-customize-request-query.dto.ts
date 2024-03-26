@@ -17,25 +17,25 @@ export class ApiCourseGetPlaceCustomizeRequestQueryDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: '쇼핑',
-    description: '추가하려는 커스텀',
+    example: 'SHOPPING',
+    description: '추가하려는 커스텀 ENUM',
   })
   place_type: string;
 
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: '성수',
-    description: '지하철 역',
+    example: '5b1296a2e88611eeb1c70242ac110002',
+    description: '지하철 역 uuid',
   })
-  subway: string;
+  subway_uuid: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({
-    example: '분위기 있는🌃',
-    description: '코스 테마',
+    example: '077ff3adc0e556148bf7eeb7a0273fb9',
+    description: '테마 uuid',
     required: false,
   })
-  theme?: string;
+  theme_uuid?: string;
 }

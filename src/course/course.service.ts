@@ -148,9 +148,6 @@ export class CourseService {
     }
 
     let course_name: string;
-    let course_sub_name: string;
-
-    // if (dto.theme) themes.push(dto.theme);
 
     if (isEmpty(dto.theme_uuid)) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
@@ -656,19 +653,34 @@ export class CourseService {
   }
 
   async coursePlaceCustomize(dto: ApiCourseGetPlaceCustomizeRequestQueryDto, user?: UserDto) {
-    if (dto.theme) {
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway_uuid);
+    if (isEmpty(subwayStation)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    let theme;
+
+    if (isNotEmpty(dto.theme_uuid)) {
+      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
       // customs = customs.filter((item) => item !== '음식점');
       // 추후 subway , place_theme , place 세개 테이블 Join
     }
 
     let userHistoryCourse: CourseDetailEntity[];
     if (isNotEmpty(user)) {
-      const userHistoryCourse: CourseDetailEntity[] =
-        await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
+      userHistoryCourse = await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
     }
 
-    const subwayPlaceCustomizeList: PlaceEntity[] =
-      await this.placeQueryRepository.findSubwayPlaceCustomizeList(dto);
+    let subwayPlaceCustomizeList: PlaceEntity[];
+    if (dto.place_type === 'CULTURE') {
+      subwayPlaceCustomizeList =
+        await this.placeQueryRepository.findSubwayPlaceCustomizeCultureList(subwayStation.name);
+    } else {
+      subwayPlaceCustomizeList = await this.placeQueryRepository.findSubwayPlaceCustomizeList(
+        dto,
+        subwayStation.name,
+      );
+    }
 
     const placeUuidsSet = new Set(dto.place_uuids);
     const filteredPlaceList = subwayPlaceCustomizeList.filter(
@@ -713,9 +725,7 @@ export class CourseService {
 
     if (isEmpty(selectedplace)) {
       /** AI 코스 추천시 결과 장소 하나라도 없으면 Error 처리 */
-      throw new NotFoundException(
-        `${dto.subway}역에는 '${dto.place_type}'에 해당하는 핫플레이스가 부족해요...`,
-      );
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
     const apiCourseGetPlaceCustomizeResponseDto = plainToInstance(
       ApiCourseGetPlaceCustomizeResponseDto,
@@ -727,8 +737,12 @@ export class CourseService {
 
     apiCourseGetPlaceCustomizeResponseDto.place_detail = customPlaceDetailFunction(
       selectedplace[0],
-      dto.place_type,
+      apiCourseGetPlaceCustomizeResponseDto.place_type,
     );
+
+    apiCourseGetPlaceCustomizeResponseDto.place_type = Object.entries(PLACE_TYPE).find(
+      ([key, val]) => val === apiCourseGetPlaceCustomizeResponseDto.place_type,
+    )[0];
 
     return { items: apiCourseGetPlaceCustomizeResponseDto };
   }

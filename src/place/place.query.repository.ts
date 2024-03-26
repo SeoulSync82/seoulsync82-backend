@@ -5,10 +5,11 @@ import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
-import { LessThan, MoreThan, Repository, Like, In } from 'typeorm';
+import { LessThan, MoreThan, Repository, Like, In, Brackets } from 'typeorm';
 import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
 import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
 import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
+import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 
 export class PlaceQueryRepository {
   constructor(
@@ -150,13 +151,33 @@ export class PlaceQueryRepository {
 
   async findSubwayPlaceCustomizeList(
     dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
+    subway_station_name: string,
   ): Promise<PlaceEntity[]> {
     return await this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
-      .andWhere('s.name = :name', { name: dto.subway })
-      .andWhere('s.place_type = :type', { type: dto.place_type })
+      .andWhere('s.name = :name', { name: subway_station_name })
+      .andWhere('s.place_type = :type', { type: PLACE_TYPE[dto.place_type] })
       .andWhere('s.kakao_rating = :rating', { rating: 1 })
+      .getMany();
+  }
+
+  async findSubwayPlaceCustomizeCultureList(subway_station_name: string): Promise<PlaceEntity[]> {
+    const now = new Date();
+
+    return await this.repository
+      .createQueryBuilder('p')
+      .innerJoinAndSelect('p.subways', 's')
+      .where('s.name = :name', { name: subway_station_name })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('s.place_type = :type1', { type1: '전시' }).orWhere('s.place_type = :type2', {
+            type2: '팝업',
+          });
+        }),
+      )
+      .andWhere('p.end_date > :now', { now })
+      .andWhere('s.kakao_rating >= :rating', { rating: 1 })
       .getMany();
   }
 }
