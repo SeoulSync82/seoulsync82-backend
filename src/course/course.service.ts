@@ -33,10 +33,7 @@ import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-plac
 import { UserDto } from 'src/user/dto/user.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
 import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
-import {
-  ApiCourseGetDetailResponseDto,
-  CourseWithPlaceDetailDto,
-} from './dto/api-course-get-detail-response.dto';
+import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
 import { customPlaceDetailFunction } from 'src/commons/function/get-place-detail-function';
 import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
 import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
@@ -141,7 +138,7 @@ export class CourseService {
       });
       placeDetailDto.sort = index + 1;
       placeDetailDto.place_type = Object.entries(PLACE_TYPE).find(
-        ([key, val]) => val === placeDetailDto.place_type,
+        ([, val]) => val === placeDetailDto.place_type,
       )[0];
       placeDetailDto.place_detail = customPlaceDetailFunction(customSortingPlace, place_type);
       placeSorting.push(placeDetailDto);
@@ -610,22 +607,41 @@ export class CourseService {
     );
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationName(course.subway);
+    const subway = await this.subwayQueryRepository.findSubway(subwayStation.name);
+
+    let theme;
+    if (isNotEmpty(course.theme)) {
+      theme = await this.themeQueryRepository.findThemeName(course.theme);
+    }
+
     const apiCourseDetailGetResponseDto = new ApiCourseGetDetailResponseDto({
-      uuid: uuid,
-      subway: course.subway,
-      line: [course.line],
-      theme: course.theme,
+      course_uuid: uuid,
       course_name: course.course_name,
-      count: coursePlaces.length,
+      subway: {
+        uuid: subwayStation.uuid,
+        station: subwayStation.name,
+      },
+      line: subway.map((subwayLine) => ({
+        uuid: subwayLine.uuid,
+        line: subwayLine.line,
+      })),
+      theme: theme
+        ? {
+            uuid: theme.uuid,
+            theme: theme.theme_name,
+          }
+        : undefined,
       isBookmarked: isNotEmpty(bookmark),
       isPosted: isNotEmpty(community),
       created_at: course.created_at,
       places: plainToInstance(
-        CourseWithPlaceDetailDto,
+        PlaceDetailDto,
         coursePlaces.map((place) => ({
           ...place.place,
           sort: place.sort,
           uuid: place.place_uuid,
+          place_type: Object.entries(PLACE_TYPE).find(([, val]) => val === place.place_type)[0],
           place_detail: customPlaceDetailFunction(place.place, place.place_type),
         })),
         {
@@ -667,14 +683,6 @@ export class CourseService {
     const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway_uuid);
     if (isEmpty(subwayStation)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-
-    let theme;
-
-    if (isNotEmpty(dto.theme_uuid)) {
-      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
-      // customs = customs.filter((item) => item !== '음식점');
-      // 추후 subway , place_theme , place 세개 테이블 Join
     }
 
     let userHistoryCourse: CourseDetailEntity[];
@@ -752,7 +760,7 @@ export class CourseService {
     );
 
     apiCourseGetPlaceCustomizeResponseDto.place_type = Object.entries(PLACE_TYPE).find(
-      ([key, val]) => val === apiCourseGetPlaceCustomizeResponseDto.place_type,
+      ([, val]) => val === apiCourseGetPlaceCustomizeResponseDto.place_type,
     )[0];
 
     return { items: apiCourseGetPlaceCustomizeResponseDto };

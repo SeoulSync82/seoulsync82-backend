@@ -17,4 +17,10 @@ export class ThemeQueryRepository {
       where: { uuid: theme_uuid },
     });
   }
+
+  async findThemeName(theme_name: string): Promise<ThemeEntity> {
+    return await this.repository.findOne({
+      where: { theme_name: theme_name },
+    });
+  }
 }
