@@ -9,7 +9,7 @@ export class ApiSubwayGetCheckResponseDto {
     example: { RESTAURANT: 12, CAFE: 3, BAR: 24, SHOPPING: 3, CULTURE: 0, ENTERTAINMENT: 1 },
     description: '커스텀',
   })
-  items: CustomListDto[];
+  items: CustomListDto;
 
   constructor(data?: Partial<ApiSubwayGetCheckResponseDto>) {
     if (data) {

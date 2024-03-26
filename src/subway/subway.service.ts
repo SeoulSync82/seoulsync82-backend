@@ -40,7 +40,7 @@ export class SubwayService {
       ENTERTAINMENT: findCountByType(PLACE_TYPE.ENTERTAINMENT, subwayCustoms),
     });
 
-    return new ApiSubwayGetCheckResponseDto({ items: [customsCheck] });
+    return new ApiSubwayGetCheckResponseDto({ items: customsCheck });
   }
 
   async subwayStationList(line_uuid: string) {
