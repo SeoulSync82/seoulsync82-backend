@@ -91,8 +91,8 @@ export class CourseController {
   @UseGuards(JwtAuthGuard)
   @Post('/recommend/save')
   @ApiOperation({
-    summary: 'AI 코스 추천 완료',
-    description: 'AI 코스 추천 완료',
+    summary: 'AI 코스 추천 저장',
+    description: 'AI 코스 추천 저장',
   })
   @ApiSuccessResponse(ApiCoursePostRecommendSaveResponseDto, {
     description: 'AI 코스 추천 저장 완료',

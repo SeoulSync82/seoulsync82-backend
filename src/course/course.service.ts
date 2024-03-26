@@ -544,13 +544,24 @@ export class CourseService {
   }
 
   async courseRecommendSave(dto: ApiCoursePostRecommendSaveRequestBodyDto, user: UserDto) {
-    const subway = await this.subwayQueryRepository.findSubway(dto.subway);
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway_uuid);
+    if (isEmpty(subwayStation)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    const subway = await this.subwayQueryRepository.findSubway(subwayStation.name);
+
+    let theme;
+
+    if (isNotEmpty(dto.theme_uuid)) {
+      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
+    }
 
     const apiCoursePostRecommendSaveResponseDto = new ApiCoursePostRecommendSaveResponseDto({
-      uuid: generateUUID(),
-      subway: dto.subway,
+      uuid: dto.course_uuid,
+      subway: subwayStation.name,
       line: subway.map((sub) => sub.line),
-      theme: dto.theme,
+      theme: theme.theme_name,
       course_name: dto.course_name,
       count: dto.places.length,
       place: dto.places,
@@ -559,13 +570,13 @@ export class CourseService {
     const courseEntity = new CourseEntity();
     courseEntity.uuid = apiCoursePostRecommendSaveResponseDto.uuid;
     courseEntity.line = apiCoursePostRecommendSaveResponseDto.line.join(', ');
-    courseEntity.subway = dto.subway;
+    courseEntity.subway = subwayStation.name;
     courseEntity.course_name = dto.course_name;
     courseEntity.user_uuid = user.uuid;
     courseEntity.user_name = user.nickname;
     courseEntity.count = dto.places.length;
-    courseEntity.theme = dto.theme;
-    courseEntity.customs = dto.places.map((place) => place.place_type).join(', ');
+    courseEntity.theme = theme.theme_name;
+    courseEntity.customs = dto.places.map((place) => PLACE_TYPE[place.place_type]).join(', ');
 
     await this.courseQueryRepository.saveCourse(courseEntity);
 
@@ -575,7 +586,7 @@ export class CourseService {
       courseDetail.sort = place.sort;
       courseDetail.place_uuid = place.uuid;
       courseDetail.place_name = place.place_name;
-      courseDetail.place_type = place.place_type;
+      courseDetail.place_type = PLACE_TYPE[place.place_type];
       return courseDetail;
     });
 

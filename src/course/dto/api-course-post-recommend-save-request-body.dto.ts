@@ -6,24 +6,32 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: '성수',
-    description: '지하철 역',
+    example: '5b1296a2e88611eeb1c70242ac110002',
+    description: '지하철 역 uuid',
   })
-  subway: string;
+  subway_uuid: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({
-    example: '분위기 있는 🌃',
-    description: '코스 테마',
+    example: '077ff3adc0e556148bf7eeb7a0273fb9',
+    description: '테마 uuid',
     required: false,
   })
-  theme?: string;
+  theme_uuid?: string;
 
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: '잠실나루역, 주변 코스 일정 🔥',
+    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    description: '코스 uuid',
+  })
+  course_uuid: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    example: '주변 코스 일정 🔥',
     description: '코스 이름',
   })
   course_name: string;
@@ -37,7 +45,7 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
         sort: 1,
         uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
         place_name: '쫄깃즈 키링 팝업스토어',
-        place_type: '팝업',
+        place_type: 'POPUP',
         thumbnail:
           'https://cf-templates-1gyolugg9zn9q-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/store/b4d678db%2C701e%2C482e%2C8a18%2C4b4a4f7a352f',
         address: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
@@ -50,7 +58,7 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
         sort: 2,
         uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
         place_name: '쫄깃즈 키링 팝업스토어',
-        place_type: '팝업',
+        place_type: 'POPUP',
         thumbnail:
           'https://cf-templates-1gyolugg9zn9q-ap-northeast-2.s3.ap-northeast-2.amazonaws.com/store/b4d678db%2C701e%2C482e%2C8a18%2C4b4a4f7a352f',
         address: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
@@ -61,6 +69,8 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
       },
     ],
     description: '장소 상세',
+    type: () => PlaceDetailDto,
+    isArray: true,
   })
   places: PlaceDetailDto[];
 }

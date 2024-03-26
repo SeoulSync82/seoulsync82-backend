@@ -32,7 +32,7 @@ export class ApiCoursePostRecommendSaveResponseDto {
 
   @Expose()
   @ApiProperty({
-    example: '잠실나루역, 주변 코스 일정 🔥',
+    example: '주변 코스 일정 🔥',
     description: '코스 이름',
   })
   course_name: string;
