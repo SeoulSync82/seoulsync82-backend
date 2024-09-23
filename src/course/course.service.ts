@@ -763,6 +763,8 @@ export class CourseService {
       ([, val]) => val === apiCourseGetPlaceCustomizeResponseDto.place_type,
     )[0];
 
+    apiCourseGetPlaceCustomizeResponseDto.sort = dto.place_uuids.length + 1;
+
     return { items: apiCourseGetPlaceCustomizeResponseDto };
   }
 }

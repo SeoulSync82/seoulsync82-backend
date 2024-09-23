@@ -4,6 +4,13 @@ import { Expose } from 'class-transformer';
 export class ApiCourseGetPlaceCustomizeResponseDto {
   @Expose()
   @ApiProperty({
+    example: 4,
+    description: '추가 하려는 장소의 sort',
+  })
+  sort: number
+
+  @Expose()
+  @ApiProperty({
     example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
     description: '장소 uuid',
   })

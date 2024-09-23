@@ -33,7 +33,8 @@ import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-
 import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
 import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
 import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
-import { UserDto } from 'src/user/dto/user.dto';
+import { UserDto } from '../user/dto/user.dto';
+
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
