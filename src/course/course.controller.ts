@@ -33,7 +33,7 @@ import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-
 import { UserDto } from 'src/user/dto/user.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
 import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
-import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
+import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -94,7 +94,7 @@ export class CourseController {
     summary: 'AI 코스 추천 저장',
     description: 'AI 코스 추천 저장',
   })
-  @ApiSuccessResponse(ApiCoursePostRecommendSaveResponseDto, {
+  @ApiSuccessResponse(ApiCoursePostSaveResponseDto, {
     description: 'AI 코스 추천 저장 완료',
     status: HttpStatus.OK,
   })
