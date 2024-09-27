@@ -88,7 +88,7 @@ export class CourseController {
   }
 
   @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @Post('/recommend/save')
   @ApiOperation({
     summary: 'AI 코스 추천 저장',
@@ -100,7 +100,7 @@ export class CourseController {
   })
   async courseRecommendSave(
     @Body() dto: ApiCoursePostRecommendSaveRequestBodyDto,
-    @CurrentUser() user: UserDto,
+    @CurrentUser() user?: UserDto,
   ) {
     return await this.courseService.courseRecommendSave(dto, user);
   }

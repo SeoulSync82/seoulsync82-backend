@@ -554,6 +554,9 @@ export class CourseService {
       theme = await this.themeQueryRepository.findThemeUuid(dto.theme.uuid);
     }
 
+    const userUuid = user?.uuid || null; // 회원이 아닐 경우 null로 설정
+    const userName = user?.nickname || 'guest'; // 닉네임 없으면 'guest'으로 설정
+
     const apiCoursePostRecommendSaveResponseDto = new ApiCoursePostRecommendSaveResponseDto({
       uuid: dto.course_uuid,
       subway: subwayStation.name,
@@ -569,8 +572,8 @@ export class CourseService {
     courseEntity.line = apiCoursePostRecommendSaveResponseDto.line.join(', ');
     courseEntity.subway = subwayStation.name;
     courseEntity.course_name = dto.course_name;
-    courseEntity.user_uuid = user.uuid;
-    courseEntity.user_name = user.nickname;
+    courseEntity.user_uuid = userUuid;
+    courseEntity.user_name = userName;
     courseEntity.count = dto.places.length;
     courseEntity.theme = theme.theme_name;
     courseEntity.customs = dto.places.map((place) => PLACE_TYPE[place.place_type]).join(', ');
