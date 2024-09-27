@@ -2,23 +2,51 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class ApiCoursePostRecommendSaveRequestBodyDto {
+export class SubwayStationDetail {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
     example: '5b1296a2e88611eeb1c70242ac110002',
     description: '지하철 역 uuid',
   })
-  subway_uuid: string;
+  uuid: string;
 
-  @IsOptional()
+  @ApiProperty({
+    example: '성수역',
+    description: '지하철 역 이름',
+  })
+  station: string;
+}
+export class ThemeDetail {
+  @IsNotEmpty()
   @IsString()
   @ApiProperty({
     example: '077ff3adc0e556148bf7eeb7a0273fb9',
     description: '테마 uuid',
-    required: false,
   })
-  theme_uuid?: string;
+  uuid: string;
+
+  @ApiProperty({
+    example: '가성비 좋은 💸',
+    description: '테마 이름',
+  })
+  theme: string;
+}
+
+export class ApiCoursePostRecommendSaveRequestBodyDto {
+  @Type(() => SubwayStationDetail)
+  @ApiProperty({
+    description: '코스 지하철',
+    type: () => SubwayStationDetail,
+  })
+  subway: SubwayStationDetail;
+
+  @Type(() => ThemeDetail)
+  @ApiProperty({
+    description: '코스 테마',
+    type: () => ThemeDetail,
+  })
+  theme: ThemeDetail;
 
   @IsNotEmpty()
   @IsString()

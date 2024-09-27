@@ -20,7 +20,12 @@ import { ApiThemeGetListResponseDto } from './theme/dto/api-theme-get-list-respo
 import { ApiUserGetProfileResponseDto } from './user/dto/api-user-get-profile-response.dto';
 import { ApiSubwayGetListResponseDto } from './subway/dto/api-subway-get-list-response.dto';
 import { ApiSubwayGetLineResponseDto } from './subway/dto/api-subway-get-line-response.dto';
-import { ApiCourseGetRecommendResponseDto } from './course/dto/api-course-get-recommend-response.dto';
+import {
+  ApiCourseGetRecommendResponseDto,
+  SubwayLineDetail,
+  SubwayStationDetail,
+  ThemeDetail,
+} from './course/dto/api-course-get-recommend-response.dto';
 import { ApiCourseGetPlaceCustomizeResponseDto } from './course/dto/api-course-get-place-customize-response.dto';
 import { ApiCoursePostRecommendSaveResponseDto } from './course/dto/api-course-post-recommend-save-response.dto';
 import { ApiCoursePostSaveResponseDto } from './course/dto/api-course-post-save-response.dto';
@@ -52,4 +57,7 @@ export const SwaggerModels = [
   ApiCourseGetPlaceCustomizeResponseDto,
   ApiCoursePostRecommendSaveResponseDto,
   ApiCoursePostSaveResponseDto,
+  SubwayLineDetail,
+  SubwayStationDetail,
+  ThemeDetail,
 ];
