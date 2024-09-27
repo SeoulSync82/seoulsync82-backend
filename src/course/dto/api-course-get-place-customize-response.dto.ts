@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class ApiCourseGetPlaceCustomizeResponseDto {
   @Expose()
@@ -7,7 +7,7 @@ export class ApiCourseGetPlaceCustomizeResponseDto {
     example: 4,
     description: '추가 하려는 장소의 sort',
   })
-  sort: number
+  sort: number;
 
   @Expose()
   @ApiProperty({
@@ -64,7 +64,8 @@ export class ApiCourseGetPlaceCustomizeResponseDto {
     example: 4.0,
     description: '평점',
   })
-  score?: number;
+  @Transform(({ value }) => value ?? 0)
+  score: number;
 
   @Expose()
   @ApiProperty({

@@ -64,7 +64,7 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
         address: '서울특별시 종로구 돈화문로11나길 28-1 1호 익선스페이스 A홀',
         latitude: '27.0319456',
         longitude: '37.5070434',
-        score: '4.0',
+        score: 4.0,
         place_detail: '도미노 피자',
       },
     ],
@@ -147,7 +147,7 @@ export class PlaceDetailDto {
     example: '4.0',
     description: '평점',
   })
-  score?: string;
+  score?: number;
 
   @IsOptional()
   @IsString()

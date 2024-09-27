@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 export class ApiCoursePostRecommendSaveResponseDto {
   @Expose()
@@ -150,7 +150,8 @@ export class PlaceDetailDto {
     example: '4.0',
     description: '평점',
   })
-  score?: string;
+  @Transform(({ value }) => value ?? 0)
+  score?: number;
 
   @Expose()
   @ApiProperty({

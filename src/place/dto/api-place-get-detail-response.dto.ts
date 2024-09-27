@@ -143,8 +143,8 @@ export class ApiPlaceGetDetailResponseDto {
     example: 4.0,
     description: '평점',
   })
-  @Transform(({ value }) => value ?? undefined)
-  score?: number;
+  @Transform(({ value }) => value ?? 0)
+  score: number;
 
   @Expose()
   @ApiProperty({
