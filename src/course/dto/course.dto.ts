@@ -519,7 +519,7 @@ export class CourseDetailResDto {
     example: true,
     description: '작성된 글인지 체크',
   })
-  isPosted: boolean;
+  is_posted: boolean;
 
   @Expose()
   @ApiProperty({
@@ -533,7 +533,7 @@ export class CourseDetailResDto {
     example: true,
     description: '북마크 유무 체크',
   })
-  isBookmarked: boolean;
+  is_bookmarked: boolean;
 
   @Expose()
   @ApiProperty({

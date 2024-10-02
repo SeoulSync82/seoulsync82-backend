@@ -248,7 +248,7 @@ export class CommunityDetailResDto {
     example: true,
     description: '구독여부',
   })
-  isBookmarked: boolean;
+  is_bookmarked: boolean;
 
   @Expose()
   @ApiProperty({
@@ -479,5 +479,5 @@ export class CommunityMyCourseListResDto {
     example: 'true',
     description: '내가 작성한 글인지',
   })
-  isPosted: boolean;
+  is_posted: boolean;
 }

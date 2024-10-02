@@ -73,7 +73,7 @@ export class CommunityService {
         excludeExtraneousValues: true,
       },
     ).map((my) => {
-      my.isPosted = myCommunity.map((item) => item.course_uuid).includes(my.course_uuid);
+      my.is_posted = myCommunity.map((item) => item.course_uuid).includes(my.course_uuid);
       return my;
     });
 
@@ -159,7 +159,7 @@ export class CommunityService {
       user_profile_image: communityUser.profile_image,
       review: community.review,
       score: community.score,
-      isBookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
+      is_bookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
       course_name: community.course_name,
       course_image: course.course_image,
       subway: course.subway,

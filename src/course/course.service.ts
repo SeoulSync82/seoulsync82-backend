@@ -600,6 +600,10 @@ export class CourseService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
+    if (isEmpty(user)) {
+      user = { uuid: '', id: null, nickname: null, profile_image: null };
+    }
+
     const bookmark: BookmarkEntity = await this.bookmarkQueryRepository.findUserBookmark(
       user,
       uuid,
@@ -635,8 +639,8 @@ export class CourseService {
             theme: theme.theme_name,
           }
         : undefined,
-      isBookmarked: isNotEmpty(bookmark),
-      isPosted: isNotEmpty(community),
+      is_bookmarked: isNotEmpty(bookmark),
+      is_posted: isNotEmpty(community),
       created_at: course.created_at,
       places: plainToInstance(
         PlaceDetailDto,

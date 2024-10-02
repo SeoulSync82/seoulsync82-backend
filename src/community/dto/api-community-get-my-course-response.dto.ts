@@ -65,5 +65,5 @@ export class ApiCommunityGetMyCourseResponseDto {
     example: 'true',
     description: '내가 작성한 글인지',
   })
-  isPosted: boolean;
+  is_posted: boolean;
 }

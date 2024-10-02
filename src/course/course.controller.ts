@@ -123,8 +123,8 @@ export class CourseController {
     return await this.courseService.myCourseRecommandHistory(dto, user);
   }
 
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
+  @UseGuards(JwtOptionalAuthGuard)
   @Get('/:uuid')
   @ApiOperation({
     summary: '코스 상세',
@@ -144,7 +144,7 @@ export class CourseController {
     required: false,
     description: '코스 uuid',
   })
-  async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user: UserDto) {
+  async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user?: UserDto) {
     return await this.courseService.courseDetail(uuid, user);
   }
 
