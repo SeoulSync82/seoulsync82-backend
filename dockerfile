@@ -2,6 +2,7 @@ FROM node:lts-slim
 
 WORKDIR /app
 COPY . .
-CMD yarn install && yarn build
+RUN yarn install && yarn build
 
+EXPOSE 3456
 ENTRYPOINT ["yarn", "run", "start:staging"]
