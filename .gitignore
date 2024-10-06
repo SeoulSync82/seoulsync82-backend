@@ -39,5 +39,3 @@ lerna-debug.log*
 .env.staging
 .env.production
 
-# config
-src/config/
