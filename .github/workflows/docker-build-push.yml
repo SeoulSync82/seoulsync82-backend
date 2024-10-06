@@ -3,9 +3,19 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [ master ]  # Change to your target branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set environment variables for Debug
+        run: echo "${{ secrets.ENV_DEBUG }}" > .env.debug
+
+      - name: Set environment variables for Staging
+        run: echo "${{ secrets.ENV_STAGING }}" > .env.staging
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
