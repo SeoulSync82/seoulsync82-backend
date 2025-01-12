@@ -35,7 +35,6 @@ import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request
 import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
 import { UserDto } from '../user/dto/user.dto';
 
-
 @ApiTags('커뮤니티')
 @Controller('/api/community')
 @UseFilters(SeoulSync82ExceptionFilter)
