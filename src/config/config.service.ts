@@ -41,7 +41,7 @@ export class ConfigService {
 
     const envVarsSchema: joi.ObjectSchema = joi.object({
       APP_ENV: joi.string().valid('debug', 'dev', 'staging', 'production').required(),
-      APP_PORT: joi.number().required().default(),
+      APP_PORT: joi.number().required().default(3456),
       APP_URL: joi.string().uri({
         scheme: [/https?/],
       }),
