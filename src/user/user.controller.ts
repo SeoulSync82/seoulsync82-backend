@@ -63,7 +63,7 @@ export class UserController {
     type: 'string',
     required: false,
     description: 'uuid',
-    example: '승모 - 2871948cc25b589ea0a672a6f060fae3 / hen - f3106509131f59359124ef5b9124f952',
+    example: '진리 - 9c3fd458bd5355dea4e649e3db77cfde / 승모 - 2871948cc25b589ea0a672a6f060fae3',
   })
   async getAccessToken(@Param('uuid') uuid: string): Promise<DetailResponseDto> {
     return await this.userService.getAccessToken(uuid);
@@ -81,7 +81,7 @@ export class UserController {
     status: HttpStatus.OK,
   })
   @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '유저 uuid가 없을 경우' || '해당 유저 정보가 없을 경우',
+    description: '유저 uuid가 없을 경우',
     status: HttpStatus.NOT_FOUND,
   })
   async getProfile(@CurrentUser() user: UserDto) {
