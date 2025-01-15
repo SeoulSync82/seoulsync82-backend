@@ -62,7 +62,7 @@ export class CultureListDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;
@@ -167,7 +167,7 @@ export class CultureDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;
@@ -286,7 +286,7 @@ export class PlaceDetailResDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;
@@ -471,7 +471,7 @@ export class ExhibitionDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;
@@ -560,7 +560,7 @@ export class PopupDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;

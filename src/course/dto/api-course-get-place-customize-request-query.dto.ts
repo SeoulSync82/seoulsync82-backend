@@ -6,7 +6,7 @@ export class ApiCourseGetPlaceCustomizeRequestQueryDto {
   @IsArray()
   @ApiProperty({
     example: [
-      'f8af50f3b7aa4125872029a0ef9fbdc3',
+      '00145054384a4b0d85b4198c6e54404f',
       '00f239d44c7141e5942957c2219dd885',
       '00f2fb983eec41a5a980747855752a6b',
     ],

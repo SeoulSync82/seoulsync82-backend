@@ -180,4 +180,10 @@ export class PlaceQueryRepository {
       .andWhere('s.kakao_rating >= :rating', { rating: 1 })
       .getMany();
   }
+
+  async findPlacesWithUuids(uuids: string[]): Promise<PlaceEntity[]> {
+    return await this.repository.find({
+      where: { uuid: In(uuids) },
+    });
+  }
 }

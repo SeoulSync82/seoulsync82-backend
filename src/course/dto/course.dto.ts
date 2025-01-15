@@ -34,7 +34,7 @@ export class CourseRecommendReqDto {
 export class CourseRecommendResDto {
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '코스 uuid',
   })
   uuid: string;
@@ -79,7 +79,7 @@ export class CourseRecommendResDto {
     example: [
       {
         sort: 1,
-        uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+        uuid: '00145054384a4b0d85b4198c6e54404f',
         place_name: '쫄깃즈 키링 팝업스토어',
         place_type: '팝업',
         thumbnail:
@@ -97,7 +97,7 @@ export class CourseRecommendResDto {
       },
       {
         sort: 2,
-        uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+        uuid: '00145054384a4b0d85b4198c6e54404f',
         place_name: '쫄깃즈 키링 팝업스토어',
         place_type: '팝업',
         thumbnail:
@@ -135,7 +135,7 @@ export class CoursePlaceDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;
@@ -243,7 +243,7 @@ export class CoursePlaceDetailDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;
@@ -509,7 +509,7 @@ export class MyCourseHistoryResDto {
 export class CourseDetailResDto {
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '코스 uuid',
   })
   course_uuid: string;
@@ -590,7 +590,7 @@ export class CourseDetailResDto {
     example: [
       {
         sort: 1,
-        uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+        uuid: '00145054384a4b0d85b4198c6e54404f',
         place_name: '쫄깃즈 키링 팝업스토어',
         place_type: '팝업',
         thumbnail:
@@ -608,7 +608,7 @@ export class CourseDetailResDto {
       },
       {
         sort: 2,
-        uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+        uuid: '00145054384a4b0d85b4198c6e54404f',
         place_name: '쫄깃즈 키링 팝업스토어',
         place_type: '팝업',
         thumbnail:
@@ -639,7 +639,7 @@ export class CourseDetailResDto {
 export class CoursePlaceListResDto {
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '코스 uuid',
   })
   course_uuid: string;
@@ -656,7 +656,7 @@ export class CoursePlaceListResDto {
     example: [
       {
         sort: 1,
-        uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+        uuid: '00145054384a4b0d85b4198c6e54404f',
         place_name: '쫄깃즈 키링 팝업스토어',
         place_type: '팝업',
         thumbnail:
@@ -678,7 +678,7 @@ export class CoursePlaceListResDto {
       },
       {
         sort: 2,
-        uuid: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+        uuid: '00145054384a4b0d85b4198c6e54404f',
         place_name: '쫄깃즈 키링 팝업스토어',
         place_type: '팝업',
         thumbnail:

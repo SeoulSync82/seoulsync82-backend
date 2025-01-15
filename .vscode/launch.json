@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Nest Framework",
-      "runtimeExecutable": "/Users/seoulsync82-backend/.nvm/versions/node/v20.4.0/bin/npm",
+      "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start:debug", "--", "--inspect-brk"],
       "autoAttachChildProcesses": true,
       "restart": true,

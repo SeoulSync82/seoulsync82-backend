@@ -179,14 +179,14 @@ export class CommunityListResDto {
 export class CommunityDetailResDto {
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '커뮤니티 uuid',
   })
   uuid: string;
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '코스 uuid',
   })
   course_uuid: string;
@@ -299,7 +299,7 @@ export class CoursePlaceDto {
 
   @Expose()
   @ApiProperty({
-    example: 'f8af50f3b7aa4125872029a0ef9fbdc3',
+    example: '00145054384a4b0d85b4198c6e54404f',
     description: '장소 uuid',
   })
   uuid: string;

@@ -1,4 +1,12 @@
-import { Controller, Get, HttpStatus, Param, UseFilters, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+  UseFilters,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
@@ -9,6 +17,7 @@ import { ERROR } from 'src/auth/constants/error';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSubwayGetListResponseDto } from './dto/api-subway-get-list-response.dto';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
+import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
 
 @ApiTags('지하철')
 @Controller('/api/subway')
@@ -57,12 +66,17 @@ export class SubwayController {
     description: '지하철 역 커스텀 체크 성공',
     status: HttpStatus.OK,
   })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '코스 uuid가 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
   @ApiParam({ name: 'line_uuid', type: 'string', description: '지하철 호선 uuid' })
   @ApiParam({ name: 'station_uuid', type: 'string', description: '지하철 역 uuid' })
   async subwayCustomsCheck(
     @Param('line_uuid') line_uuid: string,
     @Param('station_uuid') station_uuid: string,
+    @Query() dto: ApiSubwayGetCheckRequestQueryDto,
   ) {
-    return await this.subwayService.subwayCustomsCheck(line_uuid, station_uuid);
+    return await this.subwayService.subwayCustomsCheck(line_uuid, station_uuid, dto);
   }
 }
