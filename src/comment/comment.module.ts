@@ -6,9 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentEntity } from '../entities/comment.entity';
 import { CommentQueryRepository } from './comment.query.repository';
 import { CommunityModule } from '../community/community.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [CourseModule, CommunityModule, TypeOrmModule.forFeature([CommentEntity])],
+  imports: [UserModule, CourseModule, CommunityModule, TypeOrmModule.forFeature([CommentEntity])],
   controllers: [CommentController],
   providers: [CommentService, CommentQueryRepository],
 })

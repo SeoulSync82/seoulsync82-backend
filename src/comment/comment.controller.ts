@@ -1,15 +1,16 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Patch,
   Param,
-  Delete,
   UseFilters,
   UseGuards,
   UseInterceptors,
   HttpStatus,
+  Put,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
@@ -24,6 +25,8 @@ import { BadWordsPipe } from '../commons/pipe/badwords.pipe';
 import { ApiCommentPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
 import { CurrentUser } from '../commons/decorators/user.decorator';
 import { UserDto } from '../user/dto/user.dto';
+import { ApiCommentPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
+import { ApiCommentGetRequestQueryDto } from './dto/api-comment-get-request-query.dto';
 
 @ApiTags('한줄평')
 @Controller('/api/comment')
@@ -33,6 +36,32 @@ import { UserDto } from '../user/dto/user.dto';
 @UseFilters(SeoulSync82ExceptionFilter)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
+  @Get('/:uuid')
+  @ApiOperation({
+    summary: '한줄평 조회',
+    description: '한줄평 조회',
+  })
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '한줄평 조회 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '게시글이 존재하지 않을 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '커뮤니티 uuid',
+  })
+  async commentList(
+    @Param('uuid') uuid: string,
+    @Query() dto: ApiCommentGetRequestQueryDto,
+    @CurrentUser() user: UserDto,
+  ) {
+    return await this.commentService.commentList(uuid, dto, user);
+  }
 
   @Post('/:uuid')
   @ApiOperation({
@@ -57,27 +86,60 @@ export class CommentController {
     @Param('uuid') uuid: string,
     @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommentPostRequestBodyDto,
-  ) {
+  ): Promise<DetailResponseDto> {
     return await this.commentService.commentPost(uuid, user, dto);
   }
 
-  @Get()
-  findAll() {
-    return this.commentService.findAll();
+  @Put('/:uuid')
+  @ApiOperation({
+    summary: '한줄평 수정',
+    description: '한줄평 삭제',
+  })
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '한줄평 수정 성공',
+    status: HttpStatus.OK,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '댓글 uuid가 존재하지 않거나 댓글 작성자와 유저가 다른 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '댓글 uuid',
+  })
+  async commentUpdate(
+    @CurrentUser() user: UserDto,
+    @Body(BadWordsPipe) dto: ApiCommentPutRequestBodyDto,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return this.commentService.commentUpdate(user, dto, uuid);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto) {
-    return this.commentService.update(+id, updateCommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id);
+  @Patch('/:uuid')
+  @ApiOperation({
+    summary: '한줄평 삭제',
+    description: '한줄평 삭제',
+  })
+  @ApiSuccessResponse(DetailResponseDto, {
+    description: '한줄평 삭제 완료',
+    status: HttpStatus.NO_CONTENT,
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '댓글 uuid가 존재하지 않거나 댓글 작성자와 유저가 다른 경우',
+    status: HttpStatus.NOT_FOUND,
+  })
+  @ApiParam({
+    name: 'uuid',
+    type: 'string',
+    required: false,
+    description: '댓글 uuid',
+  })
+  async commentDelete(
+    @CurrentUser() user: UserDto,
+    @Param('uuid') uuid: string,
+  ): Promise<DetailResponseDto> {
+    return this.commentService.commentDelete(user, uuid);
   }
 }
