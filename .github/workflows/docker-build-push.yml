@@ -40,10 +40,10 @@ jobs:
       - name: Send HTTP API POST Request
         run: |
           curl -X 'POST' \
-            'http://${{ secrets.HOST_NAME }}/container/update/seoulsync' \
-            -H 'accept: application/json' \
-            -H 'Content-Type: application/json' \
-            -H 'Authorization: ${{ secrets.API_TOKEN }}' \
+            "http://${HOST_NAME}/container/update/seoulsync" \
+            -H "accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: ${API_TOKEN}" \
             -d '{
                   "type": "backend",
                   "host_port": 7008,
