@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ master ]  # Change to your target branch
+    branches: [master] # Change to your target branch
 
 jobs:
   build-and-push:
@@ -36,3 +36,19 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY_URL }}/seoulsync-backend:latest
+
+      - name: Send HTTP API POST Request
+        run: |
+          curl -X 'POST' \
+            'http://${{ secrets.HOST_NAME }}/container/update/seoulsync' \
+            -H 'accept: application/json' \
+            -H 'Content-Type: application/json' \
+            -H 'Authorization: ${{ secrets.API_TOKEN }}' \
+            -d '{
+                  "type": "backend",
+                  "host_port": 7008,
+                  "container_port": 3456
+              }'
+        env:
+          HOST_NAME: ${{ secrets.NAS_MANAGE_HOST }}
+          API_TOKEN: ${{ secrets.NAS_MANAGE_PASSWORD }}
