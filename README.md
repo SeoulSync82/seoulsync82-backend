@@ -93,7 +93,7 @@ seoulsync82-backend
 
 ```bash
 # 프로젝트 클론
-git clone https://github.com/your-repo/SeoulSync82.git
+git clone https://github.com/SeoulSync82/seoulsync82-backend.git
 cd SeoulSync82
 
 # 의존성 설치
