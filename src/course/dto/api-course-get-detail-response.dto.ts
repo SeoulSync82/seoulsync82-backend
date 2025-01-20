@@ -132,7 +132,7 @@ export class ApiCourseGetDetailResponseDto {
 
   @Expose()
   @ApiProperty({
-    example: '주변 코스 일정🔥',
+    example: '잠실역, 주변 코스 일정🔥',
     description: '코스 이름',
   })
   course_name: string;

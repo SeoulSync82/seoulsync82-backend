@@ -91,6 +91,12 @@ seoulsync82-backend
 
 ## 설치 및 실행 (Installation & Usage)
 
+### Requirements
+
+- **Node.js** (v20+)
+- **MySQL** & **Redis**
+- **AWS CLI**
+
 ```bash
 # 프로젝트 클론
 git clone https://github.com/SeoulSync82/seoulsync82-backend.git

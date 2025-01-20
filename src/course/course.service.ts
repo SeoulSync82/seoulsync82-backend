@@ -1,42 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Emojis } from 'src/commons/enum/emoji';
 import { ERROR } from 'src/auth/constants/error';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
+import { Emojis } from 'src/commons/enum/emoji';
+import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
+import { customPlaceDetailFunction } from 'src/commons/function/get-place-detail-function';
+import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
+import { CommunityQueryRepository } from 'src/community/community.query.repository';
+import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
+import { CommunityEntity } from 'src/entities/community.entity';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
-import { CourseQueryRepository } from './course.query.repository';
-import { CoursePlaceDetailDto, CoursePlaceDto } from './dto/course.dto';
+import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
-import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
-import { CommunityQueryRepository } from 'src/community/community.query.repository';
-import { CommunityEntity } from 'src/entities/community.entity';
-import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
-import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
-import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
+import { CourseQueryRepository } from './course.query.repository';
+import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
 import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
 import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-history-response.dto';
+import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
 import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
 import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
 import {
   ApiCourseGetRecommendResponseDto,
   PlaceDetailDto,
 } from './dto/api-course-get-recommend-response.dto';
-import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
-import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
-import { UserDto } from 'src/user/dto/user.dto';
+import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
+import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
 import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
-import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
-import { customPlaceDetailFunction } from 'src/commons/function/get-place-detail-function';
-import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
-import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
+import { CoursePlaceDetailDto, CoursePlaceDto } from './dto/course.dto';
 
 @Injectable()
 export class CourseService {
@@ -148,11 +148,11 @@ export class CourseService {
 
     if (isEmpty(dto.theme_uuid)) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
-      course_name = `주변 코스 일정 ${randomEmoji}`;
+      course_name = `${subwayStation.name}역, 주변 코스 일정 ${randomEmoji}`;
     } else {
       const themeText = theme.theme_name.substring(0, theme.theme_name.length - 2).trim();
       const themeEmoji = theme.theme_name.substring(theme.theme_name.length - 2);
-      course_name = `${themeText} 코스 일정 ${themeEmoji}`;
+      course_name = `${subwayStation.name}역, ${themeText} 코스 일정 ${themeEmoji}`;
     }
 
     const subway = await this.subwayQueryRepository.findSubway(subwayStation.name);
