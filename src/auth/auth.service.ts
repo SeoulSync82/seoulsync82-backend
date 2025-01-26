@@ -1,15 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from 'src/config/config.service';
+import { isEmpty } from 'class-validator';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { UserQueryRepository } from 'src/user/user.query.repository';
-import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 import { generateUUID } from 'src/commons/util/uuid';
-import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
-import { isEmpty } from 'class-validator';
-import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
+import { ConfigService } from 'src/config/config.service';
 import { UserDto } from 'src/user/dto/user.dto';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 import { ERROR } from './constants/error';
+import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
+import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
+import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -162,7 +162,8 @@ export class AuthService {
     res.cookie('refresh_token', refresh_token, {
       expires: now,
       httpOnly: true,
-      secure: true,
+      /** HTTP 환경에서 테스트 중이라 임시로 false 변경 */
+      secure: false,
       sameSite: 'none',
     });
     return access_token;
