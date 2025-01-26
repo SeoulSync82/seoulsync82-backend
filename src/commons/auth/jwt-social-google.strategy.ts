@@ -22,9 +22,9 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const localReferer1 = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
     const localReferer2 = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL_SUB');
 
-    const env = referer === localReferer1 || referer === localReferer2;
+    const env = referer?.startsWith(localReferer1) || referer?.startsWith(localReferer2);
     let callbackURL;
-    if (isNotEmpty(req.headers.referer) && env === true) {
+    if (isNotEmpty(referer) && env === true) {
       callbackURL = this.configService.get('GOOGLE_DEV_CALLBACK');
     } else {
       callbackURL = this.configService.get('GOOGLE_CALLBACK');
