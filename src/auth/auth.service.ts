@@ -162,8 +162,7 @@ export class AuthService {
     res.cookie('refresh_token', refresh_token, {
       expires: now,
       httpOnly: true,
-      /** HTTP 환경에서 테스트 중이라 임시로 false 변경 */
-      secure: false,
+      secure: true,
       sameSite: 'none',
     });
     return access_token;
