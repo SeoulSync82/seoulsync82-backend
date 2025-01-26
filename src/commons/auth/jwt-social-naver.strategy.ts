@@ -14,7 +14,7 @@ export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
   }
 
   authenticate(req, options) {
-    const env = req.headers.referer === 'http://localhost:3000/';
+    const env = req.headers.referer === this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
     let callbackURL;
     if (isNotEmpty(req.headers.referer) && env === true) {
       callbackURL = this.configService.get('NAVER_DEV_CALLBACK');
