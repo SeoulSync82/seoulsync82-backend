@@ -1,6 +1,6 @@
 import { parse } from 'dotenv';
-import * as joi from 'joi';
 import * as fs from 'fs';
+import * as joi from 'joi';
 
 /**
  * Key-value mapping
@@ -76,6 +76,7 @@ export class ConfigService {
       OLD_SEOULSYNC82_FRONTEND_LOCAL: joi.string().required(),
       OLD_SEOULSYNC82_FRONTEND_STAGING: joi.string().required(),
       SEOULSYNC82_FRONTEND_LOCAL: joi.string().required(),
+      SEOULSYNC82_FRONTEND_LOCAL_SUB: joi.string().required(),
       SEOULSYNC82_FRONTEND_STAGING: joi.string().required(),
     });
 

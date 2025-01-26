@@ -44,6 +44,7 @@ async function bootstrap() {
     cors({
       origin: [
         configService.get('SEOULSYNC82_FRONTEND_LOCAL'),
+        configService.get('SEOULSYNC82_FRONTEND_LOCAL_SUB'),
         configService.get('SEOULSYNC82_FRONTEND_STAGING'),
       ],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

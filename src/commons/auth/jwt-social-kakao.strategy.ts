@@ -18,7 +18,10 @@ export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       ? req.headers.referer.slice(0, -1)
       : req.headers.referer;
 
-    const env = referer === this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
+    const localReferer1 = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL');
+    const localReferer2 = this.configService.get('SEOULSYNC82_FRONTEND_LOCAL_SUB');
+
+    const env = referer === localReferer1 || referer === localReferer2;
     let callbackURL;
     if (isNotEmpty(req.headers.referer) && env === true) {
       callbackURL = this.configService.get('KAKAO_DEV_CALLBACK');
