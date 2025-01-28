@@ -8,7 +8,7 @@ export class ApiCourseGetRecommendRequestQueryDto {
     example: '5b1296a2e88611eeb1c70242ac110002',
     description: '지하철 역 uuid',
   })
-  subway_uuid: string;
+  station_uuid: string;
 
   @IsOptional()
   @IsString()

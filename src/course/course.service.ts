@@ -52,7 +52,7 @@ export class CourseService {
   ) {}
 
   async courseRecommend(dto: ApiCourseGetRecommendRequestQueryDto, user?: UserDto) {
-    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway_uuid);
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.station_uuid);
     if (isEmpty(subwayStation)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
@@ -687,7 +687,7 @@ export class CourseService {
   }
 
   async coursePlaceCustomize(dto: ApiCourseGetPlaceCustomizeRequestQueryDto, user?: UserDto) {
-    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway_uuid);
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.station_uuid);
     if (isEmpty(subwayStation)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
