@@ -1,15 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsInt, IsNotEmpty, Min, Max, IsIn, IsString } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { NextPageTransform } from '../../commons/decorators/next-page-transform.decorator';
 
 export class ApiPlaceGetExhibitionRequestQueryDto {
   @IsOptional()
-  @IsInt()
   @ApiProperty({
-    example: 0,
-    description: '가장 마지막으로 본 전시 아이디',
+    example:
+      'eyJzdGFydF9kYXRlIjoiMjAyNS0wMS0xMFQwMDowMDowMC4wMDBaIiwiZW5kX2RhdGUiOiIyMDI1LTA0LTEwVDAwOjAwOjAwLjAwMFoiLCJpZCI6NjUzNjQwfQ==',
+    description: '페이징을 위한 커서',
     required: false,
+    type: String,
   })
-  last_id?: number;
+  @NextPageTransform<{
+    start_date?: string;
+    end_date?: string;
+    id?: number;
+  }>((val) => val)
+  next_page?: {
+    start_date?: string;
+    end_date?: string;
+    id?: number;
+  };
 
   @IsNotEmpty()
   @IsInt()
@@ -25,9 +36,9 @@ export class ApiPlaceGetExhibitionRequestQueryDto {
   @IsString()
   @IsIn(['latest', 'deadline'])
   @ApiProperty({
-    example: '"latest" or "deadline"',
-    description: '정렬',
+    example: 'latest',
+    description: "'latest' || 'deadline'",
     required: false,
   })
-  order: string;
+  order: 'latest' | 'deadline';
 }

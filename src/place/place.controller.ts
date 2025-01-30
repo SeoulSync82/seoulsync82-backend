@@ -7,13 +7,14 @@ import {
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ERROR } from 'src/auth/constants/error';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { ApiPagingSuccessResponse } from '../commons/decorators/api-paging-success-response.decorator';
 import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';
 import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
 import { ApiPlaceGetCultureResponseDto } from './dto/api-place-get-culture-response.dto';
@@ -22,7 +23,6 @@ import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibi
 import { ApiPlaceGetExhibitionResponseDto } from './dto/api-place-get-exhibition-response.dto';
 import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
 import { ApiPlaceGetPopupResponseDto } from './dto/api-place-get-popup-response.dto';
-
 import { PlaceService } from './place.service';
 
 @ApiTags('장소')
@@ -75,7 +75,7 @@ export class PlaceController {
     summary: '전시소개 목록',
     description: '전시소개 목록',
   })
-  @ApiArraySuccessResponse(ApiPlaceGetExhibitionResponseDto, {
+  @ApiPagingSuccessResponse(ApiPlaceGetExhibitionResponseDto, {
     description: '전시소개 목록 조회 성공',
     status: HttpStatus.OK,
   })
@@ -88,7 +88,7 @@ export class PlaceController {
     summary: '팝업소개 목록',
     description: '팝업소개 목록',
   })
-  @ApiArraySuccessResponse(ApiPlaceGetPopupResponseDto, {
+  @ApiPagingSuccessResponse(ApiPlaceGetPopupResponseDto, {
     description: '팝업소개 목록 조회 성공',
     status: HttpStatus.OK,
   })

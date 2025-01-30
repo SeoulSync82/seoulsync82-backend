@@ -1,15 +1,16 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 import { ApiCourseGetPlaceCustomizeRequestQueryDto } from 'src/course/dto/api-course-get-place-customize-request-query.dto';
 import { ApiCourseGetRecommendRequestQueryDto } from 'src/course/dto/api-course-get-recommend-request-query.dto';
 import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-post-recommend-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
-import { LessThan, MoreThan, Repository, Like, In, Brackets } from 'typeorm';
+import { Brackets, In, LessThan, Like, MoreThan, Repository } from 'typeorm';
+import { CursorPaginationHelper } from '../commons/helpers/cursor.helper';
 import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
 import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
 import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
-import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 
 export class PlaceQueryRepository {
   constructor(
@@ -39,50 +40,74 @@ export class PlaceQueryRepository {
     });
   }
 
-  async findExhibitionList(dto: ApiPlaceGetExhibitionRequestQueryDto): Promise<PlaceEntity[]> {
-    const now = new Date();
-    const whereConditions = { place_type: '전시', end_date: MoreThan(now) };
-    let orderType = {};
+  async findExhibitionList(dto: ApiPlaceGetExhibitionRequestQueryDto) {
+    const qb = this.repository
+      .createQueryBuilder('place')
+      .where('place.place_type = :type', { type: '전시' })
+      .andWhere('place.end_date > NOW()');
 
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
+    CursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page);
 
     if (dto.order === 'latest') {
-      orderType = { start_date: 'DESC' };
-    } else if (dto.order === 'deadline') {
-      orderType = { end_date: 'ASC' };
+      qb.orderBy('place.start_date', 'DESC').addOrderBy('place.id', 'DESC');
+    } else {
+      qb.orderBy('place.end_date', 'ASC').addOrderBy('place.id', 'ASC');
     }
 
-    return await this.repository.find({
-      where: whereConditions,
-      order: orderType,
-      take: dto.size,
-    });
+    qb.take(dto.size + 1);
+    const results = await qb.getMany();
+    const hasNext = results.length > dto.size;
+
+    return {
+      items: hasNext ? results.slice(0, -1) : results,
+      nextCursor: hasNext
+        ? CursorPaginationHelper.generateCursor(results[dto.size - 1], dto.order)
+        : null,
+    };
   }
 
-  async findPopupList(dto: ApiPlaceGetPopupRequestQueryDto): Promise<PlaceEntity[]> {
+  async findPopupList(dto: ApiPlaceGetPopupRequestQueryDto) {
+    const qb = this.repository
+      .createQueryBuilder('place')
+      .where('place.place_type = :type', { type: '팝업' })
+      .andWhere('place.end_date > NOW()');
+
+    CursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page);
+
+    if (dto.order === 'latest') {
+      qb.orderBy('place.start_date', 'DESC').addOrderBy('place.id', 'DESC');
+    } else {
+      qb.orderBy('place.end_date', 'ASC').addOrderBy('place.id', 'ASC');
+    }
+
+    qb.take(dto.size + 1);
+    const results = await qb.getMany();
+    const hasNext = results.length > dto.size;
+
+    return {
+      items: hasNext ? results.slice(0, -1) : results,
+      nextCursor: hasNext
+        ? CursorPaginationHelper.generateCursor(results[dto.size - 1], dto.order)
+        : null,
+    };
+  }
+
+  async countPopup(): Promise<number> {
+    // return await this.repository.count({
+    //   where: { place_type: '팝업', end_date: MoreThan(new Date()) },
+    // });
     const now = new Date();
     const whereConditions = {
       place_type: '팝업',
       end_date: MoreThan(now),
     };
-    let orderType = {};
 
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
+    return await this.repository.count({ where: whereConditions });
+  }
 
-    if (dto.order === 'latest') {
-      orderType = { start_date: 'DESC' };
-    } else if (dto.order === 'deadline') {
-      orderType = { end_date: 'ASC' };
-    }
-
-    return await this.repository.find({
-      where: whereConditions,
-      order: orderType,
-      take: dto.size,
+  async countExhibition(): Promise<number> {
+    return await this.repository.count({
+      where: { place_type: '전시', end_date: MoreThan(new Date()) },
     });
   }
 

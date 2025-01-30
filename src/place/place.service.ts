@@ -52,42 +52,37 @@ export class PlaceService {
   }
 
   async findExhibitionList(dto: ApiPlaceGetExhibitionRequestQueryDto) {
-    const exhibitionList: PlaceEntity[] = await this.placeQueryRepository.findExhibitionList(dto);
-    if (!exhibitionList || exhibitionList.length === 0) {
-      return { items: [] };
+    const totalCount: number = await this.placeQueryRepository.countExhibition();
+    if (totalCount === 0) {
+      return { items: [], total_count: 0, last_item_id: 0 };
     }
 
-    const apiPlaceExhibitionGetResponseDto: ApiPlaceGetExhibitionResponseDto[] = plainToInstance(
-      ApiPlaceGetExhibitionResponseDto,
-      exhibitionList,
-      {
+    const { items, nextCursor } = await this.placeQueryRepository.findExhibitionList(dto);
+
+    return {
+      items: plainToInstance(ApiPlaceGetExhibitionResponseDto, items, {
         excludeExtraneousValues: true,
-      },
-    );
-
-    const last_item_id =
-      exhibitionList.length === dto.size ? exhibitionList[exhibitionList.length - 1].id : 0;
-
-    return { items: apiPlaceExhibitionGetResponseDto, last_item_id };
+      }),
+      total_count: totalCount,
+      next_page: nextCursor,
+    };
   }
 
   async findPopupList(dto: ApiPlaceGetPopupRequestQueryDto) {
-    const popupList: PlaceEntity[] = await this.placeQueryRepository.findPopupList(dto);
-    if (!popupList || popupList.length === 0) {
-      return { items: [] };
+    const totalCount: number = await this.placeQueryRepository.countPopup();
+    if (totalCount === 0) {
+      return { items: [], total_count: 0, last_item_id: 0 };
     }
 
-    const apiPlacePopupGetResponseDto: ApiPlaceGetPopupResponseDto[] = plainToInstance(
-      ApiPlaceGetPopupResponseDto,
-      popupList,
-      {
+    const { items, nextCursor } = await this.placeQueryRepository.findPopupList(dto);
+
+    return {
+      items: plainToInstance(ApiPlaceGetPopupResponseDto, items, {
         excludeExtraneousValues: true,
-      },
-    );
-
-    const last_item_id = popupList.length === dto.size ? popupList[popupList.length - 1].id : 0;
-
-    return { items: apiPlacePopupGetResponseDto, last_item_id };
+      }),
+      total_count: totalCount,
+      next_page: nextCursor,
+    };
   }
 
   async findPlaceDetail(uuid) {
