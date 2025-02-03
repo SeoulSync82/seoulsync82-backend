@@ -28,8 +28,7 @@ export class PlaceQueryRepository {
       .select('place')
       .where('place.place_type IN (:...types)', { types: ['전시', '팝업'] })
       .andWhere('place.end_date > :now', { now });
-    if (dto.last_id > 0) q.andWhere('place.id < :last_id', { last_id: dto.last_id });
-    q.orderBy('place.id', 'DESC');
+    q.orderBy('start_date', 'DESC');
     q.limit(dto.size);
     return q.getMany();
   }

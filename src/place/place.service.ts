@@ -31,10 +31,7 @@ export class PlaceService {
       },
     );
 
-    const last_item_id =
-      cultureList.length === dto.size ? cultureList[cultureList.length - 1].id : 0;
-
-    return { items: apiPlaceCultureGetResponseDto, last_item_id };
+    return { items: apiPlaceCultureGetResponseDto };
   }
 
   async findCultureDetail(uuid) {
