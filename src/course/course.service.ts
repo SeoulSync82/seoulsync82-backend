@@ -541,7 +541,7 @@ export class CourseService {
   }
 
   async courseRecommendSave(dto: ApiCoursePostRecommendSaveRequestBodyDto, user: UserDto) {
-    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.subway.uuid);
+    const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.station_uuid);
     if (isEmpty(subwayStation)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
@@ -550,8 +550,8 @@ export class CourseService {
 
     let theme;
 
-    if (isNotEmpty(dto.theme.uuid)) {
-      theme = await this.themeQueryRepository.findThemeUuid(dto.theme.uuid);
+    if (isNotEmpty(dto.theme_uuid)) {
+      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
     }
 
     const userUuid = user?.uuid || null; // 회원이 아닐 경우 null로 설정

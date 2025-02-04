@@ -34,19 +34,22 @@ export class ThemeDetail {
 }
 
 export class ApiCoursePostRecommendSaveRequestBodyDto {
-  @Type(() => SubwayStationDetail)
+  @IsNotEmpty()
+  @IsString()
   @ApiProperty({
-    description: '코스 지하철',
-    type: () => SubwayStationDetail,
+    example: '5b1296a2e88611eeb1c70242ac110002',
+    description: '지하철 역 uuid',
   })
-  subway: SubwayStationDetail;
+  station_uuid: string;
 
-  @Type(() => ThemeDetail)
+  @IsOptional()
+  @IsString()
   @ApiProperty({
-    description: '코스 테마',
-    type: () => ThemeDetail,
+    example: '077ff3adc0e556148bf7eeb7a0273fb9',
+    description: '테마 uuid',
+    required: false,
   })
-  theme: ThemeDetail;
+  theme_uuid?: string;
 
   @IsNotEmpty()
   @IsString()
