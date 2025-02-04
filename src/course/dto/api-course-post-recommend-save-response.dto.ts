@@ -151,7 +151,7 @@ export class PlaceDetailDto {
     description: '평점',
   })
   @Transform(({ value }) => value ?? 0)
-  score?: number;
+  score?: string;
 
   @Expose()
   @ApiProperty({

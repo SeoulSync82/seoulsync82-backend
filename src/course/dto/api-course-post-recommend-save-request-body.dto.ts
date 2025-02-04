@@ -6,6 +6,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   ValidateNested,
@@ -151,7 +152,7 @@ export class PlaceDetailDto {
   })
   place_type: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @ApiProperty({
     example:
@@ -185,12 +186,12 @@ export class PlaceDetailDto {
   longitude: string;
 
   @IsOptional()
-  @IsString()
+  @IsNumberString()
   @ApiProperty({
     example: '4.0',
     description: '평점',
   })
-  score?: number;
+  score?: string;
 
   @IsOptional()
   @IsString()

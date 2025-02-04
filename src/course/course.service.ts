@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/auth/constants/error';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
@@ -541,6 +541,11 @@ export class CourseService {
   }
 
   async courseRecommendSave(dto: ApiCoursePostRecommendSaveRequestBodyDto, user: UserDto) {
+    const course: CourseEntity = await this.courseQueryRepository.findCourse(dto.course_uuid);
+    if (isNotEmpty(course)) {
+      throw new ConflictException(ERROR.DUPLICATION);
+    }
+
     const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.station_uuid);
     if (isEmpty(subwayStation)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
