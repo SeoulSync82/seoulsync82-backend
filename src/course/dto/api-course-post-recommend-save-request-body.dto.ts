@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class SubwayStationDetail {
   @IsNotEmpty()
@@ -69,6 +78,9 @@ export class ApiCoursePostRecommendSaveRequestBodyDto {
 
   @IsNotEmpty()
   @IsArray()
+  @ArrayMinSize(3)
+  @ArrayMaxSize(6)
+  @ValidateNested({ each: true })
   @Type(() => PlaceDetailDto)
   @ApiProperty({
     example: [
