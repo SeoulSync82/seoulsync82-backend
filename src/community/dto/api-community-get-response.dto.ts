@@ -101,7 +101,7 @@ export class ApiCommunityGetResponseDto {
     example: '1',
     description: '좋아요 개수',
   })
-  like: number;
+  like_count: number;
 
   @Expose()
   @ApiProperty({

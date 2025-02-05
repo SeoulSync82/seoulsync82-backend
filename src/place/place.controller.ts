@@ -49,6 +49,7 @@ export class PlaceController {
   @ApiOperation({
     summary: '전시/팝업 상세',
     description: '전시/팝업 상세',
+    deprecated: true,
   })
   @ApiSuccessResponse(ApiPlaceGetCultureDetailResponseDto, {
     description: '전시/팝업 상세 조회 성공',

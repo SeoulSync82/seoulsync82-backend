@@ -1,16 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional, Max, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { ToBoolean } from 'src/commons/decorators/to-boolean.decorator';
+import { NextPageTransform } from '../../commons/decorators/next-page-transform.decorator';
 
 export class ApiCommunityGetRequestQueryDto {
   @IsOptional()
-  @IsInt()
   @ApiProperty({
-    example: 0,
-    description: '마지막 커뮤니티 아이디',
+    example:
+      'eyJjcmVhdGVkX2F0IjoiMjAyNC0wMS0xMFQwMDowMDowMC4wMDBaIiwiZW5kX2RhdGUiOiIyMDI0LTA0LTEwVDAwOjAwOjAwLjAwMFoiLCJpZCI6NjUzNjQwfQ==',
+    description: '페이징을 위한 커서',
     required: false,
+    type: String,
   })
-  last_id?: number;
+  @NextPageTransform<{
+    created_at?: string;
+    like?: number;
+    id?: number;
+  }>((val) => val)
+  next_page?: {
+    created_at?: string;
+    like?: number;
+    id?: number;
+  };
 
   @IsNotEmpty()
   @IsInt()
@@ -31,4 +51,14 @@ export class ApiCommunityGetRequestQueryDto {
   })
   @ToBoolean()
   me?: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(['latest', 'popular'])
+  @ApiProperty({
+    example: 'latest',
+    description: "'latest' || 'popular'",
+    required: false,
+  })
+  order: 'latest' | 'popular';
 }

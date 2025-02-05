@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CommunityEntity } from './community.entity';
 
 @Entity({ name: 'reaction' })
 export class ReactionEntity {
@@ -35,4 +36,8 @@ export class ReactionEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
+
+  @ManyToOne(() => CommunityEntity, (community) => community.reactions, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'target_uuid' })
+  community: CommunityEntity;
 }

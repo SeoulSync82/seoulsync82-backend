@@ -2,16 +2,16 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Query,
+  Req,
   UseFilters,
   UseGuards,
   UseInterceptors,
-  Req,
-  HttpStatus,
-  Patch,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ERROR } from 'src/auth/constants/error';
@@ -25,15 +25,16 @@ import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exce
 import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
+import { ApiPagingSuccessResponse } from '../commons/decorators/api-paging-success-response.decorator';
+import { UserDto } from '../user/dto/user.dto';
 import { CommunityService } from './community.service';
 import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
-import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
-import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
 import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
 import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
+import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
+import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
 import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
 import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
-import { UserDto } from '../user/dto/user.dto';
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
@@ -100,7 +101,7 @@ export class CommunityController {
     summary: '커뮤니티 목록',
     description: '커뮤니티 목록',
   })
-  @ApiArraySuccessResponse(ApiCommunityGetResponseDto, {
+  @ApiPagingSuccessResponse(ApiCommunityGetResponseDto, {
     description: '커뮤니티 목록 조회 성공',
     status: HttpStatus.OK,
   })

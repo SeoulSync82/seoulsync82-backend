@@ -2,27 +2,27 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { plainToInstance } from 'class-transformer';
 import { isNotEmpty } from 'class-validator';
 import { ERROR } from 'src/auth/constants/error';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
+import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
+import { CourseEntity } from 'src/entities/course.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
 import { UserEntity } from 'src/entities/user.entity';
-import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { CommunityQueryRepository } from './community.query.repository';
-import { CommunityPutReqDto } from './dto/community.dto';
-import { ReactionQueryRepository } from './reaction.query.repository';
-import { CourseEntity } from 'src/entities/course.entity';
-import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
+import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
 import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
 import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
 import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
 import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
-import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
-import { isEmpty } from 'src/commons/util/is/is-empty';
-import { UserDto } from 'src/user/dto/user.dto';
+import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
+import { CommunityPutReqDto } from './dto/community.dto';
+import { ReactionQueryRepository } from './reaction.query.repository';
 
 @Injectable()
 export class CommunityService {
@@ -84,57 +84,43 @@ export class CommunityService {
   }
 
   async communityList(dto: ApiCommunityGetRequestQueryDto, user) {
-    let communityList: CommunityEntity[];
-    if (dto.me === true) {
-      communityList = await this.communityQueryRepository.findMyCommunity(dto, user);
-    } else {
-      communityList = await this.communityQueryRepository.find(dto);
+    const totalCount: number = await this.communityQueryRepository.countCommunity();
+    if (totalCount === 0) {
+      return { items: [], total_count: 0, next_page: null };
     }
 
-    if (communityList.length === 0) {
-      return { items: [] };
-    }
+    const { communityList, nextCursor } = await this.communityQueryRepository.findCommunityList(
+      dto,
+      user,
+    );
 
     const courseList: CourseEntity[] = await this.courseQueryRepository.findList(
       communityList.map((item) => item.course_uuid),
-    );
-
-    const reaction = await this.reactionQueryRepository.findCommunityReaction(
-      communityList.map((item) => item.uuid),
     );
 
     const userList = await this.userQueryRepository.findUserList(
       communityList.map((item) => item.user_uuid),
     );
 
-    const apiCommunityGetResponseDto = plainToInstance(ApiCommunityGetResponseDto, communityList, {
-      excludeExtraneousValues: true,
-    }).map((community) => {
-      community.course_uuid = courseList.find((item) => item.uuid === community.course_uuid).uuid;
-      community.customs = courseList.find((item) => item.uuid === community.course_uuid).customs;
-      community.line = courseList.find((item) => item.uuid === community.course_uuid).line;
-      community.subway = courseList.find((item) => item.uuid === community.course_uuid).subway;
-      community.course_image = courseList.find(
-        (item) => item.uuid === community.course_uuid,
-      ).course_image;
-      community.course_name = courseList.find(
-        (item) => item.uuid === community.course_uuid,
-      ).course_name;
-      community.like = reaction.filter((item) => item.target_uuid === community.uuid).length;
-      community.isLiked = reaction
-        .filter((item) => item.target_uuid === community.uuid)
-        .map((user) => user.user_uuid)
-        .includes(user.uuid);
-      community.user_name = userList.find((user) => user.uuid === community.user_uuid).name;
-      community.user_profile_image = userList.find(
-        (user) => user.uuid === community.user_uuid,
-      ).profile_image;
-      return community;
-    });
-
-    const last_item_id =
-      communityList.length === dto.size ? communityList[communityList.length - 1].id : 0;
-    return { items: apiCommunityGetResponseDto, last_item_id };
+    return {
+      items: plainToInstance(ApiCommunityGetResponseDto, communityList, {
+        excludeExtraneousValues: true,
+      }).map((community) => {
+        community.customs = courseList.find((item) => item.uuid === community.course_uuid).customs;
+        community.line = courseList.find((item) => item.uuid === community.course_uuid).line;
+        community.subway = courseList.find((item) => item.uuid === community.course_uuid).subway;
+        community.course_image = courseList.find(
+          (item) => item.uuid === community.course_uuid,
+        ).course_image;
+        community.user_name = userList.find((user) => user.uuid === community.user_uuid).name;
+        community.user_profile_image = userList.find(
+          (user) => user.uuid === community.user_uuid,
+        ).profile_image;
+        return community;
+      }),
+      total_count: totalCount,
+      next_page: nextCursor,
+    };
   }
 
   async communityDetail(uuid, user) {

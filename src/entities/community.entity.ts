@@ -1,4 +1,6 @@
-import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { Expose } from 'class-transformer';
+import { Column, Entity, Generated, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ReactionEntity } from './reaction.entity';
 
 @Entity({ name: 'community' })
 export class CommunityEntity {
@@ -41,4 +43,14 @@ export class CommunityEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
+
+  @Expose()
+  like_count: number;
+
+  @Expose()
+  isLiked: any;
+
+  @OneToMany(() => ReactionEntity, (reaction) => reaction.community, { cascade: true })
+  @JoinColumn({ name: 'target_uuid' })
+  reactions: ReactionEntity[];
 }
