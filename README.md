@@ -1,4 +1,4 @@
-![Image](https://github.com/user-attachments/assets/7df3c453-da11-4989-80d4-40feae6519f2)
+<img src="https://github.com/user-attachments/assets/460f7cb9-ccd1-4f5f-887a-55aad1eae418" style="width: 100px" />
 
 # seoulsync82-backend
 
@@ -8,6 +8,8 @@
 ---
 
 ## 주요 기능 (Key Features)
+🔗 [SeoulSync82 – AI 코스 추천 로직](https://ilikezzi.notion.site/SeoulSync82-49ca12c8af2346fdb083527c772f2eb3?pvs=4)
+
 
 ### 1. 코스 추천 및 핫플레이스
 
