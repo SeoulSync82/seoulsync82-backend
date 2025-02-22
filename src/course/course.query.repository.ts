@@ -1,8 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { BookmarkEntity } from 'src/entities/bookmark.entity';
-import { Repository, In, LessThan } from 'typeorm';
+import { In, LessThan, Repository } from 'typeorm';
 import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
 
 export class CourseQueryRepository {

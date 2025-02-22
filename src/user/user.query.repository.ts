@@ -56,7 +56,7 @@ export class UserQueryRepository {
     return await this.repository.update({ id: user.id }, whereConditions);
   }
 
-  async findUserList(uuids) {
+  async findUserList(uuids): Promise<UserEntity[]> {
     return await this.repository.find({
       where: { uuid: In(uuids) },
     });

@@ -1,6 +1,6 @@
 import { PlaceEntity } from 'src/entities/place.entity';
 
-export function customPlaceDetailFunction(place: PlaceEntity, placeType: string): string {
+export function getCustomByPlaceType(place: PlaceEntity, placeType: string): string {
   const detailMapping = {
     음식점: place.cate_name_depth2,
     카페: place.brandname,

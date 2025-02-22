@@ -55,26 +55,32 @@ export class SubwayQueryRepository {
       .getRawMany();
   }
 
-  async subwayStationList(line_uuid: string) {
+  async subwayStationList(line_uuid: string): Promise<SubwayStationEntity[]> {
     return await this.subwayStationRepository.find({
       where: { line_uuid: line_uuid },
       order: { id: 'ASC' },
     });
   }
 
-  async findSubwayLine() {
+  async findSubwayLine(): Promise<SubwayLineEntity[]> {
     return await this.subwayLineRepository.find({
       order: { id: 'ASC' },
     });
   }
 
-  async findSubway(subway: string) {
+  async findSubway(subway: string): Promise<SubwayStationEntity[]> {
     return await this.subwayStationRepository.find({
       where: { name: subway },
     });
   }
 
-  async findLineAndStation(line_uuid: string, station_uuid: string) {
+  async findLineAndStation(
+    line_uuid: string,
+    station_uuid: string,
+  ): Promise<{
+    line: string;
+    station: string;
+  }> {
     const result = await this.subwayStationRepository.findOne({
       where: { uuid: station_uuid, line_uuid: line_uuid },
     });
@@ -82,15 +88,25 @@ export class SubwayQueryRepository {
     return { line: result.line, station: result.name };
   }
 
-  async findSubwayStationUuid(subway_uuid: string) {
+  async findSubwayStationUuid(subway_uuid: string): Promise<SubwayStationEntity> {
     return await this.subwayStationRepository.findOne({
       where: { uuid: subway_uuid },
     });
   }
 
-  async findSubwayStationName(subway_name: string) {
+  async findSubwayStationName(subway_name: string): Promise<SubwayStationEntity> {
     return await this.subwayStationRepository.findOne({
       where: { name: subway_name },
     });
+  }
+
+  async findAllLinesForStation(subway_uuid: string): Promise<SubwayStationEntity[]> {
+    return await this.subwayStationRepository
+      .createQueryBuilder('subway')
+      .where('subway.uuid = :subway_uuid', { subway_uuid })
+      .orWhere('subway.name = (SELECT name FROM subway_station WHERE uuid = :subway_uuid)', {
+        subway_uuid,
+      })
+      .getMany();
   }
 }

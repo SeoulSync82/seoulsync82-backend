@@ -21,6 +21,7 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { UserDto } from 'src/user/dto/user.dto';
+import { CourseRecommendationService } from './course-recommendation.service';
 import { CourseService } from './course.service';
 import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
 import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
@@ -30,8 +31,6 @@ import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-plac
 import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
 import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
 import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
-import { ApiCoursePostRecommendRequestBodyDto } from './dto/api-course-post-recommend-request-body.dto';
-import { ApiCoursePostRecommendResponseDto } from './dto/api-course-post-recommend-response.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
 import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-response.dto';
 
@@ -40,7 +39,10 @@ import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-respons
 @UseFilters(SeoulSync82ExceptionFilter)
 @UseInterceptors(SuccessInterceptor)
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly courseRecommendationService: CourseRecommendationService,
+  ) {}
 
   @ApiBearerAuth('access-token')
   @UseGuards(JwtOptionalAuthGuard)
@@ -62,7 +64,7 @@ export class CourseController {
     @Query() dto: ApiCourseGetRecommendRequestQueryDto,
     @CurrentUser() user?: UserDto,
   ) {
-    return await this.courseService.courseRecommend(dto, user);
+    return await this.courseRecommendationService.getCourseRecommendation(dto, user);
   }
 
   @ApiBearerAuth('access-token')
@@ -84,7 +86,7 @@ export class CourseController {
     @Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
     @CurrentUser() user?: UserDto,
   ) {
-    return await this.courseService.coursePlaceCustomize(dto, user);
+    return await this.courseRecommendationService.addCustomPlaceToCourse(dto, user);
   }
 
   @ApiBearerAuth('access-token')
@@ -102,7 +104,7 @@ export class CourseController {
     @Body() dto: ApiCoursePostRecommendSaveRequestBodyDto,
     @CurrentUser() user?: UserDto,
   ) {
-    return await this.courseService.courseRecommendSave(dto, user);
+    return await this.courseService.saveCourseRecommend(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -120,7 +122,7 @@ export class CourseController {
     @Query() dto: ApiCourseGetMyHistoryRequestQueryDto,
     @CurrentUser() user: UserDto,
   ) {
-    return await this.courseService.myCourseRecommandHistory(dto, user);
+    return await this.courseService.getMyCourseHistory(dto, user);
   }
 
   @ApiBearerAuth('access-token')
@@ -145,7 +147,7 @@ export class CourseController {
     description: '코스 uuid',
   })
   async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user?: UserDto) {
-    return await this.courseService.courseDetail(uuid, user);
+    return await this.courseService.getCourseDetail(uuid, user);
   }
 
   @Get('/:uuid/place/list')
@@ -169,47 +171,6 @@ export class CourseController {
     description: '코스 uuid',
   })
   async coursePlaceList(@Param('uuid') uuid: string) {
-    return await this.courseService.coursePlaceList(uuid);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @Post('/member/recommend/deprecated')
-  @ApiOperation({
-    summary: '#deprecated AI 코스 추천 - 회원',
-    description: '#deprecated AI 코스 추천 - 회원',
-    deprecated: true,
-  })
-  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
-    description: 'AI 코스 추천 완료',
-    status: HttpStatus.CREATED,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 custom이 부족한 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  async old_courseMemberRecommend(
-    @CurrentUser() user: UserDto,
-    @Body() dto: ApiCoursePostRecommendRequestBodyDto,
-  ) {
-    return await this.courseService.old_courseMemberRecommend(user, dto);
-  }
-
-  @Get('/guest/recommend/deprecated')
-  @ApiOperation({
-    summary: '#deprecated AI 코스 추천 - 비회원',
-    description: '#deprecated AI 코스 추천 - 비회원',
-    deprecated: true,
-  })
-  @ApiSuccessResponse(ApiCoursePostRecommendResponseDto, {
-    description: 'AI 코스 추천 완료',
-    status: HttpStatus.OK,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '선택한 지하철역에 custom이 부족한 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  async old_courseGuestRecommend(@Query() dto: ApiCoursePostRecommendRequestBodyDto) {
-    return await this.courseService.old_courseGuestRecommend(dto);
+    return await this.courseService.getCoursePlaceList(uuid);
   }
 }
