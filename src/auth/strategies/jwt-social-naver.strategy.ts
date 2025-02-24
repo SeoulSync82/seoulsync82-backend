@@ -1,31 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { VerifyCallback } from 'passport-google-oauth20';
 import { Profile, Strategy } from 'passport-naver';
 import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
-export class JwtNaverDevStrategy extends PassportStrategy(Strategy, 'naver-dev') {
+export class JwtNaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('NAVER_ID'),
       clientSecret: configService.get('NAVER_SECRET'),
+      callbackURL: configService.get('NAVER_CALLBACK'),
     });
-  }
-
-  authenticate(req, options) {
-    let callbackURL = this.configService.get('NAVER_DEV_CALLBACK');
-    super.authenticate(req, { ...options, callbackURL });
   }
 
   async validate(
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: (error: any, user?: any, info?: any) => void,
+    done: VerifyCallback,
   ) {
     try {
-      console.log('naver-success');
-      console.log(profile);
       const { _json } = profile;
       const user = {
         email: _json.email,

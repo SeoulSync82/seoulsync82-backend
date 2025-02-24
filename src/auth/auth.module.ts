@@ -1,20 +1,17 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './auth.controller';
-import { JwtGoogleStrategy } from 'src/commons/auth/jwt-social-google.strategy';
-import { JwtNaverStrategy } from 'src/commons/auth/jwt-social-naver.strategy';
-import { JwtKakaoStrategy } from 'src/commons/auth/jwt-social-kakao.strategy';
-import { UserService } from 'src/user/user.service';
-import { UserEntity } from 'src/entities/user.entity';
-import { ConfigModule } from 'src/config/config.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtStrategy } from 'src/auth/strategies/jwt-strategy';
+import { ConfigModule } from 'src/config/config.module';
+import { UserEntity } from 'src/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
-import { JwtGoogleDevStrategy } from 'src/commons/auth/jwt-social-google-dev.strategy';
-import { JwtKakaoDevStrategy } from 'src/commons/auth/jwt-social-kakao-dev.strategy';
-import { JwtNaverDevStrategy } from 'src/commons/auth/jwt-social-naver-dev.strategy';
-import { JwtStrategy } from 'src/commons/auth/jwt-strategy';
+import { UserService } from 'src/user/user.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtGoogleStrategy } from './strategies/jwt-social-google.strategy';
+import { JwtKakaoStrategy } from './strategies/jwt-social-kakao.strategy';
+import { JwtNaverStrategy } from './strategies/jwt-social-naver.strategy';
 
 @Module({
   imports: [
@@ -30,9 +27,6 @@ import { JwtStrategy } from 'src/commons/auth/jwt-strategy';
     JwtKakaoStrategy,
     AuthService,
     UserService,
-    JwtGoogleDevStrategy,
-    JwtKakaoDevStrategy,
-    JwtNaverDevStrategy,
     JwtStrategy,
   ],
   controllers: [AuthController],

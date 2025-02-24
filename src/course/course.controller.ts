@@ -11,9 +11,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { ERROR } from 'src/auth/constants/error';
-import { JwtAuthGuard } from 'src/commons/auth/jwt-auth.guard';
-import { JwtOptionalAuthGuard } from 'src/commons/auth/jwt-optional.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ERROR } from 'src/commons/constants/error';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
@@ -21,6 +20,7 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { UserDto } from 'src/user/dto/user.dto';
+import { JwtOptionalAuthGuard } from '../auth/guards/jwt-optional.guard';
 import { CourseRecommendationService } from './course-recommendation.service';
 import { CourseService } from './course.service';
 import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';

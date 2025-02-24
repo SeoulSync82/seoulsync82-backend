@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';

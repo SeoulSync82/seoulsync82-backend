@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
 import { badwordsCheck } from '../badwords/badwords_check';
 
 @Injectable()

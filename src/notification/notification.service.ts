@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';

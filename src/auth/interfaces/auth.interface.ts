@@ -1,11 +1,7 @@
 import { Request } from 'express';
-import { ValidateAuthOutputDto } from '../dto/api-auth-validate.dto';
-
-/* Local Login Strategy */
-export type RequestWithUserData = Request & { user: ValidateAuthOutputDto };
 
 /* JWT Strategy */
-export interface Payload {
+export interface PayloadId {
   id: number;
 }
 

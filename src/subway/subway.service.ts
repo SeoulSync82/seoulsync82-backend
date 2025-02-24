@@ -1,16 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
+import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { CustomListDto } from 'src/place/dto/subway.dto';
+import { PlaceQueryRepository } from '../place/place.query.repository';
+import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
 import { ApiSubwayGetCheckResponseDto } from './dto/api-subway-get-check-response.dto';
 import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
 import { ApiSubwayGetListResponseDto } from './dto/api-subway-get-list-response.dto';
-import { SubwayQueryRepository } from './subway.query.repository';
 import { StationInfo } from './interfaces/subway.interfaces';
-import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
-import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
-import { PlaceQueryRepository } from '../place/place.query.repository';
+import { SubwayQueryRepository } from './subway.query.repository';
 
 @Injectable()
 export class SubwayService {

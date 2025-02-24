@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/auth/constants/error';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { ERROR } from 'src/commons/constants/error';
 import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 import { getCustomByPlaceType } from 'src/commons/helpers/custom-by-place-type.helper';
 import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';

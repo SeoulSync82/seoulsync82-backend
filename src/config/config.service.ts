@@ -45,27 +45,24 @@ export class ConfigService {
       APP_URL: joi.string().uri({
         scheme: [/https?/],
       }),
-      DB_TYPE: joi.string().default('mariadb'),
+      DB_TYPE: joi.string().default('mysql'),
       DB_USERNAME: joi.string().default('root'),
       DB_PASSWORD: joi.string().allow('').default(''),
       DB_HOST: joi.string().default('localhost'),
-      DB_PORT: joi.number().default('8889'),
-      DB_DATABASE: joi.string().default('nest2'),
+      DB_PORT: joi.number().default('3306'),
+      DB_DATABASE: joi.string().default('SeoulSync82'),
 
       GOOGLE_ID: joi.string().required(),
       GOOGLE_SECRET: joi.string().required(),
       GOOGLE_CALLBACK: joi.string().required(),
-      GOOGLE_DEV_CALLBACK: joi.string().required(),
 
       NAVER_ID: joi.string().required(),
       NAVER_SECRET: joi.string().required(),
       NAVER_CALLBACK: joi.string().required(),
-      NAVER_DEV_CALLBACK: joi.string().required(),
 
       KAKAO_ID: joi.string().required(),
       KAKAO_SECRET: joi.string().required(),
       KAKAO_CALLBACK: joi.string().required(),
-      KAKAO_DEV_CALLBACK: joi.string().required(),
 
       JWT_SECRET: joi.string().required(),
       JWT_ACCESS_TOKEN_EXPIRATION_TIME: joi.string().required(),

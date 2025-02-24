@@ -1,19 +1,19 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
+import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
-import { BookmarkQueryRepository } from './bookmark.query.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { isEmpty } from 'src/commons/util/is/is-empty';
+import { BookmarkQueryRepository } from './bookmark.query.repository';
+import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
 import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
-import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
-import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class BookmarkService {

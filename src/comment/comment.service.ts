@@ -1,21 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CommentQueryRepository } from './comment.query.repository';
-import { UserDto } from '../user/dto/user.dto';
-import { ApiCommentPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
-import { CourseQueryRepository } from '../course/course.query.repository';
-import { CommunityQueryRepository } from '../community/community.query.repository';
-import { ERROR } from '../auth/constants/error';
-import { CommunityEntity } from '../entities/community.entity';
-import { isEmpty } from '../commons/util/is/is-empty';
-import { CommentEntity } from '../entities/comment.entity';
-import { generateUUID } from '../commons/util/uuid';
+import { plainToInstance } from 'class-transformer';
+import { ERROR } from '../commons/constants/error';
 import { DetailResponseDto } from '../commons/dto/response.dto';
-import { ApiCommentPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
+import { isEmpty } from '../commons/util/is/is-empty';
+import { generateUUID } from '../commons/util/uuid';
+import { CommunityQueryRepository } from '../community/community.query.repository';
+import { CourseQueryRepository } from '../course/course.query.repository';
+import { CommentEntity } from '../entities/comment.entity';
+import { CommunityEntity } from '../entities/community.entity';
+import { UserEntity } from '../entities/user.entity';
+import { UserDto } from '../user/dto/user.dto';
+import { UserQueryRepository } from '../user/user.query.repository';
+import { CommentQueryRepository } from './comment.query.repository';
 import { ApiCommentGetRequestQueryDto } from './dto/api-comment-get-request-query.dto';
 import { ApiCommentGetResponseDto, CommentListDto } from './dto/api-comment-get-response.dto';
-import { plainToInstance } from 'class-transformer';
-import { UserQueryRepository } from '../user/user.query.repository';
-import { UserEntity } from '../entities/user.entity';
+import { ApiCommentPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
+import { ApiCommentPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
 
 @Injectable()
 export class CommentService {

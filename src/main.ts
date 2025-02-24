@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { AppModule } from './app.module';
-import { ERROR } from './auth/constants/error';
+import { ERROR } from './commons/constants/error';
 import { ConfigService } from './config/config.service';
 import { SwaggerModels } from './swagger';
 
@@ -74,7 +74,10 @@ async function bootstrap() {
       },
     ),
     {
-      swaggerOptions: { defaultModelsExpandDepth: -1 },
+      swaggerOptions: {
+        defaultModelsExpandDepth: -1,
+        persistAuthorization: true, // 새로고침 해도 인증 토큰 유지
+      },
     },
   );
 

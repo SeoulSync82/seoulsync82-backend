@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
 import { getPlaceTypeKey } from 'src/commons/helpers/place-type.helper';
 import { getRandomShuffleElements, getTopWeight } from 'src/commons/helpers/place-weight.helper';
 import { generateUUID } from 'src/commons/util/uuid';

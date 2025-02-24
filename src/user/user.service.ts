@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { isEmpty } from 'class-validator';
 import * as jwt from 'jsonwebtoken';
-import { ERROR } from 'src/auth/constants/error';
+import { ERROR } from 'src/commons/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { ConfigService } from 'src/config/config.service';
 import { ApiUserGetProfileResponseDto } from './dto/api-user-get-profile-response.dto';

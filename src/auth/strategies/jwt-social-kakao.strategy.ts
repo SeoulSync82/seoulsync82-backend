@@ -1,31 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { VerifyCallback } from 'passport-google-oauth20';
 import { Profile, Strategy } from 'passport-kakao';
 import { ConfigService } from 'src/config/config.service';
 
 @Injectable()
-export class JwtKakaoDevStrategy extends PassportStrategy(Strategy, 'kakao-dev') {
+export class JwtKakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(private readonly configService: ConfigService) {
     super({
       clientID: configService.get('KAKAO_ID'),
       clientSecret: configService.get('KAKAO_SECRET'),
+      callbackURL: configService.get('KAKAO_CALLBACK'),
     });
-  }
-
-  authenticate(req, options) {
-    let callbackURL = this.configService.get('KAKAO_DEV_CALLBACK');
-    super.authenticate(req, { ...options, callbackURL });
   }
 
   async validate(
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: (error: any, user?: any, info?: any) => void,
+    done: VerifyCallback,
   ) {
     try {
-      console.log('kakao-success');
-      console.log(profile);
       const { _json } = profile;
       const user = {
         email: _json.kakao_account.email,

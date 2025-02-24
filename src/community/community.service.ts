@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { isNotEmpty } from 'class-validator';
-import { ERROR } from 'src/auth/constants/error';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { ERROR } from 'src/commons/constants/error';
 import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';

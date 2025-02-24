@@ -1,32 +1,32 @@
 import {
-  Controller,
-  Post,
   Body,
-  Patch,
+  Controller,
+  Get,
+  HttpStatus,
   Param,
+  Patch,
+  Post,
+  Put,
+  Query,
   UseFilters,
   UseGuards,
   UseInterceptors,
-  HttpStatus,
-  Put,
-  Get,
-  Query,
 } from '@nestjs/common';
-import { CommentService } from './comment.service';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../commons/auth/jwt-auth.guard';
-import { SeoulSync82ExceptionFilter } from '../commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from '../commons/interceptors/success.interceptor';
-import { ERROR } from '../auth/constants/error';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ERROR } from '../commons/constants/error';
 import { ApiExceptionResponse } from '../commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from '../commons/decorators/api-success-response.decorator';
-import { DetailResponseDto } from '../commons/dto/response.dto';
-import { BadWordsPipe } from '../commons/pipe/badwords.pipe';
-import { ApiCommentPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
 import { CurrentUser } from '../commons/decorators/user.decorator';
+import { DetailResponseDto } from '../commons/dto/response.dto';
+import { SeoulSync82ExceptionFilter } from '../commons/filters/seoulsync82.exception.filter';
+import { SuccessInterceptor } from '../commons/interceptors/success.interceptor';
+import { BadWordsPipe } from '../commons/pipe/badwords.pipe';
 import { UserDto } from '../user/dto/user.dto';
-import { ApiCommentPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
+import { CommentService } from './comment.service';
 import { ApiCommentGetRequestQueryDto } from './dto/api-comment-get-request-query.dto';
+import { ApiCommentPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
+import { ApiCommentPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
 
 @ApiTags('한줄평')
 @Controller('/api/comment')

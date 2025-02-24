@@ -1,7 +1,7 @@
-import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
+import { ERROR } from 'src/commons/constants/error';
 import { isEmpty } from '../util/is/is-empty';
-import { ERROR } from 'src/auth/constants/error';
 
 export const ApiExceptionResponse = (error: ERROR[], options?: ApiResponseOptions) => {
   const status = isEmpty(options?.status) ? HttpStatus.OK : options.status;
