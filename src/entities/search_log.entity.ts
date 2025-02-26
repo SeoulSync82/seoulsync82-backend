@@ -1,30 +1,36 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'search_log' })
 export class SearchLogEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, nullable: false })
   search: string;
 
-  @Column()
+  @Column({ type: 'datetime', nullable: true })
   archived_at: Date;
 
-  @Column('datetime', {
-    name: 'created_at',
+  @CreateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @Column('datetime', {
-    name: 'updated_at',
+  @UpdateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;

@@ -29,7 +29,7 @@ module.exports = {
   ],
   rules: {
     'unused-imports/no-unused-imports': 'warn',
-    'unused-imports/no-unused-vars': 'warn',
+    'unused-imports/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-unused-vars': 'off',
     'unused-imports/no-unused-imports': 'error',
     '@typescript-eslint/interface-name-prefix': 'off',

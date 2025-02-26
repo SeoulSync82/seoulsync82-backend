@@ -8,8 +8,8 @@
 ---
 
 ## 주요 기능 (Key Features)
-🔗 [SeoulSync82 – AI 코스 추천 로직](https://ilikezzi.notion.site/SeoulSync82-49ca12c8af2346fdb083527c772f2eb3?pvs=4)
 
+🔗 [SeoulSync82 – AI 코스 추천 로직](https://ilikezzi.notion.site/SeoulSync82-49ca12c8af2346fdb083527c772f2eb3?pvs=4)
 
 ### 1. 코스 추천 및 핫플레이스
 
@@ -88,6 +88,12 @@ seoulsync82-backend
 ├── tsconfig.json
 └── README.md
 ```
+
+---
+
+## Database Schema (ERD)
+
+![SEOULSYNC82_ERD](https://github.com/user-attachments/assets/07376fbc-87f7-4599-b3b5-babab1943ad7)
 
 ---
 

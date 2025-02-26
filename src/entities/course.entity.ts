@@ -1,45 +1,44 @@
-import { Column, Entity, Generated, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CourseDetailEntity } from './course.detail.entity';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BookmarkEntity } from './bookmark.entity';
+import { CourseDetailEntity } from './course.detail.entity';
 
 @Entity({ name: 'course' })
 export class CourseEntity {
-  @Column({ type: 'integer' })
-  @Generated('increment')
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 20, nullable: false })
   subway: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   line: string;
 
-  @Column()
+  @Column({ type: 'text', nullable: true })
   course_image: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   course_name: string;
 
-  @Column()
-  user_uuid: string;
+  @Column({ type: 'varchar', length: 36, nullable: true })
+  user_uuid: string; // 비회원
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   user_name: string;
 
-  @Column()
+  @Column({ type: 'int', default: 0 })
   count: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 20, nullable: true })
   theme: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   customs: string;
 
-  @Column('datetime', {
-    name: 'created_at',
+  @CreateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;

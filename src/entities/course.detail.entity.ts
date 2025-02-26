@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { CourseEntity } from './course.entity';
 import { PlaceEntity } from './place.entity';
 
@@ -7,32 +14,36 @@ export class CourseDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  course_uuid: string;
+  @Column({ type: 'varchar', length: 36, nullable: false })
+  course_uuid: string; // FK -> course.uuid
 
-  @Column()
+  @Column({ type: 'int', default: 0 })
   sort: number;
 
-  @Column()
-  place_uuid: string;
+  @Column({ type: 'varchar', length: 36, nullable: false })
+  place_uuid: string; // FK -> place.uuid
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   place_name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 10, nullable: false })
   place_type: string;
 
-  @Column('datetime', {
-    name: 'created_at',
+  @CreateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @ManyToOne(() => CourseEntity, (Course) => Course.courseDetails)
+  @ManyToOne(() => CourseEntity, (course) => course.courseDetails, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'course_uuid', referencedColumnName: 'uuid' })
   course: CourseEntity;
 
-  @ManyToOne(() => PlaceEntity, (place) => place.courseDetails)
-  @JoinColumn({ name: 'place_uuid' })
+  @ManyToOne(() => PlaceEntity, (place) => place.courseDetails, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'place_uuid', referencedColumnName: 'uuid' })
   place: PlaceEntity;
 }

@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CommunityEntity } from './community.entity';
 
 @Entity({ name: 'reaction' })
@@ -6,38 +14,36 @@ export class ReactionEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
-  @Column()
-  target_uuid: string;
+  @Column({ type: 'varchar', length: 36, nullable: false })
+  target_uuid: string; // FK to community
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   user_name: string;
 
-  @Column()
-  @Column('tinyint', {
-    name: 'like',
-    default: () => 1,
-  })
+  @Column({ type: 'tinyint', default: 1 })
   like: number;
 
-  @Column('datetime', {
-    name: 'created_at',
+  @CreateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @Column('datetime', {
-    name: 'updated_at',
+  @UpdateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
 
-  @ManyToOne(() => CommunityEntity, (community) => community.reactions, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'target_uuid' })
+  @ManyToOne(() => CommunityEntity, (community) => community.reactions, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'target_uuid', referencedColumnName: 'uuid' })
   community: CommunityEntity;
 }

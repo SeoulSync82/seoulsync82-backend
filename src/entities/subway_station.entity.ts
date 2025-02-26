@@ -5,15 +5,21 @@ export class SubwayStationEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 20, nullable: false })
   name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
+  line_uuid: string;
+
+  @Column({ type: 'varchar', length: 50, nullable: false })
   line: string;
 
-  @Column()
-  line_uuid: string;
+  @Column({ type: 'decimal', precision: 10, scale: 8, nullable: true })
+  latitude: number;
+
+  @Column({ type: 'decimal', precision: 11, scale: 8, nullable: true })
+  longitude: number;
 }

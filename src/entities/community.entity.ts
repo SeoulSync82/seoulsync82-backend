@@ -1,45 +1,52 @@
 import { Expose } from 'class-transformer';
-import { Column, Entity, Generated, JoinColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { CommentEntity } from './comment.entity';
 import { ReactionEntity } from './reaction.entity';
 
 @Entity({ name: 'community' })
 export class CommunityEntity {
-  @Column({ type: 'integer' })
-  @Generated('increment')
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   user_name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   course_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   course_name: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 1 })
+  @Column({ type: 'decimal', precision: 10, scale: 1, default: 0 })
   score: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   review: string;
 
-  @Column()
+  @Column('datetime', { nullable: true })
   archived_at: Date;
 
-  @Column('datetime', {
-    name: 'created_at',
+  @CreateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @Column('datetime', {
-    name: 'updated_at',
+  @UpdateDateColumn({
+    type: 'datetime',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
@@ -48,9 +55,11 @@ export class CommunityEntity {
   like_count: number;
 
   @Expose()
-  isLiked: any;
+  isLiked: boolean;
 
   @OneToMany(() => ReactionEntity, (reaction) => reaction.community, { cascade: true })
-  @JoinColumn({ name: 'target_uuid' })
   reactions: ReactionEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.community, { cascade: true })
+  comments: CommentEntity[];
 }

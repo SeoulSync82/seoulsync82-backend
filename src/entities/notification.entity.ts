@@ -1,30 +1,30 @@
-import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'notification' })
 export class NotificationEntity {
-  @Column({ type: 'integer' })
-  @Generated('increment')
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   target_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   target_user_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, nullable: false })
   content: string;
 
-  @Column()
+  @Column({ type: 'datetime', nullable: true })
   read_at: Date;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })

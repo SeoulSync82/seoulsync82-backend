@@ -1,41 +1,55 @@
-import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { CommunityEntity } from './community.entity';
 
 @Entity({ name: 'comment' })
 export class CommentEntity {
-  @Column({ type: 'integer' })
-  @Generated('increment')
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   user_name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   comment: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   target_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   target_user_uuid: string;
 
-  @Column()
+  @Column({ type: 'datetime', nullable: true })
   archived_at: Date;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @Column('datetime', {
+  @UpdateDateColumn({
+    type: 'datetime',
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
+
+  @ManyToOne(() => CommunityEntity, (community) => community.comments, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'target_uuid', referencedColumnName: 'uuid' })
+  community: CommunityEntity;
 }

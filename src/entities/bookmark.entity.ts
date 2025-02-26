@@ -1,52 +1,63 @@
-import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CourseEntity } from './course.entity';
 
 @Entity({ name: 'bookmark' })
 export class BookmarkEntity {
-  @Column({ type: 'integer' })
-  @Generated('increment')
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
   uuid: string;
 
-  @Column()
-  course_uuid: string;
+  @Column({ type: 'varchar', length: 36, nullable: false })
+  course_uuid: string; // FK → CourseEntity.uuid
 
-  @Column()
+  @Column({ type: 'varchar', length: 20, nullable: false })
   subway: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   line: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   user_name: string;
 
-  @Column()
+  @Column({ type: 'text', nullable: true })
   course_image: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false })
   course_name: string;
 
-  @Column()
+  @Column({ type: 'datetime', nullable: true })
   archived_at: Date;
 
-  @Column('datetime', {
+  @CreateDateColumn({
+    type: 'datetime',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   created_at: Date;
 
-  @Column('datetime', {
+  @UpdateDateColumn({
+    type: 'datetime',
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
 
-  @ManyToOne(() => CourseEntity, (Course) => Course.bookmarks)
+  @ManyToOne(() => CourseEntity, (course) => course.bookmarks, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'course_uuid', referencedColumnName: 'uuid' })
   course: CourseEntity;
 }
