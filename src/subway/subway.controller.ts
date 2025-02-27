@@ -1,18 +1,8 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Query,
-  UseFilters,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ERROR } from 'src/commons/constants/error';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { ApiSubwayGetCheckResponseDto } from 'src/subway/dto/api-subway-get-check-response.dto';
 import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
 import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
@@ -21,8 +11,6 @@ import { SubwayService } from './subway.service';
 
 @ApiTags('지하철')
 @Controller('/api/subway')
-@UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor)
 export class SubwayController {
   constructor(private readonly subwayService: SubwayService) {}
 
@@ -35,7 +23,7 @@ export class SubwayController {
     description: '지하철 역 호선 조회 성공',
     status: HttpStatus.OK,
   })
-  async subwayLineList() {
+  async subwayLineList(): Promise<ApiSubwayGetLineResponseDto> {
     return await this.subwayService.subwayLineList();
   }
 
@@ -53,7 +41,9 @@ export class SubwayController {
     status: HttpStatus.NOT_FOUND,
   })
   @ApiParam({ name: 'line_uuid', type: 'string', description: '지하철 호선 uuid' })
-  async subwayStationList(@Param('line_uuid') line_uuid: string) {
+  async subwayStationList(
+    @Param('line_uuid') line_uuid: string,
+  ): Promise<ApiSubwayGetListResponseDto> {
     return await this.subwayService.subwayStationList(line_uuid);
   }
 
@@ -76,7 +66,7 @@ export class SubwayController {
     @Param('line_uuid') line_uuid: string,
     @Param('station_uuid') station_uuid: string,
     @Query() dto: ApiSubwayGetCheckRequestQueryDto,
-  ) {
+  ): Promise<ApiSubwayGetCheckResponseDto> {
     return await this.subwayService.subwayCustomsCheck(line_uuid, station_uuid, dto);
   }
 }

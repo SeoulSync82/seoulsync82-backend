@@ -33,7 +33,10 @@ export class CourseRecommendationService {
     private readonly themeQueryRepository: ThemeQueryRepository,
   ) {}
 
-  async getCourseRecommendation(dto: ApiCourseGetRecommendRequestQueryDto, user?: UserDto) {
+  async getCourseRecommendation(
+    dto: ApiCourseGetRecommendRequestQueryDto,
+    user?: UserDto,
+  ): Promise<ApiCourseGetRecommendResponseDto> {
     // 1. 지하철역 조회
     const subwayWithLines = await this.subwayQueryRepository.findAllLinesForStation(
       dto.station_uuid,
@@ -121,10 +124,13 @@ export class CourseRecommendationService {
       places: placeSorting,
     });
 
-    return { items: apiCourseGetRecommendResponseDto };
+    return apiCourseGetRecommendResponseDto;
   }
 
-  async addCustomPlaceToCourse(dto: ApiCourseGetPlaceCustomizeRequestQueryDto, user?: UserDto) {
+  async addCustomPlaceToCourse(
+    dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
+    user?: UserDto,
+  ): Promise<ApiCourseGetPlaceCustomizeResponseDto> {
     // 1. 추가 할 지하철역 조회
     const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.station_uuid);
     if (isEmpty(subwayStation)) {
@@ -182,6 +188,6 @@ export class CourseRecommendationService {
       { excludeExtraneousValues: true },
     );
 
-    return { items: apiCourseGetPlaceCustomizeResponseDto };
+    return apiCourseGetPlaceCustomizeResponseDto;
   }
 }

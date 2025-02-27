@@ -1,3 +1,3 @@
-import { CoreOutput } from 'src/commons/dtos/core.dto';
+import { authCommonResponseDto } from 'src/auth/dto/auth-common-response.dto';
 
-export class ApiAuthPostUserLogoutResponseDto extends CoreOutput {}
+export class ApiAuthPostUserLogoutResponseDto extends authCommonResponseDto {}

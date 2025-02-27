@@ -1,7 +1,7 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiOkResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
 
-export const ApiPagingSuccessResponse = <TModel extends Type<unknown>>(
+export const ApiArrayLastItemIdSuccessResponse = <TModel extends Type<unknown>>(
   model: TModel,
   options?: ApiResponseOptions,
 ) => {
@@ -23,8 +23,10 @@ export const ApiPagingSuccessResponse = <TModel extends Type<unknown>>(
                     type: 'array',
                     items: { $ref: getSchemaPath(model) },
                   },
-                  total_count: { type: 'number', description: '전체 건수' },
-                  next_page: { type: 'string', description: '다음 페이지 Encrypted 커서' },
+                  last_item_id: {
+                    type: 'number',
+                    description: '마지막 아이템의 ID',
+                  },
                 },
               },
             },

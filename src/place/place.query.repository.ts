@@ -92,9 +92,6 @@ export class PlaceQueryRepository {
   }
 
   async countPopup(): Promise<number> {
-    // return await this.repository.count({
-    //   where: { place_type: '팝업', end_date: MoreThan(new Date()) },
-    // });
     const now = new Date();
     const whereConditions = {
       place_type: '팝업',

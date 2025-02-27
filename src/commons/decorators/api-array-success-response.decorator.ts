@@ -1,5 +1,5 @@
-import { ApiOkResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
 import { applyDecorators, Type } from '@nestjs/common';
+import { ApiOkResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
 
 export const ApiArraySuccessResponse = <TModel extends Type<unknown>>(
   model: TModel,
@@ -12,27 +12,18 @@ export const ApiArraySuccessResponse = <TModel extends Type<unknown>>(
         allOf: [
           {
             properties: {
-              status_code: {
-                type: 'number',
-                default: 1,
-              },
-              status: {
-                type: 'string',
-                default: 'SUCCESS',
-              },
+              status: { type: 'string', default: 'SUCCESS' },
+              statusCode: { type: 'number', default: 200 },
+              timestamp: { type: 'string', example: new Date().toISOString() },
+              path: { type: 'string' },
               data: {
                 type: 'object',
                 properties: {
                   items: {
                     type: 'array',
-                    items: {
-                      $ref: getSchemaPath(model),
-                    },
+                    items: { $ref: getSchemaPath(model) },
                   },
-                  last_item_id: {
-                    type: 'string',
-                    description: 'last_item_id',
-                  },
+                  next_page: { type: 'string', description: '다음 페이지 Encrypted 커서' },
                 },
               },
             },

@@ -1,5 +1,5 @@
-import { ApiResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
+import { ApiResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
 import { isEmpty } from '../util/is/is-empty';
 
 export const ApiSuccessResponse = <TModel extends Type<unknown>>(
@@ -7,7 +7,6 @@ export const ApiSuccessResponse = <TModel extends Type<unknown>>(
   options?: ApiResponseOptions,
 ) => {
   const status = isEmpty(options?.status) ? HttpStatus.OK : options.status;
-
   return applyDecorators(
     ApiResponse({
       ...options,
@@ -16,18 +15,11 @@ export const ApiSuccessResponse = <TModel extends Type<unknown>>(
         allOf: [
           {
             properties: {
-              // status_code: {
-              //   type: 'number',
-              //   default: 1,
-              // },
-              status: {
-                type: 'string',
-                default: 'SUCCESS',
-              },
-              data: {
-                type: 'object',
-                $ref: getSchemaPath(model),
-              },
+              status: { type: 'string', default: 'SUCCESS' },
+              statusCode: { type: 'number', default: status },
+              timestamp: { type: 'string', example: new Date().toISOString() },
+              path: { type: 'string' },
+              data: { $ref: getSchemaPath(model) },
             },
           },
         ],

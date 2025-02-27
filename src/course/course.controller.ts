@@ -1,26 +1,14 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Post,
-  Query,
-  UseFilters,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
-import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { UserDto } from 'src/user/dto/user.dto';
 import { JwtOptionalAuthGuard } from '../auth/guards/jwt-optional.guard';
+import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
+import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
 import { CourseRecommendationService } from './course-recommendation.service';
 import { CourseService } from './course.service';
 import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
@@ -36,8 +24,6 @@ import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-respons
 
 @ApiTags('코스')
 @Controller('/api/course')
-@UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor)
 export class CourseController {
   constructor(
     private readonly courseService: CourseService,
@@ -63,7 +49,7 @@ export class CourseController {
   async courseRecommend(
     @Query() dto: ApiCourseGetRecommendRequestQueryDto,
     @CurrentUser() user?: UserDto,
-  ) {
+  ): Promise<ApiCourseGetRecommendResponseDto> {
     return await this.courseRecommendationService.getCourseRecommendation(dto, user);
   }
 
@@ -85,7 +71,7 @@ export class CourseController {
   async coursePlaceCustomize(
     @Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
     @CurrentUser() user?: UserDto,
-  ) {
+  ): Promise<ApiCourseGetPlaceCustomizeResponseDto> {
     return await this.courseRecommendationService.addCustomPlaceToCourse(dto, user);
   }
 
@@ -103,7 +89,7 @@ export class CourseController {
   async courseRecommendSave(
     @Body() dto: ApiCoursePostRecommendSaveRequestBodyDto,
     @CurrentUser() user?: UserDto,
-  ) {
+  ): Promise<ApiCoursePostSaveResponseDto> {
     return await this.courseService.saveCourseRecommend(dto, user);
   }
 
@@ -114,14 +100,14 @@ export class CourseController {
     summary: '내 코스 추천내역',
     description: '내 코스 추천내역',
   })
-  @ApiArraySuccessResponse(ApiCourseGetMyHistoryResponseDto, {
+  @ApiArrayLastItemIdSuccessResponse(ApiCourseGetMyHistoryResponseDto, {
     description: '내 코스 추천내역 조회 성공',
     status: HttpStatus.OK,
   })
   async myCourseRecommandHistory(
     @Query() dto: ApiCourseGetMyHistoryRequestQueryDto,
     @CurrentUser() user: UserDto,
-  ) {
+  ): Promise<LastItemIdResponseDto<ApiCourseGetMyHistoryResponseDto>> {
     return await this.courseService.getMyCourseHistory(dto, user);
   }
 
@@ -146,7 +132,10 @@ export class CourseController {
     required: false,
     description: '코스 uuid',
   })
-  async courseDetail(@Param('uuid') uuid: string, @CurrentUser() user?: UserDto) {
+  async courseDetail(
+    @Param('uuid') uuid: string,
+    @CurrentUser() user?: UserDto,
+  ): Promise<ApiCourseGetDetailResponseDto> {
     return await this.courseService.getCourseDetail(uuid, user);
   }
 
@@ -170,7 +159,7 @@ export class CourseController {
     required: false,
     description: '코스 uuid',
   })
-  async coursePlaceList(@Param('uuid') uuid: string) {
+  async coursePlaceList(@Param('uuid') uuid: string): Promise<ApiCourseGetPlaceListResponseDto> {
     return await this.courseService.getCoursePlaceList(uuid);
   }
 }

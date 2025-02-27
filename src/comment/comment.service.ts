@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from '../commons/constants/error';
-import { DetailResponseDto } from '../commons/dto/response.dto';
+import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
 import { isEmpty } from '../commons/util/is/is-empty';
 import { generateUUID } from '../commons/util/uuid';
 import { CommunityQueryRepository } from '../community/community.query.repository';
@@ -26,7 +26,11 @@ export class CommentService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async commentList(uuid, dto: ApiCommentGetRequestQueryDto, user: UserDto) {
+  async commentList(
+    uuid,
+    dto: ApiCommentGetRequestQueryDto,
+    user: UserDto,
+  ): Promise<ApiCommentGetResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -57,10 +61,14 @@ export class CommentService {
       ),
       last_id: comments.length === dto.size ? comments[comments.length - 1].id : 0,
     };
-    return { items: apiCommentGetResponseDto };
+    return apiCommentGetResponseDto;
   }
 
-  async commentPost(uuid, user: UserDto, dto: ApiCommentPostRequestBodyDto) {
+  async commentPost(
+    uuid,
+    user: UserDto,
+    dto: ApiCommentPostRequestBodyDto,
+  ): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -76,10 +84,14 @@ export class CommentService {
 
     await this.commentQueryRepository.save(commentEntity);
 
-    return DetailResponseDto.uuid(commentEntity.uuid);
+    return { uuid: commentEntity.uuid };
   }
 
-  async commentUpdate(user: UserDto, dto: ApiCommentPutRequestBodyDto, uuid) {
+  async commentUpdate(
+    user: UserDto,
+    dto: ApiCommentPutRequestBodyDto,
+    uuid,
+  ): Promise<UuidResponseDto> {
     const comment: CommentEntity = await this.commentQueryRepository.findOne(uuid);
     if (isEmpty(comment) || comment.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -89,10 +101,10 @@ export class CommentService {
 
     await this.commentQueryRepository.save(comment);
 
-    return DetailResponseDto.uuid(comment.uuid);
+    return { uuid: comment.uuid };
   }
 
-  async commentDelete(user: UserDto, uuid) {
+  async commentDelete(user: UserDto, uuid): Promise<UuidResponseDto> {
     const comment: CommentEntity = await this.commentQueryRepository.findOne(uuid);
     if (isEmpty(comment) || comment.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -102,6 +114,6 @@ export class CommentService {
 
     await this.commentQueryRepository.save(comment);
 
-    return DetailResponseDto.uuid(comment.uuid);
+    return { uuid: comment.uuid };
   }
 }

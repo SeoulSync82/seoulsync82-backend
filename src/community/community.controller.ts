@@ -9,23 +9,22 @@ import {
   Put,
   Query,
   Req,
-  UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
-import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
 import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
+import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
 import { ApiPagingSuccessResponse } from '../commons/decorators/api-paging-success-response.decorator';
+import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
+import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
 import { UserDto } from '../user/dto/user.dto';
 import { CommunityService } from './community.service';
 import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
@@ -38,8 +37,6 @@ import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-b
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
-@UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor)
 export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
@@ -50,7 +47,7 @@ export class CommunityController {
     summary: '커뮤니티 글쓰기',
     description: '커뮤니티 글쓰기',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '커뮤니티 글쓰기 성공',
     status: HttpStatus.CREATED,
   })
@@ -72,7 +69,7 @@ export class CommunityController {
     @Param('uuid') uuid: string,
     @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommunityPostRequestBodyDto,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.communityService.communityPost(uuid, user, dto);
   }
 
@@ -83,14 +80,14 @@ export class CommunityController {
     summary: '커뮤니티 글쓰기 - 내 코스 추천내역',
     description: '커뮤니티 글쓰기 - 내 코스 추천내역',
   })
-  @ApiArraySuccessResponse(ApiCommunityGetMyCourseResponseDto, {
+  @ApiArrayLastItemIdSuccessResponse(ApiCommunityGetMyCourseResponseDto, {
     description: '커뮤니티 글쓰기 - 내 코스 추천내역 조회 성공',
     status: HttpStatus.OK,
   })
   async communityMyCourseList(
     @Query() dto: ApiCommunityGetMyCourseRequestQueryDto,
     @CurrentUser() user: UserDto,
-  ) {
+  ): Promise<LastItemIdResponseDto<ApiCommunityGetMyCourseResponseDto>> {
     return await this.communityService.communityMyCourseList(dto, user);
   }
 
@@ -105,7 +102,10 @@ export class CommunityController {
     description: '커뮤니티 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async communityList(@Query() dto: ApiCommunityGetRequestQueryDto, @CurrentUser() user: UserDto) {
+  async communityList(
+    @Query() dto: ApiCommunityGetRequestQueryDto,
+    @CurrentUser() user: UserDto,
+  ): Promise<CursorPaginatedResponseDto<ApiCommunityGetResponseDto>> {
     return await this.communityService.communityList(dto, user);
   }
 
@@ -141,7 +141,7 @@ export class CommunityController {
     summary: '커뮤니티 수정',
     description: '커뮤니티 수정',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '커뮤니티 수정 성공',
     status: HttpStatus.OK,
   })
@@ -159,7 +159,7 @@ export class CommunityController {
     @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommunityPutRequestBodyDto,
     @Param('uuid') uuid: string,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.communityService.communityPut(user, dto, uuid);
   }
 
@@ -170,7 +170,7 @@ export class CommunityController {
     summary: '커뮤니티 삭제',
     description: '커뮤니티 삭제',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '북마크 삭제 완료',
     status: HttpStatus.NO_CONTENT,
   })
@@ -187,7 +187,7 @@ export class CommunityController {
   async communityDelete(
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.communityService.communityDelete(user, uuid);
   }
 
@@ -198,7 +198,7 @@ export class CommunityController {
     summary: '커뮤니티 코스 좋아요',
     description: '커뮤니티 코스 좋아요',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '커뮤니티 코스 좋아요 성공',
     status: HttpStatus.CREATED,
   })
@@ -221,7 +221,7 @@ export class CommunityController {
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
     @Req() req,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     const res = await this.communityService.communityReaction(user, uuid);
     req.notification = res.notification;
     return res.data;
@@ -234,7 +234,7 @@ export class CommunityController {
     summary: '커뮤니티 코스 좋아요 취소',
     description: '커뮤니티 코스 좋아요 취소',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '커뮤니티 코스 좋아요 취소 성공',
     status: HttpStatus.NO_CONTENT,
   })
@@ -255,7 +255,7 @@ export class CommunityController {
   async communityReactionDelete(
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.communityService.communityReactionDelete(user, uuid);
   }
 }

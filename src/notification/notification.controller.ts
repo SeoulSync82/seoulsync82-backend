@@ -1,24 +1,14 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Query,
-  UseFilters,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Patch, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { UserDto } from 'src/user/dto/user.dto';
+import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
+import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
 import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
 import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
 import { NotificationService } from './notification.service';
@@ -27,8 +17,6 @@ import { NotificationService } from './notification.service';
 @Controller('/api/notification')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
-@UseInterceptors(SuccessInterceptor)
-@UseFilters(SeoulSync82ExceptionFilter)
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
@@ -37,14 +25,14 @@ export class NotificationController {
     summary: '알림 목록',
     description: '알림 목록',
   })
-  @ApiArraySuccessResponse(ApiNotificationGetListResponseDto, {
+  @ApiArrayLastItemIdSuccessResponse(ApiNotificationGetListResponseDto, {
     description: '알림 목록 조회 성공',
     status: HttpStatus.OK,
   })
   async notificationList(
     @Query() dto: ApiNotificationGetListRequestQueryDto,
     @CurrentUser() user: UserDto,
-  ) {
+  ): Promise<LastItemIdResponseDto<ApiNotificationGetListResponseDto>> {
     return await this.notificationService.notificationList(dto, user);
   }
 
@@ -53,7 +41,7 @@ export class NotificationController {
     summary: '알림 읽음 처리 ',
     description: '알림 읽음 처리 ',
   })
-  @ApiArraySuccessResponse(DetailResponseDto, {
+  @ApiArraySuccessResponse(UuidResponseDto, {
     description: '알림 읽음 처리 성공',
     status: HttpStatus.NO_CONTENT,
   })
@@ -71,7 +59,7 @@ export class NotificationController {
   async notificationRead(
     @Param('uuid') uuid: string,
     @CurrentUser() user: UserDto,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.notificationService.notificationRead(uuid, user);
   }
 }

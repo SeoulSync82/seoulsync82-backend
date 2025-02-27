@@ -1,15 +1,11 @@
-import { Controller, Get, HttpStatus, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { ApiThemeGetListResponseDto } from './dto/api-theme-get-list-response.dto';
 import { ThemeService } from './theme.service';
 
 @ApiTags('테마')
 @Controller('/api/theme')
-@UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor)
 export class ThemeController {
   constructor(private readonly themeService: ThemeService) {}
 
@@ -22,7 +18,7 @@ export class ThemeController {
     description: '테마 리스트 조회 성공',
     status: HttpStatus.OK,
   })
-  async themeList() {
+  async themeList(): Promise<{ items: ApiThemeGetListResponseDto[] }> {
     return await this.themeService.themeList();
   }
 }

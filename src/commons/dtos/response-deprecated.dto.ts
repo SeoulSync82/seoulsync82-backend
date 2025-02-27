@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+
+/** deprecated */
 export class ResponseDataDto {
   items: Array<any>;
   last_item?: any;

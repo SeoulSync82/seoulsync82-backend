@@ -7,9 +7,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
-  UseFilters,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -17,22 +15,20 @@ import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { ConfigService } from 'src/config/config.service';
 import { UserDto } from 'src/user/dto/user.dto';
 import { ERROR } from '../commons/constants/error';
+import { ApiSuccessResponse } from '../commons/decorators/api-success-response.decorator';
 import { getFrontendUrl } from '../commons/helpers/frontend-redirect.helper';
 import { AuthService } from './auth.service';
 import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
 import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
+import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
 import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
 @ApiTags('계정')
 @Controller('/api/auth')
 @Controller()
-@UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor)
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
@@ -127,6 +123,10 @@ export class AuthController {
     summary: '로그인 연장',
     description: '토큰 리프레시',
   })
+  @ApiSuccessResponse(ApiAuthPostUserRefreshResponseDto, {
+    description: '로그인 연장 성공',
+    status: HttpStatus.CREATED,
+  })
   @ApiExceptionResponse([ERROR.AUTHENTICATION], {
     description: '로그인 연장 실패',
     status: HttpStatus.UNAUTHORIZED,
@@ -134,7 +134,7 @@ export class AuthController {
   async silentRefresh(
     @Req() req: ApiAuthPostUserRefreshRequestDto,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<ApiAuthPostUserRefreshResponseDto> {
     return await this.authService.silentRefresh(req, res);
   }
 
@@ -144,6 +144,10 @@ export class AuthController {
   @ApiOperation({
     summary: '로그아웃',
     description: '로그아웃 요청',
+  })
+  @ApiSuccessResponse(ApiAuthPostUserLogoutResponseDto, {
+    description: '로그아웃 성공',
+    status: HttpStatus.CREATED,
   })
   @ApiExceptionResponse([ERROR.AUTHENTICATION], {
     description: '로그아웃 실패',

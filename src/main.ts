@@ -5,6 +5,8 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { AppModule } from './app.module';
 import { ERROR } from './commons/constants/error';
+import { GlobalExceptionFilter } from './commons/filters/global-exception.filter';
+import { SuccessInterceptor } from './commons/interceptors/success.interceptor';
 import { ConfigService } from './config/config.service';
 import { SwaggerModels } from './swagger';
 
@@ -15,6 +17,9 @@ async function bootstrap() {
         ? ['error', 'warn', 'log', 'debug']
         : ['error', 'warn', 'log', 'verbose', 'debug'],
   });
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
+  app.useGlobalInterceptors(new SuccessInterceptor());
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -8,7 +8,7 @@ import { ThemeQueryRepository } from './theme.query.repository';
 export class ThemeService {
   constructor(private readonly themeQueryRepository: ThemeQueryRepository) {}
 
-  async themeList() {
+  async themeList(): Promise<{ items: ApiThemeGetListResponseDto[] }> {
     const themeList: ThemeEntity[] = await this.themeQueryRepository.findList();
 
     const apiThemeListGetResponseDto = plainToInstance(ApiThemeGetListResponseDto, themeList, {

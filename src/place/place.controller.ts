@@ -1,20 +1,12 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Query,
-  UseFilters,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ERROR } from 'src/commons/constants/error';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { ApiPagingSuccessResponse } from '../commons/decorators/api-paging-success-response.decorator';
+import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
+import { ListResponseDto } from '../commons/dtos/list-response.dto';
 import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';
 import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
 import { ApiPlaceGetCultureResponseDto } from './dto/api-place-get-culture-response.dto';
@@ -27,8 +19,6 @@ import { PlaceService } from './place.service';
 
 @ApiTags('장소')
 @Controller('/api/place')
-@UseFilters(SeoulSync82ExceptionFilter)
-@UseInterceptors(SuccessInterceptor)
 export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
@@ -41,7 +31,9 @@ export class PlaceController {
     description: '전시/팝업 간편 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async findCultureList(@Query() dto: ApiPlaceGetCultureRequestQueryDto) {
+  async findCultureList(
+    @Query() dto: ApiPlaceGetCultureRequestQueryDto,
+  ): Promise<ListResponseDto<ApiPlaceGetCultureResponseDto>> {
     return await this.placeService.findCultureList(dto);
   }
 
@@ -80,7 +72,9 @@ export class PlaceController {
     description: '전시소개 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async findExhibitionList(@Query() dto: ApiPlaceGetExhibitionRequestQueryDto) {
+  async findExhibitionList(
+    @Query() dto: ApiPlaceGetExhibitionRequestQueryDto,
+  ): Promise<CursorPaginatedResponseDto<ApiPlaceGetExhibitionResponseDto>> {
     return await this.placeService.findExhibitionList(dto);
   }
 
@@ -93,7 +87,9 @@ export class PlaceController {
     description: '팝업소개 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async findPopupList(@Query() dto: ApiPlaceGetPopupRequestQueryDto) {
+  async findPopupList(
+    @Query() dto: ApiPlaceGetPopupRequestQueryDto,
+  ): Promise<CursorPaginatedResponseDto<ApiPlaceGetPopupResponseDto>> {
     return await this.placeService.findPopupList(dto);
   }
 

@@ -13,6 +13,7 @@ import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { DataSource } from 'typeorm';
+import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
 import { getPlaceTypeKey } from '../commons/helpers/place-type.helper';
 import { CourseQueryRepository } from './course.query.repository';
 import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
@@ -22,6 +23,7 @@ import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-lis
 import { PlaceDetailDto } from './dto/api-course-get-recommend-response.dto';
 import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
 import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
+import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-response.dto';
 import { CoursePlaceDetailDto } from './dto/course.dto';
 
 @Injectable()
@@ -38,7 +40,10 @@ export class CourseService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async saveCourseRecommend(dto: ApiCoursePostRecommendSaveRequestBodyDto, user: UserDto) {
+  async saveCourseRecommend(
+    dto: ApiCoursePostRecommendSaveRequestBodyDto,
+    user: UserDto,
+  ): Promise<ApiCoursePostSaveResponseDto> {
     const course: CourseEntity = await this.courseQueryRepository.findCourse(dto.course_uuid);
     if (isNotEmpty(course)) {
       throw new ConflictException(ERROR.DUPLICATION);
@@ -101,7 +106,7 @@ export class CourseService {
 
       await queryRunner.manager.save(CourseDetailEntity, courseDetailEntity);
       await queryRunner.commitTransaction();
-      return { items: apiCoursePostRecommendSaveResponseDto.uuid };
+      return { uuid: apiCoursePostRecommendSaveResponseDto.uuid };
     } catch (e) {
       await queryRunner.rollbackTransaction();
       this.logger.error('Error in saveCourseRecommend', e.stack);
@@ -111,7 +116,7 @@ export class CourseService {
     }
   }
 
-  async getCourseDetail(uuid: string, user: UserDto) {
+  async getCourseDetail(uuid: string, user: UserDto): Promise<ApiCourseGetDetailResponseDto> {
     if (isEmpty(user)) {
       user = { uuid: '', id: null, nickname: null, profile_image: null };
     }
@@ -173,13 +178,16 @@ export class CourseService {
       places: placeDtos,
     });
 
-    return { items: apiCourseDetailGetResponseDto };
+    return apiCourseDetailGetResponseDto;
   }
 
-  async getMyCourseHistory(dto: ApiCourseGetMyHistoryRequestQueryDto, user: UserDto) {
+  async getMyCourseHistory(
+    dto: ApiCourseGetMyHistoryRequestQueryDto,
+    user: UserDto,
+  ): Promise<LastItemIdResponseDto<ApiCourseGetMyHistoryResponseDto>> {
     const courseList = await this.courseQueryRepository.findMyCourse(dto, user);
     if (courseList.length === 0) {
-      return { items: [] };
+      return { items: [], last_item_id: 0 };
     }
 
     const userList = await this.userQueryRepository.findUserList(
@@ -204,7 +212,7 @@ export class CourseService {
     return { items: apiCourseMyHistoryGetResponseDto, last_item_id };
   }
 
-  async getCoursePlaceList(uuid) {
+  async getCoursePlaceList(uuid): Promise<ApiCourseGetPlaceListResponseDto> {
     const course = await this.courseQueryRepository.findOne(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);

@@ -1,26 +1,13 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseFilters,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
-import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
-import { SeoulSync82ExceptionFilter } from 'src/commons/filters/seoulsync82.exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { UserDto } from 'src/user/dto/user.dto';
+import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
+import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
 import { BookmarkService } from './bookmark.service';
 import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
@@ -30,8 +17,6 @@ import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
 @Controller('/api/bookmark')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access-token')
-@UseInterceptors(SuccessInterceptor)
-@UseFilters(SeoulSync82ExceptionFilter)
 export class BookmarkController {
   constructor(private readonly bookmarkService: BookmarkService) {}
 
@@ -40,12 +25,12 @@ export class BookmarkController {
     summary: '북마크 목록',
     description: '북마크 목록',
   })
-  @ApiArraySuccessResponse(ApiBookmarkGetResponseDto, {
+  @ApiArrayLastItemIdSuccessResponse(ApiBookmarkGetResponseDto, {
     description: '북마크 목록 조회 성공',
     status: HttpStatus.OK,
   })
   async bookmarkList(@Query() dto: ApiBookmarkGetRequestQueryDto, @CurrentUser() user: UserDto) {
-    return await this.bookmarkService.bookmarkList(dto, user);
+    return this.bookmarkService.bookmarkList(dto, user);
   }
 
   @Get('/:uuid')
@@ -77,7 +62,7 @@ export class BookmarkController {
     summary: '북마크 저장',
     description: '북마크 저장',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '북마크 저장 완료',
     status: HttpStatus.CREATED,
   })
@@ -98,7 +83,7 @@ export class BookmarkController {
   async bookmarkSave(
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.bookmarkService.bookmarkSave(user, uuid);
   }
 
@@ -107,7 +92,7 @@ export class BookmarkController {
     summary: '북마크 삭제',
     description: '북마크 삭제',
   })
-  @ApiSuccessResponse(DetailResponseDto, {
+  @ApiSuccessResponse(UuidResponseDto, {
     description: '북마크 삭제 완료',
     status: HttpStatus.NO_CONTENT,
   })
@@ -124,7 +109,7 @@ export class BookmarkController {
   async bookmarkDelete(
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
-  ): Promise<DetailResponseDto> {
+  ): Promise<UuidResponseDto> {
     return await this.bookmarkService.bookmarkDelete(user, uuid);
   }
 }

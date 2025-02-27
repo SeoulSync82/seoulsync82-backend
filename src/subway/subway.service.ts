@@ -23,7 +23,7 @@ export class SubwayService {
     line_uuid: string,
     station_uuid: string,
     dto: ApiSubwayGetCheckRequestQueryDto,
-  ) {
+  ): Promise<ApiSubwayGetCheckResponseDto> {
     const stationInfo: StationInfo = await this.subwayQueryRepository.findLineAndStation(
       line_uuid,
       station_uuid,
@@ -59,7 +59,7 @@ export class SubwayService {
     return new ApiSubwayGetCheckResponseDto({ items: customsCheck });
   }
 
-  async subwayStationList(line_uuid: string) {
+  async subwayStationList(line_uuid: string): Promise<ApiSubwayGetListResponseDto> {
     const subwayStationList = await this.subwayQueryRepository.subwayStationList(line_uuid);
     if (isEmpty(subwayStationList)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -76,7 +76,7 @@ export class SubwayService {
     return apiSubwayListGetResponseDto;
   }
 
-  async subwayLineList() {
+  async subwayLineList(): Promise<ApiSubwayGetLineResponseDto> {
     const subwayLine = await this.subwayQueryRepository.findSubwayLine();
     const apiSubwayLineGetResponseDto = plainToInstance(
       ApiSubwayGetLineResponseDto,

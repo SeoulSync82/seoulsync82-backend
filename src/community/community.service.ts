@@ -3,7 +3,6 @@ import { plainToInstance } from 'class-transformer';
 import { isNotEmpty } from 'class-validator';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { ERROR } from 'src/commons/constants/error';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
@@ -14,7 +13,14 @@ import { ReactionEntity } from 'src/entities/reaction.entity';
 import { UserEntity } from 'src/entities/user.entity';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
+import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
+import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
 import { CommunityQueryRepository } from './community.query.repository';
+import {
+  ApiCommunityPostReactionResponseDto,
+  NotificationDto,
+} from './dto/\bapi-community-post-reaction-response.dto';
 import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
 import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
 import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
@@ -34,7 +40,11 @@ export class CommunityService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async communityPost(uuid, user: UserDto, dto: ApiCommunityPostRequestBodyDto) {
+  async communityPost(
+    uuid,
+    user: UserDto,
+    dto: ApiCommunityPostRequestBodyDto,
+  ): Promise<UuidResponseDto> {
     const course = await this.courseQueryRepository.findOne(uuid);
     if (isEmpty(course)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -55,13 +65,16 @@ export class CommunityService {
 
     await this.communityQueryRepository.save(communityEntity);
 
-    return DetailResponseDto.uuid(communityEntity.uuid);
+    return { uuid: communityEntity.uuid };
   }
 
-  async communityMyCourseList(dto: ApiCommunityGetMyCourseRequestQueryDto, user: UserDto) {
+  async communityMyCourseList(
+    dto: ApiCommunityGetMyCourseRequestQueryDto,
+    user: UserDto,
+  ): Promise<LastItemIdResponseDto<ApiCommunityGetMyCourseResponseDto>> {
     const myCourseList: CourseEntity[] = await this.courseQueryRepository.findMyCourse(dto, user);
     if (myCourseList.length === 0) {
-      return { items: [] };
+      return { items: [], last_item_id: 0 };
     }
 
     const myCommunity: CommunityEntity[] = await this.communityQueryRepository.myCommunity(user);
@@ -83,7 +96,10 @@ export class CommunityService {
     return { items: apiCommunityMyCourseGetResponseDto, last_item_id };
   }
 
-  async communityList(dto: ApiCommunityGetRequestQueryDto, user) {
+  async communityList(
+    dto: ApiCommunityGetRequestQueryDto,
+    user,
+  ): Promise<CursorPaginatedResponseDto<ApiCommunityGetResponseDto>> {
     const totalCount: number = await this.communityQueryRepository.countCommunity();
     if (totalCount === 0) {
       return { items: [], total_count: 0, next_page: null };
@@ -123,7 +139,7 @@ export class CommunityService {
     };
   }
 
-  async communityDetail(uuid, user) {
+  async communityDetail(uuid, user): Promise<ApiCommunityGetDetailResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -168,7 +184,7 @@ export class CommunityService {
     return apiCommunityDetailGetResponseDto;
   }
 
-  async communityPut(user: UserDto, dto: CommunityPutReqDto, uuid) {
+  async communityPut(user: UserDto, dto: CommunityPutReqDto, uuid): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community) || community.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -179,10 +195,10 @@ export class CommunityService {
 
     await this.communityQueryRepository.save(community);
 
-    return DetailResponseDto.uuid(uuid);
+    return { uuid };
   }
 
-  async communityDelete(user: UserDto, uuid) {
+  async communityDelete(user: UserDto, uuid): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community) || community.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -192,17 +208,20 @@ export class CommunityService {
 
     await this.communityQueryRepository.save(community);
 
-    return DetailResponseDto.uuid(uuid);
+    return { uuid };
   }
 
-  async communityReaction(user: UserDto, uuid) {
+  async communityReaction(
+    user: UserDto,
+    uuid: string,
+  ): Promise<ApiCommunityPostReactionResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
 
-    let notification = {};
+    let notification: NotificationDto | null = null;
 
     const reactionEntity = new ReactionEntity();
     if (!reaction) {
@@ -226,10 +245,13 @@ export class CommunityService {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
-    return DetailResponseDto.notification({ uuid }, notification);
+    return {
+      data: { uuid },
+      notification,
+    };
   }
 
-  async communityReactionDelete(user: UserDto, uuid) {
+  async communityReactionDelete(user: UserDto, uuid: string): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -244,6 +266,6 @@ export class CommunityService {
       throw new ConflictException(ERROR.DUPLICATION);
     }
 
-    return DetailResponseDto.uuid(uuid);
+    return { uuid };
   }
 }

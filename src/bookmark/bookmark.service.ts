@@ -1,7 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/commons/constants/error';
-import { DetailResponseDto } from 'src/commons/dto/response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
@@ -10,6 +9,8 @@ import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
+import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
 import { BookmarkQueryRepository } from './bookmark.query.repository';
 import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
 import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
@@ -24,10 +25,13 @@ export class BookmarkService {
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async bookmarkList(dto: ApiBookmarkGetRequestQueryDto, user: UserDto) {
+  async bookmarkList(
+    dto: ApiBookmarkGetRequestQueryDto,
+    user: UserDto,
+  ): Promise<LastItemIdResponseDto<ApiBookmarkGetResponseDto>> {
     const courseList = await this.bookmarkQueryRepository.find(dto, user);
-    if (courseList.length === 0) {
-      return { items: [] };
+    if (isEmpty(courseList.length)) {
+      return { items: [], last_item_id: 0 };
     }
 
     const userList = await this.userQueryRepository.findUserList(
@@ -44,11 +48,10 @@ export class BookmarkService {
     });
 
     const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
-
     return { items: apiBookmarkGetResponseDto, last_item_id };
   }
 
-  async myCourseDetail(uuid) {
+  async myCourseDetail(uuid): Promise<ApiBookmarkGetDetailResponseDto> {
     const course = await this.bookmarkQueryRepository.findOne(uuid);
     if (isEmpty(course)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -78,7 +81,7 @@ export class BookmarkService {
     return myCourseDetailResDto;
   }
 
-  async bookmarkSave(user: UserDto, uuid) {
+  async bookmarkSave(user: UserDto, uuid: string): Promise<UuidResponseDto> {
     const course = await this.courseQueryRepository.findCourse(uuid);
     if (!course) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -104,15 +107,15 @@ export class BookmarkService {
       await this.bookmarkQueryRepository.bookmarkUpdate(bookmarkEntity);
     }
 
-    return DetailResponseDto.uuid(uuid);
+    return { uuid };
   }
 
-  async bookmarkDelete(user, uuid) {
+  async bookmarkDelete(user: UserDto, uuid: string): Promise<UuidResponseDto> {
     const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
     if (isEmpty(myBookmark)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     } else await this.bookmarkQueryRepository.bookmarkDelete(myBookmark);
 
-    return DetailResponseDto.uuid(uuid);
+    return { uuid };
   }
 }
