@@ -1,16 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { ERROR } from 'src/commons/constants/error';
 import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
+import { findCountByType } from 'src/commons/helpers/place-count-by-type.helper';
 import { isEmpty } from 'src/commons/util/is/is-empty';
-import { CustomListDto } from 'src/place/dto/subway.dto';
-import { PlaceQueryRepository } from '../place/place.query.repository';
-import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
-import { ApiSubwayGetCheckResponseDto } from './dto/api-subway-get-check-response.dto';
-import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
-import { ApiSubwayGetListResponseDto } from './dto/api-subway-get-list-response.dto';
-import { StationInfo } from './interfaces/subway.interfaces';
-import { SubwayQueryRepository } from './subway.query.repository';
+import { PlaceQueryRepository } from 'src/place/place.query.repository';
+import { ApiSubwayGetCheckRequestQueryDto } from 'src/subway/dto/api-subway-get-check-request-query.dto';
+import { ApiSubwayGetCheckResponseDto } from 'src/subway/dto/api-subway-get-check-response.dto';
+import { ApiSubwayGetLineResponseDto } from 'src/subway/dto/api-subway-get-line-response.dto';
+import { ApiSubwayGetListResponseDto } from 'src/subway/dto/api-subway-get-list-response.dto';
+import { SubwayCustomListDto } from 'src/subway/dto/subway-custom-list.dto';
+import { StationInfo } from 'src/subway/interfaces/subway.interfaces';
+import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
+import { ERROR } from '../commons/constants/error';
 
 @Injectable()
 export class SubwayService {
@@ -20,70 +21,67 @@ export class SubwayService {
   ) {}
 
   async subwayCustomsCheck(
-    line_uuid: string,
-    station_uuid: string,
+    lineUuid: string,
+    stationUuid: string,
     dto: ApiSubwayGetCheckRequestQueryDto,
   ): Promise<ApiSubwayGetCheckResponseDto> {
+    // 1. Retrieve station info first
     const stationInfo: StationInfo = await this.subwayQueryRepository.findLineAndStation(
-      line_uuid,
-      station_uuid,
+      lineUuid,
+      stationUuid,
     );
-    let subwayCustoms = await this.subwayQueryRepository.groupByCustoms(stationInfo);
-    const subwayCurrentCulture = await this.subwayQueryRepository.findSubwayCurrentCulture(
-      stationInfo,
-    );
+    // 2. 병렬로 호출 (customs, current culture, 이미 추가된 장소)
+    const [subwayCustoms, subwayCurrentCulture, alreadyAddedPlaces] = await Promise.all([
+      this.subwayQueryRepository.groupByCustoms(stationInfo),
+      this.subwayQueryRepository.findSubwayCurrentCulture(stationInfo),
+      this.placeQueryRepository.findPlacesWithUuids(dto.place_uuids),
+    ]);
 
-    const alreadyAddedPlaces = await this.placeQueryRepository.findPlacesWithUuids(dto.place_uuids);
-
-    alreadyAddedPlaces.forEach((place) => {
-      const targetCustom = subwayCustoms.find((custom) => custom.type === place.place_type);
-      targetCustom.count = parseInt(targetCustom.count) - 1;
+    // 3. Updated subway customs
+    const updatedSubwayCustoms = subwayCustoms.map((custom) => {
+      const addedCount = alreadyAddedPlaces.filter(
+        (place) => place.place_type === custom.type,
+      ).length;
+      return { ...custom, count: Number(custom.count) - addedCount };
     });
 
-    function findCountByType(type, results) {
-      const item = results.find((item) => item.type === type);
-      return item ? parseInt(item.count, 10) : 0;
-    }
-
-    const customsCheck = new CustomListDto({
-      RESTAURANT: findCountByType(PLACE_TYPE.RESTAURANT, subwayCustoms),
-      CAFE: findCountByType(PLACE_TYPE.CAFE, subwayCustoms),
-      BAR: findCountByType(PLACE_TYPE.BAR, subwayCustoms),
-      SHOPPING: findCountByType(PLACE_TYPE.SHOPPING, subwayCustoms),
+    // 4. Compose customs check
+    const customsCheck = new SubwayCustomListDto({
+      RESTAURANT: findCountByType(PLACE_TYPE.RESTAURANT, updatedSubwayCustoms),
+      CAFE: findCountByType(PLACE_TYPE.CAFE, updatedSubwayCustoms),
+      BAR: findCountByType(PLACE_TYPE.BAR, updatedSubwayCustoms),
+      SHOPPING: findCountByType(PLACE_TYPE.SHOPPING, updatedSubwayCustoms),
       CULTURE:
         findCountByType(PLACE_TYPE.EXHIBITION, subwayCurrentCulture) +
         findCountByType(PLACE_TYPE.POPUP, subwayCurrentCulture),
-      ENTERTAINMENT: findCountByType(PLACE_TYPE.ENTERTAINMENT, subwayCustoms),
+      ENTERTAINMENT: findCountByType(PLACE_TYPE.ENTERTAINMENT, updatedSubwayCustoms),
     });
 
     return new ApiSubwayGetCheckResponseDto({ items: customsCheck });
   }
 
-  async subwayStationList(line_uuid: string): Promise<ApiSubwayGetListResponseDto> {
-    const subwayStationList = await this.subwayQueryRepository.subwayStationList(line_uuid);
+  async subwayStationList(lineUuid: string): Promise<ApiSubwayGetListResponseDto> {
+    const subwayStationList = await this.subwayQueryRepository.subwayStationList(lineUuid);
     if (isEmpty(subwayStationList)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const apiSubwayListGetResponseDto = plainToInstance(
+    return plainToInstance(
       ApiSubwayGetListResponseDto,
       {
         items: subwayStationList.map((station) => ({ uuid: station.uuid, station: station.name })),
       },
       { excludeExtraneousValues: true },
     );
-
-    return apiSubwayListGetResponseDto;
   }
 
   async subwayLineList(): Promise<ApiSubwayGetLineResponseDto> {
     const subwayLine = await this.subwayQueryRepository.findSubwayLine();
-    const apiSubwayLineGetResponseDto = plainToInstance(
+
+    return plainToInstance(
       ApiSubwayGetLineResponseDto,
       { items: subwayLine.map((item) => ({ uuid: item.uuid, line: item.line })) },
       { excludeExtraneousValues: true },
     );
-
-    return apiSubwayLineGetResponseDto;
   }
 }

@@ -1,9 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApiCourseGetMyHistoryRequestQueryDto } from 'src/course/dto/api-course-get-my-history-request-query.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { In, LessThan, Repository } from 'typeorm';
-import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
 
 export class CourseQueryRepository {
   constructor(
@@ -16,18 +16,18 @@ export class CourseQueryRepository {
   ) {}
 
   async saveCourse(courseEntity) {
-    return await this.repository.save(courseEntity);
+    return this.repository.save(courseEntity);
   }
 
   async saveCourseDetail(courseDetailEntity) {
-    return await this.detailRepository.save(courseDetailEntity);
+    return this.detailRepository.save(courseDetailEntity);
   }
 
   async findUserHistoryCourse(uuid: string): Promise<CourseDetailEntity[]> {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    return await this.detailRepository
+    return this.detailRepository
       .createQueryBuilder('courseDetail')
       .innerJoin('courseDetail.course', 'course')
       .where('course.user_uuid = :uuid', { uuid })
@@ -37,13 +37,13 @@ export class CourseQueryRepository {
   }
 
   async findCourse(uuid): Promise<CourseEntity> {
-    return await this.repository.findOne({
-      where: { uuid: uuid },
+    return this.repository.findOne({
+      where: { uuid },
     });
   }
 
   async findPlace(courseUuid: string): Promise<CourseDetailEntity[]> {
-    return await this.detailRepository
+    return this.detailRepository
       .createQueryBuilder('courseDetail')
       .leftJoinAndSelect('courseDetail.place', 'place')
       .where('courseDetail.course_uuid = :courseUuid', { courseUuid })
@@ -52,14 +52,14 @@ export class CourseQueryRepository {
   }
 
   async findList(uuids): Promise<CourseEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: { uuid: In(uuids) },
     });
   }
 
   async findOne(uuid): Promise<CourseEntity> {
-    return await this.repository.findOne({
-      where: { uuid: uuid },
+    return this.repository.findOne({
+      where: { uuid },
     });
   }
 
@@ -70,7 +70,7 @@ export class CourseQueryRepository {
       Object.assign(whereConditions, { id: LessThan(dto.last_id) });
     }
 
-    return await this.repository.find({
+    return this.repository.find({
       where: whereConditions,
       order: { created_at: 'DESC' },
       take: dto.size,
@@ -78,7 +78,7 @@ export class CourseQueryRepository {
   }
 
   async findUserCourse(uuid, user): Promise<CourseEntity> {
-    return await this.repository.findOne({
+    return this.repository.findOne({
       where: { user_uuid: user.uuid },
     });
   }

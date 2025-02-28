@@ -1,6 +1,6 @@
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
+import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { BookmarkEntity } from './bookmark.entity';
-import { CourseDetailEntity } from './course.detail.entity';
 
 @Entity({ name: 'course' })
 export class CourseEntity {

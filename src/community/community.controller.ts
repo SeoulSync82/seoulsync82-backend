@@ -15,25 +15,25 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
+import { ApiArrayLastItemIdSuccessResponse } from 'src/commons/decorators/api-array-last-item-id-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
+import { ApiPagingSuccessResponse } from 'src/commons/decorators/api-paging-success-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
-import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
-import { ApiPagingSuccessResponse } from '../commons/decorators/api-paging-success-response.decorator';
-import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { UserDto } from '../user/dto/user.dto';
-import { CommunityService } from './community.service';
-import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
-import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
-import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
-import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
-import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
-import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
-import { ApiCommunityPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
+import { CommunityService } from 'src/community/community.service';
+import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
+import { ApiCommunityGetMyCourseRequestQueryDto } from 'src/community/dto/api-community-get-my-course-request-query.dto';
+import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
+import { ApiCommunityGetRequestQueryDto } from 'src/community/dto/api-community-get-request-query.dto';
+import { ApiCommunityGetResponseDto } from 'src/community/dto/api-community-get-response.dto';
+import { ApiCommunityPostRequestBodyDto } from 'src/community/dto/api-community-post-request-body.dto';
+import { ApiCommunityPutRequestBodyDto } from 'src/community/dto/api-community-put-request-body.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('커뮤니티')
 @Controller('/api/community')
@@ -70,7 +70,7 @@ export class CommunityController {
     @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommunityPostRequestBodyDto,
   ): Promise<UuidResponseDto> {
-    return await this.communityService.communityPost(uuid, user, dto);
+    return this.communityService.communityPost(uuid, user, dto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -88,7 +88,7 @@ export class CommunityController {
     @Query() dto: ApiCommunityGetMyCourseRequestQueryDto,
     @CurrentUser() user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiCommunityGetMyCourseResponseDto>> {
-    return await this.communityService.communityMyCourseList(dto, user);
+    return this.communityService.communityMyCourseList(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -106,7 +106,7 @@ export class CommunityController {
     @Query() dto: ApiCommunityGetRequestQueryDto,
     @CurrentUser() user: UserDto,
   ): Promise<CursorPaginatedResponseDto<ApiCommunityGetResponseDto>> {
-    return await this.communityService.communityList(dto, user);
+    return this.communityService.communityList(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -131,7 +131,7 @@ export class CommunityController {
     description: '커뮤니티 uuid',
   })
   async communityDetail(@Param('uuid') uuid: string, @CurrentUser() user) {
-    return await this.communityService.communityDetail(uuid, user);
+    return this.communityService.communityDetail(uuid, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -160,7 +160,7 @@ export class CommunityController {
     @Body(BadWordsPipe) dto: ApiCommunityPutRequestBodyDto,
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
-    return await this.communityService.communityPut(user, dto, uuid);
+    return this.communityService.communityPut(user, dto, uuid);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -188,7 +188,7 @@ export class CommunityController {
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
-    return await this.communityService.communityDelete(user, uuid);
+    return this.communityService.communityDelete(user, uuid);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -256,6 +256,6 @@ export class CommunityController {
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
-    return await this.communityService.communityReactionDelete(user, uuid);
+    return this.communityService.communityReactionDelete(user, uuid);
   }
 }

@@ -51,7 +51,7 @@ export function isEmpty<T>(value?: T | null | undefined): value is null | undefi
       return typeof notNull === 'string' && notNull === '' ? FE.left(true) : FE.right(notNull);
     }),
     FE.chain((notString) => {
-      return typeof notString === 'number' && isNaN(notString)
+      return typeof notString === 'number' && Number.isNaN(notString)
         ? FE.left(true)
         : FE.right(notString);
     }),

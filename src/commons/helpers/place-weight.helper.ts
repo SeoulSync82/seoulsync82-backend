@@ -1,4 +1,4 @@
-import { PlaceEntity } from '../../entities/place.entity';
+import { PlaceEntity } from 'src/entities/place.entity';
 
 /** 가중치 계산 함수, 최근 추천된 장소는 가중치를 감소 */
 export const calculateWeight = (
@@ -25,17 +25,16 @@ export const getTopWeight = (
   return weightedPlaces.sort((a, b) => b.weight - a.weight).slice(0, topN);
 };
 
-export const getRandomShuffleElements = <T>(places: T[], count: number): T[] => {
-  const shuffled = fisherYatesShuffle(places);
-  return shuffled.slice(0, count);
-};
-
 /** Fisher–Yates Shuffle 알고리즘 */
 function fisherYatesShuffle<T>(array: T[]): T[] {
   const result = [...array];
-  for (let i = result.length - 1; i > 0; i--) {
+  for (let i = result.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
 }
+export const getRandomShuffleElements = <T>(places: T[], count: number): T[] => {
+  const shuffled = fisherYatesShuffle(places);
+  return shuffled.slice(0, count);
+};

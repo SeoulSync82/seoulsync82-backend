@@ -11,19 +11,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ERROR } from '../commons/constants/error';
-import { ApiExceptionResponse } from '../commons/decorators/api-exception-response.decorator';
-import { ApiSuccessResponse } from '../commons/decorators/api-success-response.decorator';
-import { CurrentUser } from '../commons/decorators/user.decorator';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { BadWordsPipe } from '../commons/pipe/badwords.pipe';
-import { UserDto } from '../user/dto/user.dto';
-import { CommentService } from './comment.service';
-import { ApiCommentGetRequestQueryDto } from './dto/api-comment-get-request-query.dto';
-import { ApiCommentGetResponseDto } from './dto/api-comment-get-response.dto';
-import { ApiCommentPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
-import { ApiCommentPutRequestBodyDto } from './dto/api-community-put-request-body.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CommentService } from 'src/comment/comment.service';
+import { ApiCommentGetRequestQueryDto } from 'src/comment/dto/api-comment-get-request-query.dto';
+import { ApiCommentGetResponseDto } from 'src/comment/dto/api-comment-get-response.dto';
+import { ApiCommentPostRequestBodyDto } from 'src/comment/dto/api-community-post-request-body.dto';
+import { ApiCommentPutRequestBodyDto } from 'src/comment/dto/api-community-put-request-body.dto';
+import { ERROR } from 'src/commons/constants/error';
+import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
+import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
+import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('한줄평')
 @Controller('/api/comment')
@@ -55,8 +55,8 @@ export class CommentController {
     @Param('uuid') uuid: string,
     @Query() dto: ApiCommentGetRequestQueryDto,
     @CurrentUser() user: UserDto,
-  ) {
-    return await this.commentService.commentList(uuid, dto, user);
+  ): Promise<ApiCommentGetResponseDto> {
+    return this.commentService.commentList(uuid, dto, user);
   }
 
   @Post('/:uuid')
@@ -83,7 +83,7 @@ export class CommentController {
     @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommentPostRequestBodyDto,
   ): Promise<UuidResponseDto> {
-    return await this.commentService.commentPost(uuid, user, dto);
+    return this.commentService.commentPost(uuid, user, dto);
   }
 
   @Put('/:uuid')

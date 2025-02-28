@@ -1,5 +1,5 @@
+import { PlaceReviewEntity } from 'src/entities/place_review.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { PlaceReviewEntity } from './place_review.entity';
 
 @Entity({ name: 'review_weight' })
 export class ReviewWeightEntity {

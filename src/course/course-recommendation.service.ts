@@ -1,28 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { DEFAULT_CUSTOMS } from 'src/commons/constants/custom-place';
+import { Emojis } from 'src/commons/constants/emoji';
 import { ERROR } from 'src/commons/constants/error';
+import { getCustomByPlaceType } from 'src/commons/helpers/custom-by-place-type.helper';
 import { getPlaceTypeKey } from 'src/commons/helpers/place-type.helper';
 import { getRandomShuffleElements, getTopWeight } from 'src/commons/helpers/place-weight.helper';
+import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
+import { CourseQueryRepository } from 'src/course/course.query.repository';
+import { ApiCourseGetPlaceCustomizeRequestQueryDto } from 'src/course/dto/api-course-get-place-customize-request-query.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from 'src/course/dto/api-course-get-place-customize-response.dto';
+import { ApiCourseGetRecommendRequestQueryDto } from 'src/course/dto/api-course-get-recommend-request-query.dto';
+import { ApiCourseGetRecommendResponseDto } from 'src/course/dto/api-course-get-recommend-response.dto';
+import { CoursePlaceInfoDto } from 'src/course/dto/course-place-info.dto';
+import { RecommendType } from 'src/course/enum/course-recommend.enum';
+import { CourseDetailEntity } from 'src/entities/course.detail.entity';
+import { PlaceEntity } from 'src/entities/place.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
-import { DEFAULT_CUSTOMS } from '../commons/constants/custom-place';
-import { Emojis } from '../commons/constants/emoji';
-import { getCustomByPlaceType } from '../commons/helpers/custom-by-place-type.helper';
-import { isEmpty, isNotEmpty } from '../commons/util/is/is-empty';
-import { CourseDetailEntity } from '../entities/course.detail.entity';
-import { PlaceEntity } from '../entities/place.entity';
-import { UserDto } from '../user/dto/user.dto';
-import { CourseQueryRepository } from './course.query.repository';
-import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
-import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
-import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
-import {
-  ApiCourseGetRecommendResponseDto,
-  PlaceDetailDto,
-} from './dto/api-course-get-recommend-response.dto';
-import { RecommendType } from './enum/course-recommend.enum';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class CourseRecommendationService {
@@ -65,7 +63,7 @@ export class CourseRecommendationService {
       userHistoryCourse = await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
     }
 
-    for (const custom of DEFAULT_CUSTOMS) {
+    DEFAULT_CUSTOMS.forEach((custom) => {
       const customPlaces: PlaceEntity[] = subwayPlaceList.filter(
         (item) => item.place_type === custom,
       );
@@ -79,16 +77,16 @@ export class CourseRecommendationService {
         throw new NotFoundException(ERROR.NOT_EXIST_DATA);
       }
       placeNonSorting.push(...selected);
-    }
+    });
 
     // 5. 카테고리별 정렬 및 DTO 변환
-    const placeSorting: PlaceDetailDto[] = [];
+    const placeSorting: CoursePlaceInfoDto[] = [];
     DEFAULT_CUSTOMS.forEach((custom, index) => {
       const place = placeNonSorting.find((item) => item.place_type === custom);
       if (isEmpty(place)) {
         throw new NotFoundException(ERROR.NOT_EXIST_DATA);
       }
-      const placeDetailDto = plainToInstance(PlaceDetailDto, place, {
+      const placeDetailDto = plainToInstance(CoursePlaceInfoDto, place, {
         excludeExtraneousValues: true,
       });
       placeDetailDto.sort = index + 1;
@@ -98,20 +96,20 @@ export class CourseRecommendationService {
     });
 
     // 6. 코스 이름 생성
-    let course_name = '';
+    let courseName = '';
     if (isEmpty(theme)) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
-      course_name = `${subwayWithLines[0].name}역, 주변 코스 일정 ${randomEmoji}`;
+      courseName = `${subwayWithLines[0].name}역, 주변 코스 일정 ${randomEmoji}`;
     } else {
       const themeText = theme.theme_name.substring(0, theme.theme_name.length - 2).trim();
       const themeEmoji = theme.theme_name.substring(theme.theme_name.length - 2);
-      course_name = `${subwayWithLines[0].name}역, ${themeText} 코스 일정 ${themeEmoji}`;
+      courseName = `${subwayWithLines[0].name}역, ${themeText} 코스 일정 ${themeEmoji}`;
     }
 
     // 7. Response 생성
     const apiCourseGetRecommendResponseDto = new ApiCourseGetRecommendResponseDto({
       course_uuid: generateUUID(),
-      course_name,
+      course_name: courseName,
       subway: {
         uuid: subwayWithLines[0].uuid,
         station: subwayWithLines[0].name,

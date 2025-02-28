@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
 import { ApiResponse, ApiResponseOptions, getSchemaPath } from '@nestjs/swagger';
-import { isEmpty } from '../util/is/is-empty';
+import { isEmpty } from 'src/commons/util/is/is-empty';
 
 export const ApiSuccessResponse = <TModel extends Type<unknown>>(
   model: TModel,

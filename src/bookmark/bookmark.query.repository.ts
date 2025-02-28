@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApiBookmarkGetRequestQueryDto } from 'src/bookmark/dto/api-bookmark-get-request-query.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
-import { IsNull, LessThan, Repository, In } from 'typeorm';
-import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
+import { In, IsNull, LessThan, Repository } from 'typeorm';
 
 export class BookmarkQueryRepository {
   constructor(
@@ -16,7 +16,7 @@ export class BookmarkQueryRepository {
       Object.assign(whereConditions, { id: LessThan(dto.last_id) });
     }
 
-    return await this.repository.find({
+    return this.repository.find({
       where: whereConditions,
       relations: { course: true },
       order: { updated_at: 'DESC' },
@@ -25,37 +25,37 @@ export class BookmarkQueryRepository {
   }
 
   async findOne(uuid): Promise<BookmarkEntity> {
-    return await this.repository.findOne({
-      where: { uuid: uuid, archived_at: IsNull() },
+    return this.repository.findOne({
+      where: { uuid, archived_at: IsNull() },
     });
   }
 
   async findList(uuids): Promise<BookmarkEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: { uuid: In(uuids) },
     });
   }
 
   async findMyCourse(uuid): Promise<BookmarkEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: { course_uuid: uuid, archived_at: IsNull() },
     });
   }
 
   async bookmarkSave(bookmarkEntity: BookmarkEntity) {
-    return await this.repository.save(bookmarkEntity);
+    return this.repository.save(bookmarkEntity);
   }
 
   async bookmarkDelete(bookmarkEntity: BookmarkEntity) {
-    return await this.repository.update({ id: bookmarkEntity.id }, { archived_at: new Date() });
+    return this.repository.update({ id: bookmarkEntity.id }, { archived_at: new Date() });
   }
 
   async bookmarkUpdate(bookmarkEntity: BookmarkEntity) {
-    return await this.repository.update({ id: bookmarkEntity.id }, { archived_at: null });
+    return this.repository.update({ id: bookmarkEntity.id }, { archived_at: null });
   }
 
   async findUserBookmark(user, uuid): Promise<BookmarkEntity> {
-    return await this.repository.findOne({
+    return this.repository.findOne({
       where: { user_uuid: user.uuid, course_uuid: uuid, archived_at: IsNull() },
     });
   }

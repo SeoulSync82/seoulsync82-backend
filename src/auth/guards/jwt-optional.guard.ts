@@ -6,11 +6,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
+import { Payload } from 'src/auth/types/jwt.payload';
 import { ERROR } from 'src/commons/constants/error';
+import { parseAuthHeader, verifyJWT } from 'src/commons/helpers/jwt.helper';
+import { isNotEmpty } from 'src/commons/util/is/is-empty';
 import { ConfigService } from 'src/config/config.service';
-import { parseAuthHeader, verifyJWT } from '../../commons/helpers/jwt.helper';
-import { isNotEmpty } from '../../commons/util/is/is-empty';
-import { Payload } from '../types/jwt.payload';
 
 @Injectable()
 export class JwtOptionalAuthGuard implements CanActivate {
@@ -27,7 +27,7 @@ export class JwtOptionalAuthGuard implements CanActivate {
       if (auth && auth.scheme.toLowerCase() === 'bearer') {
         try {
           const payload = await verifyJWT<Payload>(auth.value, this.config.get('JWT_SECRET'));
-          request['user'] = payload;
+          request.user = payload;
         } catch (e) {
           this.logger.error(`Error in JwtOptionalAuthGuard: ${e.message}`, e.stack);
           throw new UnauthorizedException(ERROR.AUTHENTICATION);

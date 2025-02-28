@@ -1,8 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommunityCursorPaginationHelper } from 'src/commons/helpers/community.cursor.helper';
+import { ApiCommunityGetRequestQueryDto } from 'src/community/dto/api-community-get-request-query.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { IsNull, Repository } from 'typeorm';
-import { CommunityCursorPaginationHelper } from '../commons/helpers/community.cursor.helper';
-import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
 
 export class CommunityQueryRepository {
   constructor(
@@ -11,30 +11,30 @@ export class CommunityQueryRepository {
   ) {}
 
   async save(communityEntity) {
-    return await this.repository.save(communityEntity);
+    return this.repository.save(communityEntity);
   }
 
   async findOne(uuid): Promise<CommunityEntity> {
-    return await this.repository.findOne({
-      where: { uuid: uuid, archived_at: IsNull() },
+    return this.repository.findOne({
+      where: { uuid, archived_at: IsNull() },
     });
   }
 
   async myCommunity(user): Promise<CommunityEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: { user_uuid: user.uuid, archived_at: IsNull() },
       order: { created_at: 'DESC' },
     });
   }
 
-  async findCommunityByCourse(uuid, user): Promise<CommunityEntity> {
-    return await this.repository.findOne({
+  async findCommunityByCourse(uuid: string, user): Promise<CommunityEntity> {
+    return this.repository.findOne({
       where: { course_uuid: uuid, user_uuid: user.uuid, archived_at: IsNull() },
     });
   }
 
   async countCommunity(): Promise<number> {
-    return await this.repository.count({
+    return this.repository.count({
       where: { archived_at: IsNull() },
     });
   }
@@ -83,13 +83,14 @@ export class CommunityQueryRepository {
 
     const { entities, raw } = await qb.getRawAndEntities();
 
-    entities.forEach((community, idx) => {
-      community.like_count = parseInt(raw[idx]['like_count'], 10);
-      community.isLiked = parseInt(raw[idx]['isLiked'], 10) === 1;
-    });
+    const updatedEntities = entities.map((community, idx) => ({
+      ...community,
+      like_count: parseInt(raw[idx].like_count, 10),
+      isLiked: parseInt(raw[idx].isLiked, 10) === 1,
+    }));
 
-    const hasNext = entities.length > dto.size;
-    const communityList = hasNext ? entities.slice(0, dto.size) : entities;
+    const hasNext = updatedEntities.length > dto.size;
+    const communityList = hasNext ? updatedEntities.slice(0, dto.size) : updatedEntities;
     const nextCursor = hasNext
       ? CommunityCursorPaginationHelper.generateCursor(
           communityList[communityList.length - 1],

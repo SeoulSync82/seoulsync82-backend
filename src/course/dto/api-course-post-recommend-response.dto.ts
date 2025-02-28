@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { CoursePlaceDto } from './course.dto';
+import { CoursePlaceDto } from 'src/course/dto/course-place.dto';
 
 export class ApiCoursePostRecommendResponseDto {
   @Expose()

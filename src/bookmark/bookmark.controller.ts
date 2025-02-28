@@ -1,17 +1,19 @@
 import { Controller, Get, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { BookmarkService } from 'src/bookmark/bookmark.service';
+import { ApiBookmarkGetDetailResponseDto } from 'src/bookmark/dto/api-bookmark-get-detail-response.dto';
+import { ApiBookmarkGetRequestQueryDto } from 'src/bookmark/dto/api-bookmark-get-request-query.dto';
+import { ApiBookmarkGetResponseDto } from 'src/bookmark/dto/api-bookmark-get-response.dto';
+import { ApiArrayLastItemIdSuccessResponse } from 'src/commons/decorators/api-array-last-item-id-success-response.decorator';
+// import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+// import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
-import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { BookmarkService } from './bookmark.service';
-import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
-import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
-import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
 
 @ApiTags('북마크')
 @Controller('/api/bookmark')
@@ -54,7 +56,7 @@ export class BookmarkController {
     description: '코스 uuid',
   })
   async myCourseDetail(@Param('uuid') uuid: string) {
-    return await this.bookmarkService.myCourseDetail(uuid);
+    return this.bookmarkService.myCourseDetail(uuid);
   }
 
   @Post('/:uuid')
@@ -84,7 +86,7 @@ export class BookmarkController {
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
-    return await this.bookmarkService.bookmarkSave(user, uuid);
+    return this.bookmarkService.bookmarkSave(user, uuid);
   }
 
   @Patch('/:uuid')
@@ -110,6 +112,6 @@ export class BookmarkController {
     @CurrentUser() user: UserDto,
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
-    return await this.bookmarkService.bookmarkDelete(user, uuid);
+    return this.bookmarkService.bookmarkDelete(user, uuid);
   }
 }

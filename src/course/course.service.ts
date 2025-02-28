@@ -2,10 +2,22 @@ import { ConflictException, Injectable, Logger, NotFoundException } from '@nestj
 import { plainToInstance } from 'class-transformer';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { ERROR } from 'src/commons/constants/error';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
 import { getCustomByPlaceType } from 'src/commons/helpers/custom-by-place-type.helper';
+import { getPlaceTypeKey } from 'src/commons/helpers/place-type.helper';
 import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
+import { CourseQueryRepository } from 'src/course/course.query.repository';
+import { ApiCourseGetDetailResponseDto } from 'src/course/dto/api-course-get-detail-response.dto';
+import { ApiCourseGetMyHistoryRequestQueryDto } from 'src/course/dto/api-course-get-my-history-request-query.dto';
+import { ApiCourseGetMyHistoryResponseDto } from 'src/course/dto/api-course-get-my-history-response.dto';
+import { ApiCourseGetPlaceListResponseDto } from 'src/course/dto/api-course-get-place-list-response.dto';
+import { ApiCoursePostRecommendSaveRequestBodyDto } from 'src/course/dto/api-course-post-recommend-save-request-body.dto';
+import { ApiCoursePostRecommendSaveResponseDto } from 'src/course/dto/api-course-post-recommend-save-response.dto';
+import { ApiCoursePostSaveResponseDto } from 'src/course/dto/api-course-post-save-response.dto';
+import { CoursePlaceDetailDto } from 'src/course/dto/course-place-detail.dto';
+import { CoursePlaceInfoDto } from 'src/course/dto/course-place-info.dto';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
@@ -13,18 +25,6 @@ import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { DataSource } from 'typeorm';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { getPlaceTypeKey } from '../commons/helpers/place-type.helper';
-import { CourseQueryRepository } from './course.query.repository';
-import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
-import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
-import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-history-response.dto';
-import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
-import { PlaceDetailDto } from './dto/api-course-get-recommend-response.dto';
-import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
-import { ApiCoursePostRecommendSaveResponseDto } from './dto/api-course-post-recommend-save-response.dto';
-import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-response.dto';
-import { CoursePlaceDetailDto } from './dto/course.dto';
 
 @Injectable()
 export class CourseService {
@@ -117,15 +117,15 @@ export class CourseService {
   }
 
   async getCourseDetail(uuid: string, user: UserDto): Promise<ApiCourseGetDetailResponseDto> {
-    if (isEmpty(user)) {
-      user = { uuid: '', id: null, nickname: null, profile_image: null };
-    }
+    const userInfo = isEmpty(user)
+      ? { uuid: '', id: null, nickname: null, profile_image: null }
+      : user;
 
     /** Promise.all()로 병렬 처리 */
     const [course, bookmark, community, coursePlaces] = await Promise.all([
       this.courseQueryRepository.findOne(uuid),
-      this.bookmarkQueryRepository.findUserBookmark(user, uuid),
-      this.communityQueryRepository.findCommunityByCourse(uuid, user),
+      this.bookmarkQueryRepository.findUserBookmark(userInfo, uuid),
+      this.communityQueryRepository.findCommunityByCourse(uuid, userInfo),
       this.courseQueryRepository.findPlace(uuid),
     ]);
 
@@ -143,7 +143,7 @@ export class CourseService {
 
     const placeDtos = coursePlaces.map((place) => {
       return plainToInstance(
-        PlaceDetailDto,
+        CoursePlaceInfoDto,
         {
           ...place.place,
           sort: place.sort,
@@ -155,7 +155,7 @@ export class CourseService {
       );
     });
 
-    const apiCourseDetailGetResponseDto = new ApiCourseGetDetailResponseDto({
+    return new ApiCourseGetDetailResponseDto({
       course_uuid: uuid,
       course_name: course.course_name,
       subway: {
@@ -177,8 +177,6 @@ export class CourseService {
       created_at: course.created_at,
       places: placeDtos,
     });
-
-    return apiCourseDetailGetResponseDto;
   }
 
   async getMyCourseHistory(
@@ -194,22 +192,17 @@ export class CourseService {
       courseList.map((item) => item.user_uuid),
     );
 
-    const apiCourseMyHistoryGetResponseDto = plainToInstance(
-      ApiCourseGetMyHistoryResponseDto,
-      courseList,
-      {
+    const lastItemId = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
+
+    return {
+      items: plainToInstance(ApiCourseGetMyHistoryResponseDto, courseList, {
         excludeExtraneousValues: true,
-      },
-    ).map((myHistory) => {
-      myHistory.user_profile_image = userList.find(
-        (user) => user.uuid === myHistory.user_uuid,
-      ).profile_image;
-      return myHistory;
-    });
-
-    const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
-
-    return { items: apiCourseMyHistoryGetResponseDto, last_item_id };
+      }).map((myHistory) => ({
+        ...myHistory,
+        user_profile_image: userList.find((u) => u.uuid === myHistory.user_uuid).profile_image,
+      })),
+      last_item_id: lastItemId,
+    };
   }
 
   async getCoursePlaceList(uuid): Promise<ApiCourseGetPlaceListResponseDto> {
@@ -220,7 +213,7 @@ export class CourseService {
 
     const coursePlaces = await this.courseQueryRepository.findPlace(uuid);
 
-    const apiCoursePlaceListGetResponseDto = new ApiCourseGetPlaceListResponseDto({
+    return new ApiCourseGetPlaceListResponseDto({
       course_uuid: uuid,
       course_name: course.course_name,
       place: plainToInstance(
@@ -235,7 +228,5 @@ export class CourseService {
         },
       ),
     });
-
-    return apiCoursePlaceListGetResponseDto;
   }
 }

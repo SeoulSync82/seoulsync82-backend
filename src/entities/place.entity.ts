@@ -1,7 +1,7 @@
+import { CourseDetailEntity } from 'src/entities/course.detail.entity';
+import { PlaceThemeEntity } from 'src/entities/place_theme.entity';
+import { SubwayEntity } from 'src/entities/subway.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CourseDetailEntity } from './course.detail.entity';
-import { PlaceThemeEntity } from './place_theme.entity';
-import { SubwayEntity } from './subway.entity';
 
 @Entity({ name: 'place' })
 export class PlaceEntity {

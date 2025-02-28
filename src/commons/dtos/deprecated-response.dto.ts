@@ -1,26 +1,29 @@
+/* eslint-disable camelcase */
+/* eslint-disable max-classes-per-file */
+
+/** deprecated */
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-/** deprecated */
 export class ResponseDataDto {
   items: Array<any>;
   last_item?: any;
   last_item_id?: number;
   mockup?: boolean;
   cache?: boolean;
-  total?: number;
+  // total?: number;
   constructor(
     items: Array<any>,
     last_item?: any,
     last_item_id?: number,
     mockup?: boolean,
     cache?: boolean,
-    total?: number,
+    // total?: number,
   ) {
     this.items = items;
     this.last_item_id = last_item_id ?? 0;
-    this.mockup = mockup ? mockup : false;
-    this.cache = cache ? cache : false;
+    this.mockup = mockup || false;
+    this.cache = cache || false;
   }
 
   static from(
@@ -29,7 +32,7 @@ export class ResponseDataDto {
     last_item_id?: number,
     mockup?: boolean,
     cache?: boolean,
-    total?: number,
+    // total?: number,
   ) {
     return new ResponseDataDto(array, last_item, last_item_id, mockup, cache);
   }
@@ -39,7 +42,7 @@ export class ResponseDataDto {
   }
 
   static fromArrayWithTotal(array: Array<any>, total?: number, mockup?: boolean, cache?: boolean) {
-    return new ResponseDataDto(array, total, null, mockup ? mockup : false, cache);
+    return new ResponseDataDto(array, total, null, mockup || false, cache);
   }
 }
 
@@ -73,7 +76,7 @@ export class DetailResponseDto {
   data: any;
 
   constructor(data: any) {
-    this.data = { ...data, mockup: data.mockup ? true : false };
+    this.data = { ...data, mockup: !!data.mockup };
   }
 
   static from(data: any) {
@@ -81,7 +84,7 @@ export class DetailResponseDto {
   }
 
   static uuid(data: any) {
-    return new DetailResponseDto({ uuid: data.uuid == undefined ? data : data.uuid }).data;
+    return new DetailResponseDto({ uuid: data.uuid === undefined ? data : data.uuid }).data;
   }
 
   static notification(data: any, notification?: any) {
@@ -98,11 +101,11 @@ export class AffectedResponseDto {
   data: any;
 
   constructor(data: any) {
-    this.data = { ...data, mockup: data.mockup ? true : false };
+    this.data = { ...data, mockup: !!data.mockup };
   }
 
   static from(affected: number, mockup?: boolean): DetailResponseDto {
-    return new DetailResponseDto({ affected_count: affected, mockup: mockup }).data;
+    return new DetailResponseDto({ affected_count: affected, mockup }).data;
   }
 }
 
@@ -125,8 +128,8 @@ export class ResponseTotalDataDto {
     this.items = items;
     this.total = total ?? 0;
     this.last_item_id = last_item_id ?? 0;
-    this.mockup = mockup ? mockup : false;
-    this.cache = cache ? cache : false;
+    this.mockup = mockup || false;
+    this.cache = cache || false;
   }
 
   static from(

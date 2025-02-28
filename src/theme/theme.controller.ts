@@ -1,8 +1,8 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
-import { ApiThemeGetListResponseDto } from './dto/api-theme-get-list-response.dto';
-import { ThemeService } from './theme.service';
+import { ApiThemeGetListResponseDto } from 'src/theme/dto/api-theme-get-list-response.dto';
+import { ThemeService } from 'src/theme/theme.service';
 
 @ApiTags('테마')
 @Controller('/api/theme')
@@ -19,6 +19,6 @@ export class ThemeController {
     status: HttpStatus.OK,
   })
   async themeList(): Promise<{ items: ApiThemeGetListResponseDto[] }> {
-    return await this.themeService.themeList();
+    return this.themeService.themeList();
   }
 }

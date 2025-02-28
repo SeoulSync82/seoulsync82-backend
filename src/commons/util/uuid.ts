@@ -1,18 +1,18 @@
-import { v4, v5 } from 'uuid';
-import { fromString } from 'uuidv4';
+/* eslint-disable import/no-extraneous-dependencies */
 import { now } from 'mongoose';
+import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 export const generateUUID = (from?: string): string => {
-  const uid = from ? fromString(from) : v4();
-  return v5('newming.io', uid).replace(/-/g, '');
+  const uid = from || uuidv4();
+  return uuidv5(uid, uuidv5.DNS).replace(/-/g, '');
 };
 
 export const generateShortUUID = (from?: string): string => {
-  const uid = generateUUID(from ? from : now().toString());
+  const uid = generateUUID(from || now().toString());
   return uid.substring(0, 24);
 };
 
 export const generateUUID5 = (from?: string): string => {
-  const uid = from ? v5(from, v5.DNS) : v5(from, v5.DNS);
+  const uid = from ? uuidv5(from, uuidv5.DNS) : uuidv5(now().toString(), uuidv5.DNS);
   return uid.replace(/-/g, '');
 };

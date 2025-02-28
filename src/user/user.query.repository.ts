@@ -9,38 +9,39 @@ export class UserQueryRepository {
   ) {}
 
   async findUser(user): Promise<UserEntity> {
-    return await this.repository.findOne({
+    return this.repository.findOne({
       where: { email: user.email, type: user.type },
     });
   }
 
   async createUser(user, uuid): Promise<UserEntity> {
-    if (user.type !== 'kakao') {
-      user.photo = null;
-    }
+    const userData = {
+      ...user,
+      photo: user.type === 'kakao' ? user.photo : null,
+    };
 
-    return await this.repository.save({
-      uuid: uuid,
-      email: user.email,
-      name: user.nickname,
-      profile_image: user.photo,
-      type: user.type,
+    return this.repository.save({
+      uuid,
+      email: userData.email,
+      name: userData.nickname,
+      profile_image: userData.photo,
+      type: userData.type,
     });
   }
 
-  async save(UserEntity): Promise<UserEntity> {
-    return await this.repository.save(UserEntity);
+  async save(userEntity): Promise<UserEntity> {
+    return this.repository.save(userEntity);
   }
 
   async findId(id): Promise<UserEntity> {
-    return await this.repository.findOne({
-      where: { id: id },
+    return this.repository.findOne({
+      where: { id },
     });
   }
 
   async findOne(uuid): Promise<UserEntity> {
-    return await this.repository.findOne({
-      where: { uuid: uuid },
+    return this.repository.findOne({
+      where: { uuid },
     });
   }
 
@@ -53,11 +54,11 @@ export class UserQueryRepository {
       Object.assign(whereConditions, { profile_image: dto.profile_image });
     }
 
-    return await this.repository.update({ id: user.id }, whereConditions);
+    return this.repository.update({ id: user.id }, whereConditions);
   }
 
   async findUserList(uuids): Promise<UserEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: { uuid: In(uuids) },
     });
   }

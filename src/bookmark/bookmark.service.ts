@@ -1,27 +1,25 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { ApiBookmarkGetDetailResponseDto } from 'src/bookmark/dto/api-bookmark-get-detail-response.dto';
+import { ApiBookmarkGetRequestQueryDto } from 'src/bookmark/dto/api-bookmark-get-request-query.dto';
+import { ApiBookmarkGetResponseDto } from 'src/bookmark/dto/api-bookmark-get-response.dto';
+import { bookmarkCoursePlaceDetailDto } from 'src/bookmark/dto/bookmark-course-place-detail.dto';
 import { ERROR } from 'src/commons/constants/error';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
-import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
-import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { BookmarkQueryRepository } from './bookmark.query.repository';
-import { ApiBookmarkGetDetailResponseDto } from './dto/api-bookmark-get-detail-response.dto';
-import { ApiBookmarkGetRequestQueryDto } from './dto/api-bookmark-get-request-query.dto';
-import { ApiBookmarkGetResponseDto } from './dto/api-bookmark-get-response.dto';
 
 @Injectable()
 export class BookmarkService {
   constructor(
     private readonly bookmarkQueryRepository: BookmarkQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
-    private readonly placeQueryRepository: PlaceQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
@@ -38,20 +36,21 @@ export class BookmarkService {
       courseList.map((item) => item.user_uuid),
     );
 
-    const apiBookmarkGetResponseDto = plainToInstance(ApiBookmarkGetResponseDto, courseList, {
-      excludeExtraneousValues: true,
-    }).map((bookmark) => {
-      bookmark.user_profile_image = userList.find(
-        (user) => user.uuid === bookmark.user_uuid,
-      ).profile_image;
-      return bookmark;
-    });
+    const lastItemId = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
-    const last_item_id = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
-    return { items: apiBookmarkGetResponseDto, last_item_id };
+    return {
+      items: plainToInstance(ApiBookmarkGetResponseDto, courseList, {
+        excludeExtraneousValues: true,
+      }).map((bookmark) => ({
+        ...bookmark,
+        user_profile_image:
+          userList.find((u) => u.uuid === bookmark.user_uuid).profile_image ?? null,
+      })),
+      last_item_id: lastItemId,
+    };
   }
 
-  async myCourseDetail(uuid): Promise<ApiBookmarkGetDetailResponseDto> {
+  async myCourseDetail(uuid: string): Promise<ApiBookmarkGetDetailResponseDto> {
     const course = await this.bookmarkQueryRepository.findOne(uuid);
     if (isEmpty(course)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -59,14 +58,14 @@ export class BookmarkService {
 
     const coursePlaces = await this.courseQueryRepository.findPlace(course.course_uuid);
 
-    const myCourseDetailResDto = new ApiBookmarkGetDetailResponseDto({
+    return new ApiBookmarkGetDetailResponseDto({
       course_uuid: course.course_uuid,
       my_course_uuid: course.uuid,
       my_course_name: course.course_name,
       subway: course.subway,
       count: coursePlaces.length,
       place: plainToInstance(
-        CoursePlaceDto,
+        bookmarkCoursePlaceDetailDto,
         coursePlaces.map((coursePlace) => ({
           ...coursePlace.place,
           sort: coursePlace.sort,
@@ -77,8 +76,6 @@ export class BookmarkService {
         },
       ),
     });
-
-    return myCourseDetailResDto;
   }
 
   async bookmarkSave(user: UserDto, uuid: string): Promise<UuidResponseDto> {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
-import { NextPageTransform } from '../../commons/decorators/next-page-transform.decorator';
+import { NextPageTransform } from 'src/commons/decorators/next-page-transform.decorator';
 
 export class ApiPlaceGetExhibitionRequestQueryDto {
   @IsOptional()

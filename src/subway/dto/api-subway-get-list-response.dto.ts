@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
+import { SubwayStationDto } from 'src/subway/dto/subway-station.dto';
 
 export class ApiSubwayGetListResponseDto {
   @Expose()
@@ -15,20 +16,4 @@ export class ApiSubwayGetListResponseDto {
     description: '지하철역 호선',
   })
   items: SubwayStationDto[];
-}
-
-export class SubwayStationDto {
-  @Expose()
-  @ApiProperty({
-    example: '077ff3adc0e556148bf7eeb7a0273fb9',
-    description: '지하철 역 uuid',
-  })
-  uuid: string;
-
-  @Expose()
-  @ApiProperty({
-    example: '1호선',
-    description: '지하철 역',
-  })
-  station: string;
 }

@@ -3,6 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookmarkModule } from 'src/bookmark/bookmark.module';
 import { CommunityModule } from 'src/community/community.module';
 import { ConfigModule } from 'src/config/config.module';
+import { CourseRecommendationService } from 'src/course/course-recommendation.service';
+import { CourseController } from 'src/course/course.controller';
+import { CourseQueryRepository } from 'src/course/course.query.repository';
+import { CourseService } from 'src/course/course.service';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
@@ -10,10 +14,6 @@ import { PlaceModule } from 'src/place/place.module';
 import { SubwayModule } from 'src/subway/subway.module';
 import { ThemeModule } from 'src/theme/theme.module';
 import { UserModule } from 'src/user/user.module';
-import { CourseRecommendationService } from './course-recommendation.service';
-import { CourseController } from './course.controller';
-import { CourseQueryRepository } from './course.query.repository';
-import { CourseService } from './course.service';
 
 @Module({
   imports: [

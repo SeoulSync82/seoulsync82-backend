@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/commons/constants/error';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { ApiNotificationGetListRequestQueryDto } from 'src/notification/dto/api-notification-get-list-request-query.dto';
+import { ApiNotificationGetListResponseDto } from 'src/notification/dto/api-notification-get-list-response.dto';
+import { NotificationQueryRepository } from 'src/notification/notification.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
-import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
-import { NotificationQueryRepository } from './notification.query.repository';
 
 @Injectable()
 export class NotificationService {
@@ -29,23 +29,18 @@ export class NotificationService {
       notificationList.map((item) => item.user_uuid),
     );
 
-    const apiNotificationListGetResponseDto = plainToInstance(
-      ApiNotificationGetListResponseDto,
-      notificationList,
-      {
-        excludeExtraneousValues: true,
-      },
-    ).map((notification) => {
-      notification.user_thumbnail = userList.find(
-        (item) => item.uuid === notification.user_uuid,
-      ).profile_image;
-      return notification;
-    });
-
-    const last_item_id =
+    const lastItemId =
       notificationList.length === dto.size ? notificationList[notificationList.length - 1].id : 0;
 
-    return { items: apiNotificationListGetResponseDto, last_item_id };
+    return {
+      items: plainToInstance(ApiNotificationGetListResponseDto, notificationList, {
+        excludeExtraneousValues: true,
+      }).map((notification) => ({
+        ...notification,
+        user_thumbnail: userList.find((item) => item.uuid === notification.user_uuid).profile_image,
+      })),
+      last_item_id: lastItemId,
+    };
   }
 
   async notificationRead(uuid: string, user: UserDto): Promise<UuidResponseDto> {

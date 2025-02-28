@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { SubwayLineEntity } from 'src/entities/subway_line.entity';
 import { SubwayStationEntity } from 'src/entities/subway_station.entity';
+import { PlaceModule } from 'src/place/place.module';
+import { SubwayController } from 'src/subway/subway.controller';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
-import { SubwayController } from './subway.controller';
-import { SubwayService } from './subway.service';
-import { PlaceModule } from '../place/place.module';
+import { SubwayService } from 'src/subway/subway.service';
 
 @Module({
   imports: [

@@ -12,19 +12,19 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { AuthService } from 'src/auth/auth.service';
+import { ApiAuthPostUserLogoutResponseDto } from 'src/auth/dto/api-auth-post-user-logout-response.dto';
+import { ApiAuthPostUserRefreshRequestDto } from 'src/auth/dto/api-auth-post-user-refresh-request.dto';
+import { ApiAuthPostUserRefreshResponseDto } from 'src/auth/dto/api-auth-post-user-refresh-response.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { GoogleRequest, KakaoRequest, NaverRequest } from 'src/auth/interfaces/auth.interface';
+import { ERROR } from 'src/commons/constants/error';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
+import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { getFrontendUrl } from 'src/commons/helpers/frontend-redirect.helper';
 import { ConfigService } from 'src/config/config.service';
 import { UserDto } from 'src/user/dto/user.dto';
-import { ERROR } from '../commons/constants/error';
-import { ApiSuccessResponse } from '../commons/decorators/api-success-response.decorator';
-import { getFrontendUrl } from '../commons/helpers/frontend-redirect.helper';
-import { AuthService } from './auth.service';
-import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
-import { ApiAuthPostUserRefreshRequestDto } from './dto/api-auth-post-user-refresh-request.dto';
-import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
-import { GoogleRequest, KakaoRequest, NaverRequest } from './interfaces/auth.interface';
 
 @ApiTags('계정')
 @Controller('/api/auth')
@@ -135,7 +135,7 @@ export class AuthController {
     @Req() req: ApiAuthPostUserRefreshRequestDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ApiAuthPostUserRefreshResponseDto> {
-    return await this.authService.silentRefresh(req, res);
+    return this.authService.silentRefresh(req, res);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -157,6 +157,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @CurrentUser() user: UserDto,
   ): Promise<ApiAuthPostUserLogoutResponseDto> {
-    return await this.authService.logout(user, res);
+    return this.authService.logout(user, res);
   }
 }

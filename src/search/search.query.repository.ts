@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { PlaceEntity } from 'src/entities/place.entity';
 import { Repository } from 'typeorm';
+import { PlaceEntity } from 'src/entities/place.entity';
 
 export class SearchQueryRepository {
   constructor(

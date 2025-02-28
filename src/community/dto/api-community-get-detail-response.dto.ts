@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { CoursePlaceDto } from './community.dto';
+import { CommunityCoursePlaceDetailDto } from 'src/community/dto/community-course-place-detail.dto';
 
 export class ApiCommunityGetDetailResponseDto {
   @Expose()
@@ -113,7 +113,7 @@ export class ApiCommunityGetDetailResponseDto {
 
   @Expose()
   @ApiProperty()
-  place: CoursePlaceDto[];
+  place: CommunityCoursePlaceDetailDto[];
 
   constructor(data?: Partial<ApiCommunityGetDetailResponseDto>) {
     if (data) {

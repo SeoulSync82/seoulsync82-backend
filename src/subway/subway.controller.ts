@@ -3,11 +3,11 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ERROR } from 'src/commons/constants/error';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
+import { ApiSubwayGetCheckRequestQueryDto } from 'src/subway/dto/api-subway-get-check-request-query.dto';
 import { ApiSubwayGetCheckResponseDto } from 'src/subway/dto/api-subway-get-check-response.dto';
-import { ApiSubwayGetCheckRequestQueryDto } from './dto/api-subway-get-check-request-query.dto';
-import { ApiSubwayGetLineResponseDto } from './dto/api-subway-get-line-response.dto';
-import { ApiSubwayGetListResponseDto } from './dto/api-subway-get-list-response.dto';
-import { SubwayService } from './subway.service';
+import { ApiSubwayGetLineResponseDto } from 'src/subway/dto/api-subway-get-line-response.dto';
+import { ApiSubwayGetListResponseDto } from 'src/subway/dto/api-subway-get-list-response.dto';
+import { SubwayService } from 'src/subway/subway.service';
 
 @ApiTags('지하철')
 @Controller('/api/subway')
@@ -24,7 +24,7 @@ export class SubwayController {
     status: HttpStatus.OK,
   })
   async subwayLineList(): Promise<ApiSubwayGetLineResponseDto> {
-    return await this.subwayService.subwayLineList();
+    return this.subwayService.subwayLineList();
   }
 
   @Get('/:line_uuid')
@@ -42,9 +42,9 @@ export class SubwayController {
   })
   @ApiParam({ name: 'line_uuid', type: 'string', description: '지하철 호선 uuid' })
   async subwayStationList(
-    @Param('line_uuid') line_uuid: string,
+    @Param('line_uuid') lineUuid: string,
   ): Promise<ApiSubwayGetListResponseDto> {
-    return await this.subwayService.subwayStationList(line_uuid);
+    return this.subwayService.subwayStationList(lineUuid);
   }
 
   @Get('/:line_uuid/:station_uuid/customs-check')
@@ -63,10 +63,10 @@ export class SubwayController {
   @ApiParam({ name: 'line_uuid', type: 'string', description: '지하철 호선 uuid' })
   @ApiParam({ name: 'station_uuid', type: 'string', description: '지하철 역 uuid' })
   async subwayCustomsCheck(
-    @Param('line_uuid') line_uuid: string,
-    @Param('station_uuid') station_uuid: string,
+    @Param('line_uuid') lineUuid: string,
+    @Param('station_uuid') stationUuid: string,
     @Query() dto: ApiSubwayGetCheckRequestQueryDto,
   ): Promise<ApiSubwayGetCheckResponseDto> {
-    return await this.subwayService.subwayCustomsCheck(line_uuid, station_uuid, dto);
+    return this.subwayService.subwayCustomsCheck(lineUuid, stationUuid, dto);
   }
 }

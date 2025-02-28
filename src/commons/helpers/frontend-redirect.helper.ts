@@ -7,7 +7,8 @@ export function getFrontendUrl(referer: string, configService: ConfigService): s
 
   if (referer.startsWith(localFrontend)) {
     return localFrontend;
-  } else if (referer.startsWith(stagingFrontend)) {
+  }
+  if (referer.startsWith(stagingFrontend)) {
     return stagingFrontend;
   }
   return prodFrontend;

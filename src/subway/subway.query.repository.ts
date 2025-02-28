@@ -1,10 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { CourseRecommendReqDto } from 'src/course/dto/course.dto';
 import { SubwayEntity } from 'src/entities/subway.entity';
 import { SubwayLineEntity } from 'src/entities/subway_line.entity';
 import { SubwayStationEntity } from 'src/entities/subway_station.entity';
-import { In, Not, Repository } from 'typeorm';
-import { StationInfo } from './interfaces/subway.interfaces';
+import { StationInfo } from 'src/subway/interfaces/subway.interfaces';
+import { Repository } from 'typeorm';
 
 export class SubwayQueryRepository {
   constructor(
@@ -16,14 +15,8 @@ export class SubwayQueryRepository {
     private subwayLineRepository: Repository<SubwayLineEntity>,
   ) {}
 
-  async findsubwayPlaceList(customs, dto: CourseRecommendReqDto): Promise<SubwayEntity[]> {
-    return await this.repository.find({
-      where: { place_type: In(customs), kakao_rating: Not(0), name: dto.subway, line: dto.line },
-    });
-  }
-
   async groupByCustoms(stationInfo: StationInfo) {
-    return await this.repository
+    return this.repository
       .createQueryBuilder('subway')
       .select('subway.place_type', 'type')
       .addSelect('COUNT(subway.id)', 'count')
@@ -38,7 +31,7 @@ export class SubwayQueryRepository {
   async findSubwayCurrentCulture(stationInfo: StationInfo) {
     const now = new Date();
 
-    return await this.repository
+    return this.repository
       .createQueryBuilder('subway')
       .leftJoinAndSelect('place', 'p', 'p.uuid = subway.place_uuid')
       .select('subway.place_type', 'type')
@@ -55,57 +48,57 @@ export class SubwayQueryRepository {
       .getRawMany();
   }
 
-  async subwayStationList(line_uuid: string): Promise<SubwayStationEntity[]> {
-    return await this.subwayStationRepository.find({
-      where: { line_uuid: line_uuid },
+  async subwayStationList(lineUuid: string): Promise<SubwayStationEntity[]> {
+    return this.subwayStationRepository.find({
+      where: { line_uuid: lineUuid },
       order: { id: 'ASC' },
     });
   }
 
   async findSubwayLine(): Promise<SubwayLineEntity[]> {
-    return await this.subwayLineRepository.find({
+    return this.subwayLineRepository.find({
       order: { id: 'ASC' },
     });
   }
 
   async findSubway(subway: string): Promise<SubwayStationEntity[]> {
-    return await this.subwayStationRepository.find({
+    return this.subwayStationRepository.find({
       where: { name: subway },
     });
   }
 
   async findLineAndStation(
-    line_uuid: string,
-    station_uuid: string,
+    lineUuid: string,
+    stationUuid: string,
   ): Promise<{
     line: string;
     station: string;
   }> {
     const result = await this.subwayStationRepository.findOne({
-      where: { uuid: station_uuid, line_uuid: line_uuid },
+      where: { uuid: stationUuid, line_uuid: lineUuid },
     });
 
     return { line: result.line, station: result.name };
   }
 
-  async findSubwayStationUuid(subway_uuid: string): Promise<SubwayStationEntity> {
-    return await this.subwayStationRepository.findOne({
-      where: { uuid: subway_uuid },
+  async findSubwayStationUuid(subwayUuid: string): Promise<SubwayStationEntity> {
+    return this.subwayStationRepository.findOne({
+      where: { uuid: subwayUuid },
     });
   }
 
-  async findSubwayStationName(subway_name: string): Promise<SubwayStationEntity> {
-    return await this.subwayStationRepository.findOne({
-      where: { name: subway_name },
+  async findSubwayStationName(subwayName: string): Promise<SubwayStationEntity> {
+    return this.subwayStationRepository.findOne({
+      where: { name: subwayName },
     });
   }
 
-  async findAllLinesForStation(subway_uuid: string): Promise<SubwayStationEntity[]> {
-    return await this.subwayStationRepository
+  async findAllLinesForStation(subwayUuid: string): Promise<SubwayStationEntity[]> {
+    return this.subwayStationRepository
       .createQueryBuilder('subway')
-      .where('subway.uuid = :subway_uuid', { subway_uuid })
-      .orWhere('subway.name = (SELECT name FROM subway_station WHERE uuid = :subway_uuid)', {
-        subway_uuid,
+      .where('subway.uuid = :subwayUuid', { subwayUuid })
+      .orWhere('subway.name = (SELECT name FROM subway_station WHERE uuid = :subwayUuid)', {
+        subwayUuid,
       })
       .getMany();
   }

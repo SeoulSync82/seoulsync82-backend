@@ -13,7 +13,7 @@ export class NotificationInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(async () => {
-        const notification = request.notification;
+        const { notification } = request;
         if (!notification || notification.user_uuid === notification.target_user_uuid) {
           return;
         }

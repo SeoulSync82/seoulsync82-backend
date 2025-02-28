@@ -1,5 +1,5 @@
+import { PlaceEntity } from 'src/entities/place.entity';
 import { SelectQueryBuilder } from 'typeorm';
-import { PlaceEntity } from '../../entities/place.entity';
 
 type CursorData = {
   start_date?: string;

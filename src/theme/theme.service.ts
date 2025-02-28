@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ThemeEntity } from 'src/entities/theme.entity';
-import { ApiThemeGetListResponseDto } from './dto/api-theme-get-list-response.dto';
-import { ThemeQueryRepository } from './theme.query.repository';
+import { ApiThemeGetListResponseDto } from 'src/theme/dto/api-theme-get-list-response.dto';
+import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
 
 @Injectable()
 export class ThemeService {

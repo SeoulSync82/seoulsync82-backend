@@ -1,3 +1,5 @@
+import { CourseEntity } from 'src/entities/course.entity';
+import { PlaceEntity } from 'src/entities/place.entity';
 import {
   Column,
   CreateDateColumn,
@@ -6,8 +8,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CourseEntity } from './course.entity';
-import { PlaceEntity } from './place.entity';
 
 @Entity({ name: 'course_detail' })
 export class CourseDetailEntity {

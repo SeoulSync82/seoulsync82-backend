@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/commons/constants/error';
+import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
+import { ListResponseDto } from 'src/commons/dtos/list-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
-import { ListResponseDto } from '../commons/dtos/list-response.dto';
-import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';
-import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
-import { ApiPlaceGetCultureResponseDto } from './dto/api-place-get-culture-response.dto';
-import { ApiPlaceGetDetailResponseDto } from './dto/api-place-get-detail-response.dto';
-import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
-import { ApiPlaceGetExhibitionResponseDto } from './dto/api-place-get-exhibition-response.dto';
-import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
-import { ApiPlaceGetPopupResponseDto } from './dto/api-place-get-popup-response.dto';
-import { PlaceQueryRepository } from './place.query.repository';
+import { ApiPlaceGetCultureDetailResponseDto } from 'src/place/dto/api-place-get-culture-detail-response.dto';
+import { ApiPlaceGetCultureRequestQueryDto } from 'src/place/dto/api-place-get-culture-request-query.dto';
+import { ApiPlaceGetCultureResponseDto } from 'src/place/dto/api-place-get-culture-response.dto';
+import { ApiPlaceGetDetailResponseDto } from 'src/place/dto/api-place-get-detail-response.dto';
+import { ApiPlaceGetExhibitionRequestQueryDto } from 'src/place/dto/api-place-get-exhibition-request-query.dto';
+import { ApiPlaceGetExhibitionResponseDto } from 'src/place/dto/api-place-get-exhibition-response.dto';
+import { ApiPlaceGetPopupRequestQueryDto } from 'src/place/dto/api-place-get-popup-request-query.dto';
+import { ApiPlaceGetPopupResponseDto } from 'src/place/dto/api-place-get-popup-response.dto';
+import { PlaceQueryRepository } from 'src/place/place.query.repository';
 
 @Injectable()
 export class PlaceService {
@@ -27,15 +27,11 @@ export class PlaceService {
       return { items: [] };
     }
 
-    const apiPlaceCultureGetResponseDto: ApiPlaceGetCultureResponseDto[] = plainToInstance(
-      ApiPlaceGetCultureResponseDto,
-      cultureList,
-      {
+    return {
+      items: plainToInstance(ApiPlaceGetCultureResponseDto, cultureList, {
         excludeExtraneousValues: true,
-      },
-    );
-
-    return { items: apiPlaceCultureGetResponseDto };
+      }),
+    };
   }
 
   async findCultureDetail(uuid: string): Promise<ApiPlaceGetCultureDetailResponseDto> {
@@ -44,12 +40,9 @@ export class PlaceService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const apiPlaceCultureDetailGetResponseDto: ApiPlaceGetCultureDetailResponseDto =
-      plainToInstance(ApiPlaceGetCultureDetailResponseDto, culture, {
-        excludeExtraneousValues: true,
-      });
-
-    return apiPlaceCultureDetailGetResponseDto;
+    return plainToInstance(ApiPlaceGetCultureDetailResponseDto, culture, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findExhibitionList(
@@ -96,14 +89,8 @@ export class PlaceService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const apiPlaceDetailGetResponseDto: ApiPlaceGetDetailResponseDto = plainToInstance(
-      ApiPlaceGetDetailResponseDto,
-      placeDetail,
-      {
-        excludeExtraneousValues: true,
-      },
-    );
-
-    return apiPlaceDetailGetResponseDto;
+    return plainToInstance(ApiPlaceGetDetailResponseDto, placeDetail, {
+      excludeExtraneousValues: true,
+    });
   }
 }

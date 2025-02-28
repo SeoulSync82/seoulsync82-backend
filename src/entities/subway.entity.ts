@@ -1,5 +1,5 @@
+import { PlaceEntity } from 'src/entities/place.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { PlaceEntity } from './place.entity';
 
 @Entity({ name: 'subway' })
 export class SubwayEntity {

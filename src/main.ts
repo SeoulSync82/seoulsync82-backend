@@ -3,12 +3,12 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
-import { AppModule } from './app.module';
-import { ERROR } from './commons/constants/error';
-import { GlobalExceptionFilter } from './commons/filters/global-exception.filter';
-import { SuccessInterceptor } from './commons/interceptors/success.interceptor';
-import { ConfigService } from './config/config.service';
-import { SwaggerModels } from './swagger';
+import { AppModule } from 'src/app.module';
+import { ERROR } from 'src/commons/constants/error';
+import { GlobalExceptionFilter } from 'src/commons/filters/global-exception.filter';
+import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
+import { ConfigService } from 'src/config/config.service';
+import { SwaggerModels } from 'src/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -31,12 +31,10 @@ async function bootstrap() {
       },
       exceptionFactory: (error: ValidationError[] = []) => {
         return new BadRequestException(
-          error.some((error) =>
-            Object.keys(error.constraints).some((key) => key === 'isNotBadword'),
-          )
+          error.some((e) => Object.keys(e.constraints).some((key) => key === 'isNotBadword'))
             ? ERROR.SWEAR_WORD
             : error
-                .map((error) => Object.keys(error.constraints).map((key) => error.constraints[key]))
+                .map((e) => Object.keys(e.constraints).map((key) => e.constraints[key]))
                 .join('\n'),
         );
       },
@@ -44,7 +42,6 @@ async function bootstrap() {
   );
 
   const configService = app.get(ConfigService);
-
   app.use(
     cors({
       origin: [
@@ -56,35 +53,27 @@ async function bootstrap() {
       credentials: true,
     }),
   );
-
   app.use(cookieParser());
 
-  SwaggerModule.setup(
-    'docs',
-    app,
-    SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder()
-        .setTitle('SeoulSync82')
-        .setDescription('The SeoulSync82 API description')
-        .setVersion('1.0.0')
-        .addTag('swagger')
-        .addBearerAuth(
-          { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-          'access-token',
-        )
-        .build(),
-      {
-        extraModels: SwaggerModels,
-      },
-    ),
-    {
-      swaggerOptions: {
-        defaultModelsExpandDepth: -1,
-        persistAuthorization: true, // 새로고침 해도 인증 토큰 유지
-      },
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('SeoulSync82')
+    .setDescription('The SeoulSync82 API description')
+    .setVersion('1.0.0')
+    .addTag('swagger')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'access-token',
+    )
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig, {
+    extraModels: SwaggerModels,
+  });
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      defaultModelsExpandDepth: -1, // 새로고침해도 인증 토큰 유지
+      persistAuthorization: true,
     },
-  );
+  });
 
   await app.listen(3456);
 }

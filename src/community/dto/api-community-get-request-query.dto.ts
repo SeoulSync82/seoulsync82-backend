@@ -9,8 +9,8 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { NextPageTransform } from 'src/commons/decorators/next-page-transform.decorator';
 import { ToBoolean } from 'src/commons/decorators/to-boolean.decorator';
-import { NextPageTransform } from '../../commons/decorators/next-page-transform.decorator';
 
 export class ApiCommunityGetRequestQueryDto {
   @IsOptional()

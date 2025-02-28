@@ -3,19 +3,19 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ERROR } from 'src/commons/constants/error';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
+import { ApiPagingSuccessResponse } from 'src/commons/decorators/api-paging-success-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
-import { ApiPagingSuccessResponse } from '../commons/decorators/api-paging-success-response.decorator';
-import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
-import { ListResponseDto } from '../commons/dtos/list-response.dto';
-import { ApiPlaceGetCultureDetailResponseDto } from './dto/api-place-get-culture-detail-response.dto';
-import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
-import { ApiPlaceGetCultureResponseDto } from './dto/api-place-get-culture-response.dto';
-import { ApiPlaceGetDetailResponseDto } from './dto/api-place-get-detail-response.dto';
-import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
-import { ApiPlaceGetExhibitionResponseDto } from './dto/api-place-get-exhibition-response.dto';
-import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
-import { ApiPlaceGetPopupResponseDto } from './dto/api-place-get-popup-response.dto';
-import { PlaceService } from './place.service';
+import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
+import { ListResponseDto } from 'src/commons/dtos/list-response.dto';
+import { ApiPlaceGetCultureDetailResponseDto } from 'src/place/dto/api-place-get-culture-detail-response.dto';
+import { ApiPlaceGetCultureRequestQueryDto } from 'src/place/dto/api-place-get-culture-request-query.dto';
+import { ApiPlaceGetCultureResponseDto } from 'src/place/dto/api-place-get-culture-response.dto';
+import { ApiPlaceGetDetailResponseDto } from 'src/place/dto/api-place-get-detail-response.dto';
+import { ApiPlaceGetExhibitionRequestQueryDto } from 'src/place/dto/api-place-get-exhibition-request-query.dto';
+import { ApiPlaceGetExhibitionResponseDto } from 'src/place/dto/api-place-get-exhibition-response.dto';
+import { ApiPlaceGetPopupRequestQueryDto } from 'src/place/dto/api-place-get-popup-request-query.dto';
+import { ApiPlaceGetPopupResponseDto } from 'src/place/dto/api-place-get-popup-response.dto';
+import { PlaceService } from 'src/place/place.service';
 
 @ApiTags('장소')
 @Controller('/api/place')
@@ -34,7 +34,7 @@ export class PlaceController {
   async findCultureList(
     @Query() dto: ApiPlaceGetCultureRequestQueryDto,
   ): Promise<ListResponseDto<ApiPlaceGetCultureResponseDto>> {
-    return await this.placeService.findCultureList(dto);
+    return this.placeService.findCultureList(dto);
   }
 
   @Get('/culture/:uuid')
@@ -60,7 +60,7 @@ export class PlaceController {
   async findCultureDetail(
     @Param('uuid') uuid: string,
   ): Promise<ApiPlaceGetCultureDetailResponseDto> {
-    return await this.placeService.findCultureDetail(uuid);
+    return this.placeService.findCultureDetail(uuid);
   }
 
   @Get('/exhibition')
@@ -75,7 +75,7 @@ export class PlaceController {
   async findExhibitionList(
     @Query() dto: ApiPlaceGetExhibitionRequestQueryDto,
   ): Promise<CursorPaginatedResponseDto<ApiPlaceGetExhibitionResponseDto>> {
-    return await this.placeService.findExhibitionList(dto);
+    return this.placeService.findExhibitionList(dto);
   }
 
   @Get('/popup')
@@ -90,7 +90,7 @@ export class PlaceController {
   async findPopupList(
     @Query() dto: ApiPlaceGetPopupRequestQueryDto,
   ): Promise<CursorPaginatedResponseDto<ApiPlaceGetPopupResponseDto>> {
-    return await this.placeService.findPopupList(dto);
+    return this.placeService.findPopupList(dto);
   }
 
   @Get('/:uuid')
@@ -113,6 +113,6 @@ export class PlaceController {
     description: '장소 uuid',
   })
   async findPlaceDetail(@Param('uuid') uuid: string): Promise<ApiPlaceGetDetailResponseDto> {
-    return await this.placeService.findPlaceDetail(uuid);
+    return this.placeService.findPlaceDetail(uuid);
   }
 }

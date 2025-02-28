@@ -1,0 +1,40 @@
+# 빌드 결과물 (컴파일된 파일)
+dist
+build
+coverage
+node_modules
+
+# 환경설정 및 설정 파일
+.env
+.env.*
+!.env.example
+
+# 데이터 파일 및 캐시
+*.log
+*.lock
+yarn.lock
+package-lock.json
+npm-debug.log*
+pnpm-debug.log*
+docker-compose.override.yml
+
+# Git 관련 파일
+.git
+.gitignore
+.gitattributes
+
+# IDE 관련 파일
+.vscode
+.idea
+*.iml
+
+# Swagger, JSON 관련
+swagger.json
+*.md
+*.xml
+*.yaml
+*.yml
+
+# 특정 파일 포맷 제외
+LICENSE
+README.md

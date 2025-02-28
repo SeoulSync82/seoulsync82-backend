@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
-import { Repository, IsNull } from 'typeorm';
 
 export class SearchQueryLogRepository {
   constructor(
@@ -9,9 +9,9 @@ export class SearchQueryLogRepository {
   ) {}
 
   async findLog(search, user): Promise<SearchLogEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: {
-        search: search,
+        search,
         user_uuid: user.uuid,
         archived_at: IsNull(),
       },
@@ -19,19 +19,19 @@ export class SearchQueryLogRepository {
   }
 
   async insert(search, uuid, user) {
-    return await this.repository.insert({
-      uuid: uuid,
-      search: search,
+    return this.repository.insert({
+      uuid,
+      search,
       user_uuid: user.uuid,
     });
   }
 
   async update(id) {
-    return await this.repository.update({ id: id }, { updated_at: new Date() });
+    return this.repository.update({ id }, { updated_at: new Date() });
   }
 
   async find(user): Promise<SearchLogEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: {
         user_uuid: user.uuid,
         archived_at: IsNull(),
@@ -42,9 +42,9 @@ export class SearchQueryLogRepository {
   }
 
   async findUserSearchLog(uuid, user): Promise<SearchLogEntity> {
-    return await this.repository.findOne({
+    return this.repository.findOne({
       where: {
-        uuid: uuid,
+        uuid,
         user_uuid: user.uuid,
         archived_at: IsNull(),
       },
@@ -52,11 +52,11 @@ export class SearchQueryLogRepository {
   }
 
   async deleteSearchLog(searchLogEntity) {
-    return await this.repository.update({ id: searchLogEntity.id }, { archived_at: new Date() });
+    return this.repository.update({ id: searchLogEntity.id }, { archived_at: new Date() });
   }
 
   async findUserSearchLogList(user): Promise<SearchLogEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: {
         user_uuid: user.uuid,
         archived_at: IsNull(),
@@ -65,6 +65,6 @@ export class SearchQueryLogRepository {
   }
 
   async save(searchLogEntity: SearchLogEntity[]): Promise<SearchLogEntity[]> {
-    return await this.repository.save(searchLogEntity);
+    return this.repository.save(searchLogEntity);
   }
 }

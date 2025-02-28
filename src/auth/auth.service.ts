@@ -2,19 +2,19 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { isEmpty } from 'class-validator';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { generateUUID } from 'src/commons/util/uuid';
-import { ConfigService } from 'src/config/config.service';
-import { UserDto } from 'src/user/dto/user.dto';
-import { UserQueryRepository } from 'src/user/user.query.repository';
-import { ERROR } from '../commons/constants/error';
-import { verifyJWT } from '../commons/helpers/jwt.helper';
+import { ApiAuthPostUserLogoutResponseDto } from 'src/auth/dto/api-auth-post-user-logout-response.dto';
+import { ApiAuthPostUserRefreshResponseDto } from 'src/auth/dto/api-auth-post-user-refresh-response.dto';
+import { ERROR } from 'src/commons/constants/error';
+import { verifyJWT } from 'src/commons/helpers/jwt.helper';
 import {
   generateAccessToken,
   generateRefreshToken,
   setRefreshCookie,
-} from '../commons/helpers/token.helper';
-import { ApiAuthPostUserLogoutResponseDto } from './dto/api-auth-post-user-logout-response.dto';
-import { ApiAuthPostUserRefreshResponseDto } from './dto/api-auth-post-user-refresh-response.dto';
+} from 'src/commons/helpers/token.helper';
+import { generateUUID } from 'src/commons/util/uuid';
+import { ConfigService } from 'src/config/config.service';
+import { UserDto } from 'src/user/dto/user.dto';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +42,7 @@ export class AuthService {
 
   async silentRefresh(req: Request, res: Response): Promise<ApiAuthPostUserRefreshResponseDto> {
     try {
-      const refreshToken = req.cookies['refresh_token'];
+      const refreshToken = req.cookies.refresh_token;
       if (isEmpty(refreshToken)) {
         throw new UnauthorizedException(ERROR.AUTHENTICATION);
       }
@@ -70,11 +70,11 @@ export class AuthService {
         nickname: loginUser.name,
         profile_image: loginUser.profile_image,
       };
-      const access_token = generateAccessToken(payload, this.configService);
+      const accessToken = generateAccessToken(payload, this.configService);
 
       return {
         ok: true,
-        access_token,
+        access_token: accessToken,
       };
     } catch (e) {
       this.logger.error(`Error in silentRefresh: ${e.message}`, e.stack);
@@ -111,14 +111,14 @@ export class AuthService {
       profile_image: findUser.profile_image,
     };
 
-    const access_token = generateAccessToken(payload, this.configService);
-    const refresh_token = generateRefreshToken(findUser.id, this.configService);
+    const accessToken = generateAccessToken(payload, this.configService);
+    const refreshToken = generateRefreshToken(findUser.id, this.configService);
 
-    findUser.refresh_token = refresh_token;
+    findUser.refresh_token = refreshToken;
     await this.userQueryRepository.save(findUser);
 
-    setRefreshCookie(res, refresh_token, this.configService);
+    setRefreshCookie(res, refreshToken, this.configService);
 
-    return { access_token };
+    return { access_token: accessToken };
   }
 }

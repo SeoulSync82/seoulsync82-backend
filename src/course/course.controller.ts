@@ -1,26 +1,26 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtOptionalAuthGuard } from 'src/auth/guards/jwt-optional.guard';
 import { ERROR } from 'src/commons/constants/error';
+import { ApiArrayLastItemIdSuccessResponse } from 'src/commons/decorators/api-array-last-item-id-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { CourseRecommendationService } from 'src/course/course-recommendation.service';
+import { CourseService } from 'src/course/course.service';
+import { ApiCourseGetDetailResponseDto } from 'src/course/dto/api-course-get-detail-response.dto';
+import { ApiCourseGetMyHistoryRequestQueryDto } from 'src/course/dto/api-course-get-my-history-request-query.dto';
+import { ApiCourseGetMyHistoryResponseDto } from 'src/course/dto/api-course-get-my-history-response.dto';
+import { ApiCourseGetPlaceCustomizeRequestQueryDto } from 'src/course/dto/api-course-get-place-customize-request-query.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from 'src/course/dto/api-course-get-place-customize-response.dto';
+import { ApiCourseGetPlaceListResponseDto } from 'src/course/dto/api-course-get-place-list-response.dto';
+import { ApiCourseGetRecommendRequestQueryDto } from 'src/course/dto/api-course-get-recommend-request-query.dto';
+import { ApiCourseGetRecommendResponseDto } from 'src/course/dto/api-course-get-recommend-response.dto';
+import { ApiCoursePostRecommendSaveRequestBodyDto } from 'src/course/dto/api-course-post-recommend-save-request-body.dto';
+import { ApiCoursePostSaveResponseDto } from 'src/course/dto/api-course-post-save-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
-import { JwtOptionalAuthGuard } from '../auth/guards/jwt-optional.guard';
-import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { CourseRecommendationService } from './course-recommendation.service';
-import { CourseService } from './course.service';
-import { ApiCourseGetDetailResponseDto } from './dto/api-course-get-detail-response.dto';
-import { ApiCourseGetMyHistoryRequestQueryDto } from './dto/api-course-get-my-history-request-query.dto';
-import { ApiCourseGetMyHistoryResponseDto } from './dto/api-course-get-my-history-response.dto';
-import { ApiCourseGetPlaceCustomizeRequestQueryDto } from './dto/api-course-get-place-customize-request-query.dto';
-import { ApiCourseGetPlaceCustomizeResponseDto } from './dto/api-course-get-place-customize-response.dto';
-import { ApiCourseGetPlaceListResponseDto } from './dto/api-course-get-place-list-response.dto';
-import { ApiCourseGetRecommendRequestQueryDto } from './dto/api-course-get-recommend-request-query.dto';
-import { ApiCourseGetRecommendResponseDto } from './dto/api-course-get-recommend-response.dto';
-import { ApiCoursePostRecommendSaveRequestBodyDto } from './dto/api-course-post-recommend-save-request-body.dto';
-import { ApiCoursePostSaveResponseDto } from './dto/api-course-post-save-response.dto';
 
 @ApiTags('코스')
 @Controller('/api/course')
@@ -50,7 +50,7 @@ export class CourseController {
     @Query() dto: ApiCourseGetRecommendRequestQueryDto,
     @CurrentUser() user?: UserDto,
   ): Promise<ApiCourseGetRecommendResponseDto> {
-    return await this.courseRecommendationService.getCourseRecommendation(dto, user);
+    return this.courseRecommendationService.getCourseRecommendation(dto, user);
   }
 
   @ApiBearerAuth('access-token')
@@ -72,7 +72,7 @@ export class CourseController {
     @Query() dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
     @CurrentUser() user?: UserDto,
   ): Promise<ApiCourseGetPlaceCustomizeResponseDto> {
-    return await this.courseRecommendationService.addCustomPlaceToCourse(dto, user);
+    return this.courseRecommendationService.addCustomPlaceToCourse(dto, user);
   }
 
   @ApiBearerAuth('access-token')
@@ -90,7 +90,7 @@ export class CourseController {
     @Body() dto: ApiCoursePostRecommendSaveRequestBodyDto,
     @CurrentUser() user?: UserDto,
   ): Promise<ApiCoursePostSaveResponseDto> {
-    return await this.courseService.saveCourseRecommend(dto, user);
+    return this.courseService.saveCourseRecommend(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -108,7 +108,7 @@ export class CourseController {
     @Query() dto: ApiCourseGetMyHistoryRequestQueryDto,
     @CurrentUser() user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiCourseGetMyHistoryResponseDto>> {
-    return await this.courseService.getMyCourseHistory(dto, user);
+    return this.courseService.getMyCourseHistory(dto, user);
   }
 
   @ApiBearerAuth('access-token')
@@ -136,7 +136,7 @@ export class CourseController {
     @Param('uuid') uuid: string,
     @CurrentUser() user?: UserDto,
   ): Promise<ApiCourseGetDetailResponseDto> {
-    return await this.courseService.getCourseDetail(uuid, user);
+    return this.courseService.getCourseDetail(uuid, user);
   }
 
   @Get('/:uuid/place/list')
@@ -160,6 +160,6 @@ export class CourseController {
     description: '코스 uuid',
   })
   async coursePlaceList(@Param('uuid') uuid: string): Promise<ApiCourseGetPlaceListResponseDto> {
-    return await this.courseService.getCoursePlaceList(uuid);
+    return this.courseService.getCoursePlaceList(uuid);
   }
 }

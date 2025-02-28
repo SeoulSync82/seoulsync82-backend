@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { ThemeEntity } from 'src/entities/theme.entity';
 import { Repository } from 'typeorm';
+import { ThemeEntity } from 'src/entities/theme.entity';
 
 export class ThemeQueryRepository {
   constructor(
@@ -9,18 +9,18 @@ export class ThemeQueryRepository {
   ) {}
 
   async findList(): Promise<ThemeEntity[]> {
-    return await this.repository.find();
+    return this.repository.find();
   }
 
-  async findThemeUuid(theme_uuid: string): Promise<ThemeEntity> {
-    return await this.repository.findOne({
-      where: { uuid: theme_uuid },
+  async findThemeUuid(themeUuid: string): Promise<ThemeEntity> {
+    return this.repository.findOne({
+      where: { uuid: themeUuid },
     });
   }
 
-  async findThemeName(theme_name: string): Promise<ThemeEntity> {
-    return await this.repository.findOne({
-      where: { theme_name: theme_name },
+  async findThemeName(themeName: string): Promise<ThemeEntity> {
+    return this.repository.findOne({
+      where: { theme_name: themeName },
     });
   }
 }

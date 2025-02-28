@@ -1,47 +1,56 @@
-import { ApiAuthPostUserLogoutResponseDto } from './auth/dto/api-auth-post-user-logout-response.dto';
-import { ApiAuthPostUserRefreshResponseDto } from './auth/dto/api-auth-post-user-refresh-response.dto';
-import { authCommonResponseDto } from './auth/dto/auth-common-response.dto';
-import { ApiBookmarkGetDetailResponseDto } from './bookmark/dto/api-bookmark-get-detail-response.dto';
-import { ApiBookmarkGetResponseDto } from './bookmark/dto/api-bookmark-get-response.dto';
-import {
-  ApiCommentGetResponseDto,
-  CommentListDto,
-} from './comment/dto/api-comment-get-response.dto';
-import { ApiResponseDto } from './commons/dtos/api-response.dto';
-import { CursorPaginatedResponseDto } from './commons/dtos/cursor-paginated-response.dto';
-import { LastItemIdResponseDto } from './commons/dtos/last-item-id-response.dto';
-import { ListResponseDto } from './commons/dtos/list-response.dto';
-import { UuidResponseDto } from './commons/dtos/uuid-response.dto';
-import { ApiCommunityGetDetailResponseDto } from './community/dto/api-community-get-detail-response.dto';
-import { ApiCommunityGetMyCourseResponseDto } from './community/dto/api-community-get-my-course-response.dto';
-import { ApiCommunityGetResponseDto } from './community/dto/api-community-get-response.dto';
-import { ApiCourseGetDetailResponseDto } from './course/dto/api-course-get-detail-response.dto';
-import { ApiCourseGetMyHistoryResponseDto } from './course/dto/api-course-get-my-history-response.dto';
-import { ApiCourseGetPlaceCustomizeResponseDto } from './course/dto/api-course-get-place-customize-response.dto';
-import { ApiCourseGetPlaceListResponseDto } from './course/dto/api-course-get-place-list-response.dto';
+import { ApiAuthPostUserLogoutResponseDto } from 'src/auth/dto/api-auth-post-user-logout-response.dto';
+import { ApiAuthPostUserRefreshResponseDto } from 'src/auth/dto/api-auth-post-user-refresh-response.dto';
+import { authCommonResponseDto } from 'src/auth/dto/auth-common-response.dto';
+import { ApiBookmarkGetDetailResponseDto } from 'src/bookmark/dto/api-bookmark-get-detail-response.dto';
+import { ApiBookmarkGetResponseDto } from 'src/bookmark/dto/api-bookmark-get-response.dto';
+import { bookmarkCoursePlaceDetailDto } from 'src/bookmark/dto/bookmark-course-place-detail.dto';
+import { ApiCommentGetResponseDto } from 'src/comment/dto/api-comment-get-response.dto';
+import { CommentListDto } from 'src/comment/dto/comment-list.dto';
+import { ApiResponseDto } from 'src/commons/dtos/api-response.dto';
+import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { ListResponseDto } from 'src/commons/dtos/list-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
+import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
+import { ApiCommunityGetResponseDto } from 'src/community/dto/api-community-get-response.dto';
+import { CommunityCoursePlaceDetailDto } from 'src/community/dto/community-course-place-detail.dto';
+import { CommunityNotificationDetailDto } from 'src/community/dto/community-notification-detail.dto';
+import { ApiCourseGetDetailResponseDto } from 'src/course/dto/api-course-get-detail-response.dto';
+import { ApiCourseGetMyHistoryResponseDto } from 'src/course/dto/api-course-get-my-history-response.dto';
+import { ApiCourseGetPlaceCustomizeResponseDto } from 'src/course/dto/api-course-get-place-customize-response.dto';
+import { ApiCourseGetPlaceListResponseDto } from 'src/course/dto/api-course-get-place-list-response.dto';
 import {
   ApiCourseGetRecommendResponseDto,
-  SubwayLineDetail,
-  SubwayStationDetail,
-  ThemeDetail,
-} from './course/dto/api-course-get-recommend-response.dto';
-import { ApiCoursePostRecommendResponseDto } from './course/dto/api-course-post-recommend-response.dto';
-import { ApiCoursePostRecommendSaveResponseDto } from './course/dto/api-course-post-recommend-save-response.dto';
-import { ApiCoursePostSaveResponseDto } from './course/dto/api-course-post-save-response.dto';
-import { ApiNotificationGetListResponseDto } from './notification/dto/api-notification-get-list-response.dto';
-import { ApiPlaceGetCultureDetailResponseDto } from './place/dto/api-place-get-culture-detail-response.dto';
-import { ApiPlaceGetCultureResponseDto } from './place/dto/api-place-get-culture-response.dto';
-import { ApiPlaceGetDetailResponseDto } from './place/dto/api-place-get-detail-response.dto';
-import { ApiPlaceGetExhibitionResponseDto } from './place/dto/api-place-get-exhibition-response.dto';
-import { ApiPlaceGetPopupResponseDto } from './place/dto/api-place-get-popup-response.dto';
-import { ApiSearchGetDetailResponseDto } from './search/dto/api-search-get-detail-response.dto';
-import { ApiSearchGetResponseDto } from './search/dto/api-search-get-response.dto';
-import { ApiSubwayGetCheckResponseDto } from './subway/dto/api-subway-get-check-response.dto';
-import { ApiSubwayGetLineResponseDto } from './subway/dto/api-subway-get-line-response.dto';
-import { ApiSubwayGetListResponseDto } from './subway/dto/api-subway-get-list-response.dto';
-import { ApiThemeGetListResponseDto } from './theme/dto/api-theme-get-list-response.dto';
-import { ApiUserGetProfileResponseDto } from './user/dto/api-user-get-profile-response.dto';
-import { ApiUserGetTokenResponseDto } from './user/dto/api-user-get-token-response.dto';
+  CourseSubwayStationDetailDto,
+} from 'src/course/dto/api-course-get-recommend-response.dto';
+import { ApiCoursePostRecommendResponseDto } from 'src/course/dto/api-course-post-recommend-response.dto';
+import { ApiCoursePostRecommendSaveResponseDto } from 'src/course/dto/api-course-post-recommend-save-response.dto';
+import { ApiCoursePostSaveResponseDto } from 'src/course/dto/api-course-post-save-response.dto';
+import { CoursePlaceDetailSaveDto } from 'src/course/dto/course-place-detail-save.dto';
+import { CoursePlaceDetailDto } from 'src/course/dto/course-place-detail.dto';
+import { CoursePlaceInfoDto } from 'src/course/dto/course-place-info.dto';
+import { CoursePlaceDto } from 'src/course/dto/course-place.dto';
+import { CourseSubwayLineDetailDto } from 'src/course/dto/course-subway-line-detail.dto';
+import { CourseThemeDetailDto } from 'src/course/dto/course-theme-detail.dto';
+import { ApiNotificationGetListResponseDto } from 'src/notification/dto/api-notification-get-list-response.dto';
+import { ApiPlaceGetCultureDetailResponseDto } from 'src/place/dto/api-place-get-culture-detail-response.dto';
+import { ApiPlaceGetCultureResponseDto } from 'src/place/dto/api-place-get-culture-response.dto';
+import { ApiPlaceGetDetailResponseDto } from 'src/place/dto/api-place-get-detail-response.dto';
+import { ApiPlaceGetExhibitionResponseDto } from 'src/place/dto/api-place-get-exhibition-response.dto';
+import { ApiPlaceGetPopupResponseDto } from 'src/place/dto/api-place-get-popup-response.dto';
+import { ApiSearchGetDetailResponseDto } from 'src/search/dto/api-search-get-detail-response.dto';
+import { ApiSearchGetResponseDto } from 'src/search/dto/api-search-get-response.dto';
+import { SearchDetailDto } from 'src/search/dto/search-detail.dto';
+import { ApiSubwayGetCheckResponseDto } from 'src/subway/dto/api-subway-get-check-response.dto';
+import { ApiSubwayGetLineResponseDto } from 'src/subway/dto/api-subway-get-line-response.dto';
+import { ApiSubwayGetListResponseDto } from 'src/subway/dto/api-subway-get-list-response.dto';
+import { SubwayCustomListDto } from 'src/subway/dto/subway-custom-list.dto';
+import { SubwaylineDto } from 'src/subway/dto/subway-line.dto';
+import { SubwayStationDto } from 'src/subway/dto/subway-station.dto';
+import { ApiThemeGetListResponseDto } from 'src/theme/dto/api-theme-get-list-response.dto';
+import { ApiUserGetProfileResponseDto } from 'src/user/dto/api-user-get-profile-response.dto';
+import { ApiUserGetTokenResponseDto } from 'src/user/dto/api-user-get-token-response.dto';
 
 export const SwaggerModels = [
   ApiPlaceGetCultureResponseDto,
@@ -70,11 +79,10 @@ export const SwaggerModels = [
   ApiCourseGetPlaceCustomizeResponseDto,
   ApiCoursePostRecommendSaveResponseDto,
   ApiCoursePostSaveResponseDto,
-  SubwayLineDetail,
-  SubwayStationDetail,
-  ThemeDetail,
+  CourseSubwayLineDetailDto,
+  CourseSubwayStationDetailDto,
+  CourseThemeDetailDto,
   ApiCommentGetResponseDto,
-  CommentListDto,
   ApiAuthPostUserLogoutResponseDto,
   ApiAuthPostUserRefreshResponseDto,
   authCommonResponseDto,
@@ -84,4 +92,16 @@ export const SwaggerModels = [
   LastItemIdResponseDto,
   ListResponseDto,
   ApiUserGetTokenResponseDto,
+  bookmarkCoursePlaceDetailDto,
+  CommentListDto,
+  CommunityNotificationDetailDto,
+  CommunityCoursePlaceDetailDto,
+  CoursePlaceDto,
+  CoursePlaceDetailDto,
+  CoursePlaceInfoDto,
+  CoursePlaceDetailSaveDto,
+  SubwayCustomListDto,
+  SearchDetailDto,
+  SubwaylineDto,
+  SubwayStationDto,
 ];

@@ -2,14 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { isEmpty } from 'class-validator';
 import { ERROR } from 'src/commons/constants/error';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { generateAccessToken } from 'src/commons/helpers/token.helper';
 import { ConfigService } from 'src/config/config.service';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { generateAccessToken } from '../commons/helpers/token.helper';
-import { ApiUserGetProfileResponseDto } from './dto/api-user-get-profile-response.dto';
-import { ApiUserGetTokenResponseDto } from './dto/api-user-get-token-response.dto';
-import { ApiUserPutUpdateRequestBodyDto } from './dto/api-user-put-update-request-body.dto';
-import { UserDto } from './dto/user.dto';
-import { UserQueryRepository } from './user.query.repository';
+import { ApiUserGetProfileResponseDto } from 'src/user/dto/api-user-get-profile-response.dto';
+import { ApiUserGetTokenResponseDto } from 'src/user/dto/api-user-get-token-response.dto';
+import { ApiUserPutUpdateRequestBodyDto } from 'src/user/dto/api-user-put-update-request-body.dto';
+import { UserDto } from 'src/user/dto/user.dto';
+import { UserQueryRepository } from 'src/user/user.query.repository';
 
 @Injectable()
 export class UserService {
@@ -27,15 +27,14 @@ export class UserService {
       profile_image: user.profile_image,
     };
 
-    const apiUserGetTokenResponseDto: ApiUserGetTokenResponseDto = plainToInstance(
+    return plainToInstance(
       ApiUserGetTokenResponseDto,
-      payload,
+      {
+        ...payload,
+        access_token: generateAccessToken(payload, this.configService),
+      },
       { excludeExtraneousValues: true },
     );
-
-    apiUserGetTokenResponseDto.access_token = generateAccessToken(payload, this.configService);
-
-    return apiUserGetTokenResponseDto;
   }
 
   async profileUpdate(
@@ -49,20 +48,13 @@ export class UserService {
   }
 
   async getProfile(user: UserDto): Promise<ApiUserGetProfileResponseDto> {
-    if (isEmpty(user.uuid)) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
     const userProfile = await this.userQueryRepository.findOne(user.uuid);
     if (isEmpty(userProfile)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const apiUserProfileGetResponseDto = plainToInstance(
-      ApiUserGetProfileResponseDto,
-      userProfile,
-      { excludeExtraneousValues: true },
-    );
-
-    return apiUserProfileGetResponseDto;
+    return plainToInstance(ApiUserGetProfileResponseDto, userProfile, {
+      excludeExtraneousValues: true,
+    });
   }
 }

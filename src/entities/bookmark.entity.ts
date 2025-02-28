@@ -1,3 +1,4 @@
+import { CourseEntity } from 'src/entities/course.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CourseEntity } from './course.entity';
 
 @Entity({ name: 'bookmark' })
 export class BookmarkEntity {

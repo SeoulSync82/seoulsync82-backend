@@ -2,16 +2,16 @@ import { Controller, Get, HttpStatus, Param, Patch, Query, UseGuards } from '@ne
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ERROR } from 'src/commons/constants/error';
+import { ApiArrayLastItemIdSuccessResponse } from 'src/commons/decorators/api-array-last-item-id-success-response.decorator';
 import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-success-response.decorator';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { ApiNotificationGetListRequestQueryDto } from 'src/notification/dto/api-notification-get-list-request-query.dto';
+import { ApiNotificationGetListResponseDto } from 'src/notification/dto/api-notification-get-list-response.dto';
+import { NotificationService } from 'src/notification/notification.service';
 import { UserDto } from 'src/user/dto/user.dto';
-import { ApiArrayLastItemIdSuccessResponse } from '../commons/decorators/api-array-last-item-id-success-response.decorator';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { ApiNotificationGetListRequestQueryDto } from './dto/api-notification-get-list-request-query.dto';
-import { ApiNotificationGetListResponseDto } from './dto/api-notification-get-list-response.dto';
-import { NotificationService } from './notification.service';
 
 @ApiTags('알림')
 @Controller('/api/notification')
@@ -33,7 +33,7 @@ export class NotificationController {
     @Query() dto: ApiNotificationGetListRequestQueryDto,
     @CurrentUser() user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiNotificationGetListResponseDto>> {
-    return await this.notificationService.notificationList(dto, user);
+    return this.notificationService.notificationList(dto, user);
   }
 
   @Patch('/:uuid')
@@ -60,6 +60,6 @@ export class NotificationController {
     @Param('uuid') uuid: string,
     @CurrentUser() user: UserDto,
   ): Promise<UuidResponseDto> {
-    return await this.notificationService.notificationRead(uuid, user);
+    return this.notificationService.notificationRead(uuid, user);
   }
 }

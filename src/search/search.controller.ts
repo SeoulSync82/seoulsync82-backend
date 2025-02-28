@@ -6,16 +6,16 @@ import { ApiArraySuccessResponse } from 'src/commons/decorators/api-array-succes
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
-import { ResponseDataDto } from 'src/commons/dtos/response-deprecated.dto';
+import { ResponseDataDto } from 'src/commons/dtos/deprecated-response.dto';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { ListResponseDto } from 'src/commons/dtos/list-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
+import { ApiSearchGetDetailResponseDto } from 'src/search/dto/api-search-get-detail-response.dto';
+import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
+import { ApiSearchGetResponseDto } from 'src/search/dto/api-search-get-response.dto';
+import { SearchService } from 'src/search/search.service';
 import { UserDto } from 'src/user/dto/user.dto';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { ListResponseDto } from '../commons/dtos/list-response.dto';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { ApiSearchGetDetailResponseDto } from './dto/api-search-get-detail-response.dto';
-import { ApiSearchGetRequestQueryDto } from './dto/api-search-get-request-query.dto';
-import { ApiSearchGetResponseDto } from './dto/api-search-get-response.dto';
-import { SearchService } from './search.service';
 
 @ApiTags('검색')
 @Controller('/api/search')
@@ -37,7 +37,7 @@ export class SearchController {
     @Query(BadWordsPipe) dto: ApiSearchGetRequestQueryDto,
     @CurrentUser() user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiSearchGetResponseDto>> {
-    return await this.searchService.searchPlace(dto, user);
+    return this.searchService.searchPlace(dto, user);
   }
 
   @Get('/place/:uuid')
@@ -60,7 +60,7 @@ export class SearchController {
     description: '장소 uuid',
   })
   async searchDetail(@Param('uuid') uuid: string): Promise<ApiSearchGetDetailResponseDto> {
-    return await this.searchService.searchDetail(uuid);
+    return this.searchService.searchDetail(uuid);
   }
 
   @Get('/popular')
@@ -69,7 +69,7 @@ export class SearchController {
     description: '인기 검색어 목록',
   })
   async searchPopular(): Promise<ListResponseDto<string>> {
-    return await this.searchService.searchPopular();
+    return this.searchService.searchPopular();
   }
 
   @Get('/recent')
@@ -80,7 +80,7 @@ export class SearchController {
     description: '최근 검색어 목록',
   })
   async searchRecent(@CurrentUser() user: UserDto): Promise<ResponseDataDto> {
-    return await this.searchService.searchRecent(user);
+    return this.searchService.searchRecent(user);
   }
 
   @Patch('/:uuid')
@@ -102,7 +102,7 @@ export class SearchController {
     @Param('uuid') uuid: string,
     @CurrentUser() user: UserDto,
   ): Promise<UuidResponseDto> {
-    return await this.searchService.deleteSearchLog(uuid, user);
+    return this.searchService.deleteSearchLog(uuid, user);
   }
 
   @Patch('/')
@@ -121,6 +121,6 @@ export class SearchController {
     status: HttpStatus.NOT_FOUND,
   })
   async deleteAllSearchLog(@CurrentUser() user: UserDto): Promise<UuidResponseDto> {
-    return await this.searchService.deleteAllSearchLog(user);
+    return this.searchService.deleteAllSearchLog(user);
   }
 }

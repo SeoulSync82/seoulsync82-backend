@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { badwordsCheck } from 'src/commons/badwords/badwords_check';
 import { ERROR } from 'src/commons/constants/error';
-import { badwordsCheck } from '../badwords/badwords_check';
 
 @Injectable()
 export class BadWordsPipe implements PipeTransform<string> {

@@ -1,5 +1,5 @@
+import { CommunityEntity } from 'src/entities/community.entity';
 import { SelectQueryBuilder } from 'typeorm';
-import { CommunityEntity } from '../../entities/community.entity';
 
 type CommunityCursorData = {
   created_at?: string;

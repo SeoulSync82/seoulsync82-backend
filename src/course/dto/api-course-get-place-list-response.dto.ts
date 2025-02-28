@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { CoursePlaceDetailDto, CoursePlaceListResDto } from './course.dto';
+import { CoursePlaceDetailDto } from 'src/course/dto/course-place-detail.dto';
 
 export class ApiCourseGetPlaceListResponseDto {
   @Expose()
@@ -69,7 +69,7 @@ export class ApiCourseGetPlaceListResponseDto {
   })
   place: CoursePlaceDetailDto[];
 
-  constructor(data?: Partial<CoursePlaceListResDto>) {
+  constructor(data?: Partial<ApiCourseGetPlaceListResponseDto>) {
     if (data) {
       Object.assign(this, data);
     }

@@ -3,32 +3,29 @@ import { plainToInstance } from 'class-transformer';
 import { isNotEmpty } from 'class-validator';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { ERROR } from 'src/commons/constants/error';
+import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
+import { CommunityQueryRepository } from 'src/community/community.query.repository';
+import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
+import { ApiCommunityGetMyCourseRequestQueryDto } from 'src/community/dto/api-community-get-my-course-request-query.dto';
+import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
+import { ApiCommunityGetRequestQueryDto } from 'src/community/dto/api-community-get-request-query.dto';
+import { ApiCommunityGetResponseDto } from 'src/community/dto/api-community-get-response.dto';
+import { ApiCommunityPostReactionResponseDto } from 'src/community/dto/api-community-post-reaction-response.dto';
+import { ApiCommunityPostRequestBodyDto } from 'src/community/dto/api-community-post-request-body.dto';
+import { ApiCommunityPutRequestBodyDto } from 'src/community/dto/api-community-put-request-body.dto';
+import { CommunityCoursePlaceDetailDto } from 'src/community/dto/community-course-place-detail.dto';
+import { CommunityNotificationDetailDto } from 'src/community/dto/community-notification-detail.dto';
+import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
-import { CoursePlaceDto } from 'src/course/dto/course.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
-import { UserEntity } from 'src/entities/user.entity';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
-import { CursorPaginatedResponseDto } from '../commons/dtos/cursor-paginated-response.dto';
-import { LastItemIdResponseDto } from '../commons/dtos/last-item-id-response.dto';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { CommunityQueryRepository } from './community.query.repository';
-import {
-  ApiCommunityPostReactionResponseDto,
-  NotificationDto,
-} from './dto/\bapi-community-post-reaction-response.dto';
-import { ApiCommunityGetDetailResponseDto } from './dto/api-community-get-detail-response.dto';
-import { ApiCommunityGetMyCourseRequestQueryDto } from './dto/api-community-get-my-course-request-query.dto';
-import { ApiCommunityGetMyCourseResponseDto } from './dto/api-community-get-my-course-response.dto';
-import { ApiCommunityGetRequestQueryDto } from './dto/api-community-get-request-query.dto';
-import { ApiCommunityGetResponseDto } from './dto/api-community-get-response.dto';
-import { ApiCommunityPostRequestBodyDto } from './dto/api-community-post-request-body.dto';
-import { CommunityPutReqDto } from './dto/community.dto';
-import { ReactionQueryRepository } from './reaction.query.repository';
 
 @Injectable()
 export class CommunityService {
@@ -41,7 +38,7 @@ export class CommunityService {
   ) {}
 
   async communityPost(
-    uuid,
+    uuid: string,
     user: UserDto,
     dto: ApiCommunityPostRequestBodyDto,
   ): Promise<UuidResponseDto> {
@@ -49,6 +46,7 @@ export class CommunityService {
     if (isEmpty(course)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
+
     const community = await this.communityQueryRepository.findCommunityByCourse(uuid, user);
     if (isNotEmpty(community)) {
       throw new ConflictException(ERROR.DUPLICATION);
@@ -79,82 +77,77 @@ export class CommunityService {
 
     const myCommunity: CommunityEntity[] = await this.communityQueryRepository.myCommunity(user);
 
-    const apiCommunityMyCourseGetResponseDto = plainToInstance(
-      ApiCommunityGetMyCourseResponseDto,
-      myCourseList,
-      {
-        excludeExtraneousValues: true,
-      },
-    ).map((my) => {
-      my.is_posted = myCommunity.map((item) => item.course_uuid).includes(my.course_uuid);
-      return my;
-    });
-
-    const last_item_id =
+    const lastItemId =
       myCourseList.length === dto.size ? myCourseList[myCourseList.length - 1].id : 0;
 
-    return { items: apiCommunityMyCourseGetResponseDto, last_item_id };
+    return {
+      items: plainToInstance(ApiCommunityGetMyCourseResponseDto, myCourseList, {
+        excludeExtraneousValues: true,
+      }).map((courseDto) => ({
+        ...courseDto,
+        is_posted: myCommunity.map((item) => item.course_uuid).includes(courseDto.course_uuid),
+      })),
+      last_item_id: lastItemId,
+    };
   }
 
   async communityList(
     dto: ApiCommunityGetRequestQueryDto,
-    user,
+    user: UserDto,
   ): Promise<CursorPaginatedResponseDto<ApiCommunityGetResponseDto>> {
-    const totalCount: number = await this.communityQueryRepository.countCommunity();
-    if (totalCount === 0) {
+    const [totalCount, communityResult] = await Promise.all([
+      this.communityQueryRepository.countCommunity(),
+      this.communityQueryRepository.findCommunityList(dto, user),
+    ]);
+
+    if (isEmpty(totalCount)) {
       return { items: [], total_count: 0, next_page: null };
     }
 
-    const { communityList, nextCursor } = await this.communityQueryRepository.findCommunityList(
-      dto,
-      user,
-    );
+    const { communityList, nextCursor } = communityResult;
 
-    const courseList: CourseEntity[] = await this.courseQueryRepository.findList(
-      communityList.map((item) => item.course_uuid),
-    );
-
-    const userList = await this.userQueryRepository.findUserList(
-      communityList.map((item) => item.user_uuid),
-    );
+    const [courseList, userList] = await Promise.all([
+      this.courseQueryRepository.findList(communityList.map((item) => item.course_uuid)),
+      this.userQueryRepository.findUserList(communityList.map((item) => item.user_uuid)),
+    ]);
 
     return {
       items: plainToInstance(ApiCommunityGetResponseDto, communityList, {
         excludeExtraneousValues: true,
       }).map((community) => {
-        community.customs = courseList.find((item) => item.uuid === community.course_uuid).customs;
-        community.line = courseList.find((item) => item.uuid === community.course_uuid).line;
-        community.subway = courseList.find((item) => item.uuid === community.course_uuid).subway;
-        community.course_image = courseList.find(
-          (item) => item.uuid === community.course_uuid,
-        ).course_image;
-        community.user_name = userList.find((user) => user.uuid === community.user_uuid).name;
-        community.user_profile_image = userList.find(
-          (user) => user.uuid === community.user_uuid,
-        ).profile_image;
-        return community;
+        const relatedCourse = courseList.find((c) => c.uuid === community.course_uuid);
+        const relatedUser = userList.find((u) => u.uuid === community.user_uuid);
+        return {
+          ...community,
+          customs: relatedCourse?.customs,
+          line: relatedCourse?.line,
+          subway: relatedCourse?.subway,
+          course_image: relatedCourse?.course_image,
+          user_name: relatedUser?.name,
+          user_profile_image: relatedUser?.profile_image,
+        };
       }),
       total_count: totalCount,
       next_page: nextCursor,
     };
   }
 
-  async communityDetail(uuid, user): Promise<ApiCommunityGetDetailResponseDto> {
+  async communityDetail(uuid: string, user: UserDto): Promise<ApiCommunityGetDetailResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const bookmark = await this.bookmarkQueryRepository.findMyCourse(community.course_uuid);
-    const course = await this.courseQueryRepository.findOne(community.course_uuid);
-    const coursePlaces = await this.courseQueryRepository.findPlace(community.course_uuid);
+    const [bookmark, course, coursePlaces, reactions, communityUser] = await Promise.all([
+      this.bookmarkQueryRepository.findMyCourse(community.course_uuid),
+      this.courseQueryRepository.findOne(community.course_uuid),
+      this.courseQueryRepository.findPlace(community.course_uuid),
+      this.reactionQueryRepository.findCommunityDetailReaction(uuid),
+      this.userQueryRepository.findOne(community.user_uuid),
+    ]);
 
-    const reaction: ReactionEntity[] =
-      await this.reactionQueryRepository.findCommunityDetailReaction(uuid);
-    const communityUser: UserEntity = await this.userQueryRepository.findOne(community.user_uuid);
-
-    const apiCommunityDetailGetResponseDto = new ApiCommunityGetDetailResponseDto({
-      uuid: uuid,
+    return new ApiCommunityGetDetailResponseDto({
+      uuid,
       course_uuid: community.course_uuid,
       user_uuid: communityUser.uuid,
       user_name: communityUser.name,
@@ -166,25 +159,25 @@ export class CommunityService {
       course_image: course.course_image,
       subway: course.subway,
       count: coursePlaces.length,
-      like: reaction.length,
-      isLiked: reaction.map((item) => item.user_uuid).includes(user.uuid),
+      like: reactions.length,
+      isLiked: reactions.map((item) => item.user_uuid).includes(user.uuid),
       place: plainToInstance(
-        CoursePlaceDto,
+        CommunityCoursePlaceDetailDto,
         coursePlaces.map((coursePlace) => ({
           ...coursePlace.place,
           sort: coursePlace.sort,
           uuid: coursePlace.place_uuid,
         })),
-        {
-          excludeExtraneousValues: true,
-        },
+        { excludeExtraneousValues: true },
       ),
     });
-
-    return apiCommunityDetailGetResponseDto;
   }
 
-  async communityPut(user: UserDto, dto: CommunityPutReqDto, uuid): Promise<UuidResponseDto> {
+  async communityPut(
+    user: UserDto,
+    dto: ApiCommunityPutRequestBodyDto,
+    uuid: string,
+  ): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community) || community.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -192,7 +185,6 @@ export class CommunityService {
 
     community.review = dto.review;
     community.score = dto.score;
-
     await this.communityQueryRepository.save(community);
 
     return { uuid };
@@ -205,7 +197,6 @@ export class CommunityService {
     }
 
     community.archived_at = new Date();
-
     await this.communityQueryRepository.save(community);
 
     return { uuid };
@@ -215,16 +206,16 @@ export class CommunityService {
     user: UserDto,
     uuid: string,
   ): Promise<ApiCommunityPostReactionResponseDto> {
-    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
+    const community = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
-    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
+    const reaction = await this.reactionQueryRepository.findOne(uuid, user);
 
-    let notification: NotificationDto | null = null;
+    let notification: CommunityNotificationDetailDto | null = null;
 
-    const reactionEntity = new ReactionEntity();
     if (!reaction) {
+      const reactionEntity = new ReactionEntity();
       reactionEntity.uuid = generateUUID();
       reactionEntity.target_uuid = uuid;
       reactionEntity.user_uuid = user.uuid;
@@ -257,7 +248,6 @@ export class CommunityService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
-
     if (!reaction) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     } else if (reaction.like === 1) {

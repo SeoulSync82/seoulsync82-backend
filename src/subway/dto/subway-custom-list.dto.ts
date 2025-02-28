@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Expose } from 'class-transformer';
 
-export class CustomListDto {
+export class SubwayCustomListDto {
   @Expose()
   @ApiProperty({
     example: '100',
@@ -44,23 +44,7 @@ export class CustomListDto {
   })
   ENTERTAINMENT: number;
 
-  constructor(data?: Partial<CustomListDto>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-}
-
-export class SubwayCustomCheckResDto {
-  @Expose()
-  @Type(() => CustomListDto)
-  @ApiProperty({
-    example: { 음식점: true, 카페: true, 술집: true, 쇼핑: false, 문화: false, 놀거리: false },
-    description: '커스텀',
-  })
-  customs: CustomListDto[];
-
-  constructor(data?: Partial<SubwayCustomCheckResDto>) {
+  constructor(data?: Partial<SubwayCustomListDto>) {
     if (data) {
       Object.assign(this, data);
     }

@@ -5,13 +5,13 @@ import { ERROR } from 'src/commons/constants/error';
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
-import { UuidResponseDto } from '../commons/dtos/uuid-response.dto';
-import { ApiUserGetProfileResponseDto } from './dto/api-user-get-profile-response.dto';
-import { ApiUserGetTokenResponseDto } from './dto/api-user-get-token-response.dto';
-import { ApiUserPutUpdateRequestBodyDto } from './dto/api-user-put-update-request-body.dto';
-import { UserDto } from './dto/user.dto';
-import { UserService } from './user.service';
+import { ApiUserGetProfileResponseDto } from 'src/user/dto/api-user-get-profile-response.dto';
+import { ApiUserGetTokenResponseDto } from 'src/user/dto/api-user-get-token-response.dto';
+import { ApiUserPutUpdateRequestBodyDto } from 'src/user/dto/api-user-put-update-request-body.dto';
+import { UserDto } from 'src/user/dto/user.dto';
+import { UserService } from 'src/user/user.service';
 
 @ApiTags('사용자')
 @Controller('/api/user')
@@ -33,7 +33,7 @@ export class UserController {
     @Body(BadWordsPipe) dto: ApiUserPutUpdateRequestBodyDto,
     @CurrentUser() user: UserDto,
   ): Promise<UuidResponseDto> {
-    return await this.userService.profileUpdate(dto, user);
+    return this.userService.profileUpdate(dto, user);
   }
 
   @Get('/token/:uuid')
@@ -49,11 +49,11 @@ export class UserController {
     name: 'uuid',
     type: 'string',
     required: false,
-    description: 'uuid',
-    example: '진리 - 9c3fd458bd5355dea4e649e3db77cfde / 승모 - 2871948cc25b589ea0a672a6f060fae3',
+    description:
+      '승모 - 2871948cc25b589ea0a672a6f060fae3 | 진리 - 9c3fd458bd5355dea4e649e3db77cfde',
   })
   async getAccessToken(@Param('uuid') uuid: string): Promise<ApiUserGetTokenResponseDto> {
-    return await this.userService.getAccessToken(uuid);
+    return this.userService.getAccessToken(uuid);
   }
 
   @Get('/profile')
@@ -72,6 +72,6 @@ export class UserController {
     status: HttpStatus.NOT_FOUND,
   })
   async getProfile(@CurrentUser() user: UserDto): Promise<ApiUserGetProfileResponseDto> {
-    return await this.userService.getProfile(user);
+    return this.userService.getProfile(user);
   }
 }

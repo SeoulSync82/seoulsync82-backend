@@ -1,4 +1,6 @@
 import { Expose } from 'class-transformer';
+import { CommentEntity } from 'src/entities/comment.entity';
+import { ReactionEntity } from 'src/entities/reaction.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,8 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CommentEntity } from './comment.entity';
-import { ReactionEntity } from './reaction.entity';
 
 @Entity({ name: 'community' })
 export class CommunityEntity {

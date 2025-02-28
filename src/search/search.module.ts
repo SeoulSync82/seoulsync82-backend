@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
 import { PlaceModule } from 'src/place/place.module';
-import { SearchController } from './search.controller';
-import { SearchQueryLogRepository } from './search.log.query.repository';
-import { SearchQueryRepository } from './search.query.repository';
-import { SearchService } from './search.service';
+import { SearchController } from 'src/search/search.controller';
+import { SearchQueryLogRepository } from 'src/search/search.log.query.repository';
+import { SearchQueryRepository } from 'src/search/search.query.repository';
+import { SearchService } from 'src/search/search.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PlaceEntity, SearchLogEntity]), PlaceModule],

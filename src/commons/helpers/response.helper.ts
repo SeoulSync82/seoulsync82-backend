@@ -1,4 +1,4 @@
-import { ApiResponseDto } from '../dtos/api-response.dto';
+import { ApiResponseDto } from 'src/commons/dtos/api-response.dto';
 
 export function createApiResponse<T>(
   data: T,

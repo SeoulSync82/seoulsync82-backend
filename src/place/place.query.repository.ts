@@ -1,16 +1,16 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { PLACE_TYPE } from 'src/commons/enum/place-type-enum';
+import { CursorPaginationHelper } from 'src/commons/helpers/cursor.helper';
 import { ApiCourseGetPlaceCustomizeRequestQueryDto } from 'src/course/dto/api-course-get-place-customize-request-query.dto';
 import { ApiCourseGetRecommendRequestQueryDto } from 'src/course/dto/api-course-get-recommend-request-query.dto';
 import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-post-recommend-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
 import { SubwayEntity } from 'src/entities/subway.entity';
+import { ApiPlaceGetCultureRequestQueryDto } from 'src/place/dto/api-place-get-culture-request-query.dto';
+import { ApiPlaceGetExhibitionRequestQueryDto } from 'src/place/dto/api-place-get-exhibition-request-query.dto';
+import { ApiPlaceGetPopupRequestQueryDto } from 'src/place/dto/api-place-get-popup-request-query.dto';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
 import { Brackets, In, LessThan, Like, MoreThan, Repository } from 'typeorm';
-import { CursorPaginationHelper } from '../commons/helpers/cursor.helper';
-import { ApiPlaceGetCultureRequestQueryDto } from './dto/api-place-get-culture-request-query.dto';
-import { ApiPlaceGetExhibitionRequestQueryDto } from './dto/api-place-get-exhibition-request-query.dto';
-import { ApiPlaceGetPopupRequestQueryDto } from './dto/api-place-get-popup-request-query.dto';
 
 export class PlaceQueryRepository {
   constructor(
@@ -34,8 +34,8 @@ export class PlaceQueryRepository {
   }
 
   async findOne(uuid): Promise<PlaceEntity> {
-    return await this.repository.findOne({
-      where: { uuid: uuid },
+    return this.repository.findOne({
+      where: { uuid },
     });
   }
 
@@ -98,11 +98,11 @@ export class PlaceQueryRepository {
       end_date: MoreThan(now),
     };
 
-    return await this.repository.count({ where: whereConditions });
+    return this.repository.count({ where: whereConditions });
   }
 
   async countExhibition(): Promise<number> {
-    return await this.repository.count({
+    return this.repository.count({
       where: { place_type: '전시', end_date: MoreThan(new Date()) },
     });
   }
@@ -125,7 +125,7 @@ export class PlaceQueryRepository {
       orderType = { start_date: 'DESC' };
     }
 
-    return await this.repository.find({
+    return this.repository.find({
       where: whereConditions,
       order: orderType,
       take: dto.size,
@@ -136,7 +136,7 @@ export class PlaceQueryRepository {
     customs,
     dto: ApiCoursePostRecommendRequestBodyDto,
   ): Promise<PlaceEntity[]> {
-    return await this.repository
+    return this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
       .where('s.line = :line', { line: dto.line })
@@ -148,19 +148,19 @@ export class PlaceQueryRepository {
 
   async findSubwayPlaceList(
     dto: ApiCourseGetRecommendRequestQueryDto,
-    subwayStation_name: string,
+    subwayStationName: string,
   ): Promise<PlaceEntity[]> {
-    return await this.repository
+    return this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
-      .andWhere('s.name = :name', { name: subwayStation_name })
+      .andWhere('s.name = :name', { name: subwayStationName })
       .andWhere('s.place_type IN (:...types)', { types: ['음식점', '카페', '술집'] })
       .andWhere('s.kakao_rating = :rating', { rating: 1 })
       .getMany();
   }
 
   async findSubwayCultureList(dto: ApiCoursePostRecommendRequestBodyDto): Promise<PlaceEntity[]> {
-    return await this.repository
+    return this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
       .where('s.line = :line', { line: dto.line })
@@ -172,24 +172,24 @@ export class PlaceQueryRepository {
 
   async findSubwayPlaceCustomizeList(
     dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
-    subway_station_name: string,
+    subwayStationName: string,
   ): Promise<PlaceEntity[]> {
-    return await this.repository
+    return this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
-      .andWhere('s.name = :name', { name: subway_station_name })
+      .andWhere('s.name = :name', { name: subwayStationName })
       .andWhere('s.place_type = :type', { type: PLACE_TYPE[dto.place_type] })
       .andWhere('s.kakao_rating = :rating', { rating: 1 })
       .getMany();
   }
 
-  async findSubwayPlaceCustomizeCultureList(subway_station_name: string): Promise<PlaceEntity[]> {
+  async findSubwayPlaceCustomizeCultureList(subwayStationName: string): Promise<PlaceEntity[]> {
     const now = new Date();
 
-    return await this.repository
+    return this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
-      .where('s.name = :name', { name: subway_station_name })
+      .where('s.name = :name', { name: subwayStationName })
       .andWhere(
         new Brackets((qb) => {
           qb.where('s.place_type = :type1', { type1: '전시' }).orWhere('s.place_type = :type2', {
@@ -203,7 +203,7 @@ export class PlaceQueryRepository {
   }
 
   async findPlacesWithUuids(uuids: string[]): Promise<PlaceEntity[]> {
-    return await this.repository.find({
+    return this.repository.find({
       where: { uuid: In(uuids) },
     });
   }

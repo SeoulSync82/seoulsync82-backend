@@ -1,3 +1,4 @@
+import { CommunityEntity } from 'src/entities/community.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CommunityEntity } from './community.entity';
 
 @Entity({ name: 'comment' })
 export class CommentEntity {

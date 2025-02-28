@@ -1,9 +1,15 @@
-<img src="https://github.com/user-attachments/assets/460f7cb9-ccd1-4f5f-887a-55aad1eae418" style="width: 100px" />
+<img src="https://github.com/user-attachments/assets/460f7cb9-ccd1-4f5f-887a-55aad1eae418" width="120"/>
 
 # seoulsync82-backend
 
-> **AI 기반으로 서울의 핫플레이스 코스를 추천하는 서비스**  
-> 서울 지하철역을 기반으로 한 **코스 추천 로직**과 AI 감정 분석을 결합해, 더욱 정교하고 재미있는 사용자 경험을 목표로 합니다.
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-brightgreen?style=flat&logo=node.js)](https://nodejs.org/)
+[![Jest](https://img.shields.io/badge/Jest-100%25_Coverage-success?style=flat&logo=jest)](https://jestjs.io/)
+[![ESLint](https://img.shields.io/badge/ESLint-Airbnb_Style_Guide-%23734CC2?style=flat&logo=eslint)](https://eslint.org/)
+[![License: MIT](https://img.shields.io/github/license/SeoulSync82/seoulsync82-backend?color=blue)](https://github.com/SeoulSync82/seoulsync82-backend/blob/master/LICENSE)
+
+> ### **AI 기반 서울 핫플레이스 코스 추천 서비스**  
+> **서울 지하철역을 기반**으로 **AI 감정 분석**과 **코스 추천 로직**을 결합하여  
+> **더욱 정교하고 재미있는 사용자 경험**을 목표로 합니다.
 
 ---
 
@@ -56,8 +62,8 @@
 | **Deployment & CI/CD** | AWS (EC2, S3, CloudFront, ELB), NAS, Docker, GitHub Actions |
 | **Auth**               | OAuth 2.0, JWT                                              |
 | **Testing**            | [Jest](https://jestjs.io/) (Unit, Integration, E2E)         |
-| **Visualization**      | 네이버 지도 API, Firebase 외부 공유                         |
 | **Logging**            | Winston                                                     |
+| **Code Style**         | [ESLint (Airbnb Style Guide)](https://github.com/airbnb/javascript) |
 
 ---
 
