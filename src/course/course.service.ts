@@ -1,4 +1,5 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { customBlancLogger } from 'blanc-logger';
 import { plainToInstance } from 'class-transformer';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
 import { ERROR } from 'src/commons/constants/error';
@@ -28,8 +29,6 @@ import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CourseService {
-  private readonly logger = new Logger(CourseService.name);
-
   constructor(
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly subwayQueryRepository: SubwayQueryRepository,
@@ -109,7 +108,7 @@ export class CourseService {
       return { uuid: apiCoursePostRecommendSaveResponseDto.uuid };
     } catch (e) {
       await queryRunner.rollbackTransaction();
-      this.logger.error('Error in saveCourseRecommend', e.stack);
+      customBlancLogger.error('Error in saveCourseRecommend', e.stack);
       throw e;
     } finally {
       await queryRunner.release();

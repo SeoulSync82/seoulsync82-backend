@@ -1,4 +1,5 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { customBlancLogger } from 'blanc-logger';
 import { isEmpty } from 'class-validator';
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
@@ -18,8 +19,6 @@ import { UserQueryRepository } from 'src/user/user.query.repository';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     private readonly configService: ConfigService,
     private readonly userQueryRepository: UserQueryRepository,
@@ -35,7 +34,10 @@ export class AuthService {
       user.type = provider;
       return await this.getOrCreateUserAuth(user, res);
     } catch (e) {
-      this.logger.error(`Error in handleSocialLogin for ${provider} : [${req.user}]`, e.stack);
+      customBlancLogger.error(
+        `Error in handleSocialLogin for ${provider} : [${req.user}]`,
+        e.stack,
+      );
       throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
@@ -77,7 +79,7 @@ export class AuthService {
         access_token: accessToken,
       };
     } catch (e) {
-      this.logger.error(`Error in silentRefresh: ${e.message}`, e.stack);
+      customBlancLogger.error(`Error in silentRefresh: ${e.message}`, e.stack);
       throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
@@ -92,7 +94,7 @@ export class AuthService {
       res.clearCookie('refreshToken');
       return { ok: true };
     } catch (e) {
-      this.logger.error(`Error in logout for user [${user}]: ${e.message}`, e.stack);
+      customBlancLogger.error(`Error in logout for user [${user}]: ${e.message}`, e.stack);
       throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }

@@ -1,6 +1,7 @@
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { blancLogger, BlancLoggerMiddleware } from 'blanc-logger';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { AppModule } from 'src/app.module';
@@ -12,11 +13,10 @@ import { SwaggerModels } from 'src/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger:
-      process.env.NODE_ENV === 'production'
-        ? ['error', 'warn', 'log', 'debug']
-        : ['error', 'warn', 'log', 'verbose', 'debug'],
+    logger: blancLogger,
   });
+
+  app.use(new BlancLoggerMiddleware().use);
 
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new SuccessInterceptor());
@@ -58,7 +58,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SeoulSync82')
     .setDescription('The SeoulSync82 API description')
-    .setVersion('1.0.0')
+    .setVersion('0.2.0')
     .addTag('swagger')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },

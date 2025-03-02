@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Logger,
   Post,
   Req,
   Res,
@@ -11,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { customBlancLogger } from 'blanc-logger';
 import { Request, Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { ApiAuthPostUserLogoutResponseDto } from 'src/auth/dto/api-auth-post-user-logout-response.dto';
@@ -30,8 +30,6 @@ import { UserDto } from 'src/user/dto/user.dto';
 @Controller('/api/auth')
 @Controller()
 export class AuthController {
-  private readonly logger = new Logger(AuthController.name);
-
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
@@ -43,10 +41,13 @@ export class AuthController {
       const result = await this.authService.handleSocialLogin(req, res, provider);
       const frontendUrl = getFrontendUrl(req.headers.referer || '', this.configService);
 
-      this.logger.log(`${provider} login success for [${req.user}]`);
+      customBlancLogger.log(`${provider} login success for [${req.user}]`, 'AuthService');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (e) {
-      this.logger.error(`Error in ${provider} login for [${req.user}]: ${e.message}`, e.stack);
+      customBlancLogger.error(
+        `Error in ${provider} login for [${req.user}]: ${e.message}`,
+        e.stack,
+      );
       throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }

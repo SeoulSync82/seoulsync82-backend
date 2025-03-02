@@ -62,7 +62,7 @@
 | **Deployment & CI/CD** | AWS (EC2, S3, CloudFront, ELB), NAS, Docker, GitHub Actions |
 | **Auth**               | OAuth 2.0, JWT                                              |
 | **Testing**            | [Jest](https://jestjs.io/) (Unit, Integration, E2E)         |
-| **Logging**            | Winston                                                     |
+| **Logging**            | <a href="https://github.com/yooseungmo/blanc-logger" target="_blank"><button style="cursor:pointer;">Blanc-Logger</button></a> (Winston 기반, 직접 개발 후 npm 배포) |
 | **Code Style**         | [ESLint (Airbnb Style Guide)](https://github.com/airbnb/javascript) |
 
 ---

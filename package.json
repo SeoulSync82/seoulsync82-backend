@@ -38,7 +38,9 @@
     "@types/jsonwebtoken": "^9.0.9",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
+    "blanc-logger": "^1.0.6",
     "cache-manager": "^5.2.3",
+    "chalk": "^4.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "common": "^0.2.5",
@@ -53,6 +55,7 @@
     "mongoose": "^7.5.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.1",
+    "nest-winston": "^1.10.2",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
@@ -62,7 +65,9 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "typeorm": "^0.3.17",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",
@@ -77,7 +82,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.1",
+    "eslint": "8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-import-resolver-typescript": "^3.8.3",

@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
+import { TypeOrmBlancLogger } from 'blanc-logger';
 import { AppController } from 'src/app.controller';
 import { AppService } from 'src/app.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { BookmarkModule } from 'src/bookmark/bookmark.module';
 import { CommentModule } from 'src/comment/comment.module';
+import { LoggingInterceptor } from 'src/commons/interceptors/logging.interceptor';
 import { CommunityModule } from 'src/community/community.module';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigService } from 'src/config/config.service';
@@ -32,6 +35,7 @@ import { UserModule } from 'src/user/user.module';
           database: configService.get('DB_DATABASE'),
           entities: [`${__dirname}/entities/**.entity{.ts,.js}`],
           logging: true,
+          logger: new TypeOrmBlancLogger(),
           synchronize: false,
           keepConnectionAlive: true,
           charset: 'utf8mb4',
@@ -53,6 +57,12 @@ import { UserModule } from 'src/user/user.module';
     CommentModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}
