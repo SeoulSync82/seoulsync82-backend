@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { customBlancLogger } from 'blanc-logger';
+import { blancLogger } from 'blanc-logger';
 import { FastifyRequest } from 'fastify';
 import { Payload } from 'src/auth/types/jwt.payload';
 import { ERROR } from 'src/commons/constants/error';
@@ -22,7 +22,10 @@ export class JwtOptionalAuthGuard implements CanActivate {
           const payload = await verifyJWT<Payload>(auth.value, this.config.get('JWT_SECRET'));
           request.user = payload;
         } catch (e) {
-          customBlancLogger.error(`Error in JwtOptionalAuthGuard: ${e.message}`, e.stack);
+          blancLogger.error(`Error in JwtOptionalAuthGuard: ${e.message}`, {
+            moduleName: 'JwtOptionalAuthGuard',
+            stack: e.stack,
+          });
           throw new UnauthorizedException(ERROR.AUTHENTICATION);
         }
       }

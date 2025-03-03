@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { TypeOrmBlancLogger } from 'blanc-logger';
 import { AppController } from 'src/app.controller';
@@ -7,7 +7,9 @@ import { AppService } from 'src/app.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { BookmarkModule } from 'src/bookmark/bookmark.module';
 import { CommentModule } from 'src/comment/comment.module';
+import { GlobalExceptionFilter } from 'src/commons/filters/global-exception.filter';
 import { LoggingInterceptor } from 'src/commons/interceptors/logging.interceptor';
+import { SuccessResponseInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { CommunityModule } from 'src/community/community.module';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigService } from 'src/config/config.service';
@@ -60,8 +62,16 @@ import { UserModule } from 'src/user/user.module';
   providers: [
     AppService,
     {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+    {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SuccessResponseInterceptor,
     },
   ],
 })

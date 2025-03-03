@@ -6,8 +6,6 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { AppModule } from 'src/app.module';
 import { ERROR } from 'src/commons/constants/error';
-import { GlobalExceptionFilter } from 'src/commons/filters/global-exception.filter';
-import { SuccessInterceptor } from 'src/commons/interceptors/success.interceptor';
 import { ConfigService } from 'src/config/config.service';
 import { SwaggerModels } from 'src/swagger';
 
@@ -17,9 +15,6 @@ async function bootstrap() {
   });
 
   app.use(new BlancLoggerMiddleware().use);
-
-  app.useGlobalFilters(new GlobalExceptionFilter());
-  app.useGlobalInterceptors(new SuccessInterceptor());
 
   app.useGlobalPipes(
     new ValidationPipe({

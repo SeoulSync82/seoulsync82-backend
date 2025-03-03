@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { customBlancLogger } from 'blanc-logger';
+import { blancLogger } from 'blanc-logger';
 import { Request, Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { ApiAuthPostUserLogoutResponseDto } from 'src/auth/dto/api-auth-post-user-logout-response.dto';
@@ -41,13 +41,13 @@ export class AuthController {
       const result = await this.authService.handleSocialLogin(req, res, provider);
       const frontendUrl = getFrontendUrl(req.headers.referer || '', this.configService);
 
-      customBlancLogger.log(`${provider} login success for [${req.user}]`, 'AuthService');
+      blancLogger.log(`${provider} login success for [${req.user}]`, 'AuthController');
       res.redirect(`${frontendUrl}/?token=${result.access_token}`);
     } catch (e) {
-      customBlancLogger.error(
-        `Error in ${provider} login for [${req.user}]: ${e.message}`,
-        e.stack,
-      );
+      blancLogger.error(`Error in ${provider} login for [${req.user}]: ${e.message}`, {
+        moduleName: 'AuthController',
+        stack: e.stack,
+      });
       throw new UnauthorizedException(ERROR.AUTHENTICATION);
     }
   }
