@@ -1,6 +1,6 @@
 {
   "name": "seoulsync82-backend",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "SeoulSync82 backend API for AI-driven course recommendations.",
   "author": "Yoo SeungMo (https://github.com/yooseungmo)",
   "private": true,
@@ -38,7 +38,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
-    "blanc-logger": "^1.0.6",
+    "blanc-logger": "^1.0.9",
     "cache-manager": "^5.2.3",
     "chalk": "^4.1.2",
     "class-transformer": "^0.5.1",
