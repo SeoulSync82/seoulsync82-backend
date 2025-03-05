@@ -150,13 +150,20 @@ export class PlaceQueryRepository {
     dto: ApiCourseGetRecommendRequestQueryDto,
     subwayStationName: string,
   ): Promise<PlaceEntity[]> {
-    return this.repository
+    const qb = this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
       .andWhere('s.name = :name', { name: subwayStationName })
       .andWhere('s.place_type IN (:...types)', { types: ['음식점', '카페', '술집'] })
-      .andWhere('s.kakao_rating = :rating', { rating: 1 })
-      .getMany();
+      .andWhere('s.kakao_rating = :rating', { rating: 1 });
+
+    if (dto.theme_uuid) {
+      qb.innerJoinAndSelect('p.placeThemes', 'pt').andWhere('pt.theme_uuid = :theme_uuid', {
+        theme_uuid: dto.theme_uuid,
+      });
+    }
+
+    return qb.getMany();
   }
 
   async findSubwayCultureList(dto: ApiCoursePostRecommendRequestBodyDto): Promise<PlaceEntity[]> {

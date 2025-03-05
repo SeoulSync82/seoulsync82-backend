@@ -5,7 +5,7 @@ export class ApiCourseGetRecommendRequestQueryDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: '5b1296a2e88611eeb1c70242ac110002',
+    example: '5b12b0bde88611eeb1c70242ac110002',
     description: '지하철 역 uuid',
   })
   station_uuid: string;
@@ -13,7 +13,7 @@ export class ApiCourseGetRecommendRequestQueryDto {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    example: '077ff3adc0e556148bf7eeb7a0273fb9',
+    example: '9f1fa47a0a1b58cab31a7a0e04248140',
     description: '테마 uuid',
     required: false,
   })

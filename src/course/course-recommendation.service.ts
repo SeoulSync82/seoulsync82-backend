@@ -17,6 +17,7 @@ import { CoursePlaceInfoDto } from 'src/course/dto/course-place-info.dto';
 import { RecommendType } from 'src/course/enum/course-recommend.enum';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { PlaceEntity } from 'src/entities/place.entity';
+import { ThemeEntity } from 'src/entities/theme.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { SubwayQueryRepository } from 'src/subway/subway.query.repository';
 import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
@@ -35,7 +36,7 @@ export class CourseRecommendationService {
     dto: ApiCourseGetRecommendRequestQueryDto,
     user?: UserDto,
   ): Promise<ApiCourseGetRecommendResponseDto> {
-    // 1. 지하철역 조회
+    // 1. 지하철역 및 노선 정보 조회
     const subwayWithLines = await this.subwayQueryRepository.findAllLinesForStation(
       dto.station_uuid,
     );
@@ -43,46 +44,65 @@ export class CourseRecommendationService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    // 2. 테마 조회 (선택한 경우)
-    let theme = null;
-    if (isNotEmpty(dto.theme_uuid)) {
-      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
-    }
-
-    // 3. 주변 장소 리스트 조회
+    // 2. 주변 장소 리스트 조회
     const subwayPlaceList: PlaceEntity[] = await this.placeQueryRepository.findSubwayPlaceList(
       dto,
       subwayWithLines[0].name,
     );
 
-    // 4. 기본 커스텀(음식점, 카페, 술집)별로 필터 및 가중치 계산 후 최상위 N개 중 랜덤 선택
-    const placeNonSorting: PlaceEntity[] = [];
+    // 3. 테마 및 히스토리 조회 (존재할 경우)
+    const theme: ThemeEntity = isNotEmpty(dto.theme_uuid)
+      ? await this.themeQueryRepository.findThemeUuid(dto.theme_uuid)
+      : null;
 
-    let userHistoryCourse: CourseDetailEntity[];
-    if (isNotEmpty(user)) {
-      userHistoryCourse = await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
-    }
+    const userHistoryCourse: CourseDetailEntity[] = isNotEmpty(user)
+      ? await this.courseQueryRepository.findUserHistoryCourse(user.uuid)
+      : [];
 
-    DEFAULT_CUSTOMS.forEach((custom) => {
-      const customPlaces: PlaceEntity[] = subwayPlaceList.filter(
-        (item) => item.place_type === custom,
-      );
+    // 4. 각 커스텀에 해당하는 장소 조회 헬퍼 함수
+    const fetchPlacesByCustom = async (custom: string): Promise<PlaceEntity[]> => {
+      let placesByCategory = subwayPlaceList.filter((place) => place.place_type === custom);
 
-      const topWeightedPlaces = getTopWeight(customPlaces, RecommendType.TOP_N, userHistoryCourse);
-      const selected = getRandomShuffleElements(
-        topWeightedPlaces,
-        RecommendType.RANDOM_SELECTION_COUNT,
-      );
-      if (isEmpty(selected)) {
-        throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+      // 해당 custom에 맞는 테마가 없을 시 재추천
+      if (placesByCategory.length === 0) {
+        const dtoWithoutTheme = { ...dto };
+        delete dtoWithoutTheme.theme_uuid;
+
+        const fallbackPlaces = await this.placeQueryRepository.findSubwayPlaceList(
+          dtoWithoutTheme,
+          subwayWithLines[0].name,
+        );
+        placesByCategory = fallbackPlaces.filter((place) => place.place_type === custom);
       }
-      placeNonSorting.push(...selected);
-    });
+      return placesByCategory;
+    };
 
-    // 5. 카테고리별 정렬 및 DTO 변환
-    const placeSorting: CoursePlaceInfoDto[] = [];
+    // 5. 기본 커스텀 타입별로 가중치 계산 및 랜덤 선택, 병렬 처리
+    const selectionPlaces: PlaceEntity[] = (
+      await Promise.all(
+        DEFAULT_CUSTOMS.map(async (custom) => {
+          const customPlaces = await fetchPlacesByCustom(custom);
+          const topWeightedPlaces = getTopWeight(
+            customPlaces,
+            RecommendType.TOP_N,
+            userHistoryCourse,
+          );
+          const selectedPlaces = getRandomShuffleElements(
+            topWeightedPlaces,
+            RecommendType.RANDOM_SELECTION_COUNT,
+          );
+          if (isEmpty(selectedPlaces)) {
+            throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+          }
+          return selectedPlaces;
+        }),
+      )
+    ).flat();
+
+    // 6. 커스텀 순서 정렬 및 DTO 변환
+    const sortedPlaces: CoursePlaceInfoDto[] = [];
     DEFAULT_CUSTOMS.forEach((custom, index) => {
-      const place = placeNonSorting.find((item) => item.place_type === custom);
+      const place = selectionPlaces.find((item) => item.place_type === custom);
       if (isEmpty(place)) {
         throw new NotFoundException(ERROR.NOT_EXIST_DATA);
       }
@@ -92,10 +112,10 @@ export class CourseRecommendationService {
       placeDetailDto.sort = index + 1;
       placeDetailDto.place_type = getPlaceTypeKey(placeDetailDto.place_type);
       placeDetailDto.place_detail = getCustomByPlaceType(place, custom);
-      placeSorting.push(placeDetailDto);
+      sortedPlaces.push(placeDetailDto);
     });
 
-    // 6. 코스 이름 생성
+    // 7. 코스 이름 생성
     let courseName = '';
     if (isEmpty(theme)) {
       const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
@@ -119,7 +139,7 @@ export class CourseRecommendationService {
         line: line.line,
       })),
       theme: theme ? { uuid: theme.uuid, theme: theme.theme_name } : undefined,
-      places: placeSorting,
+      places: sortedPlaces,
     });
 
     return apiCourseGetRecommendResponseDto;
