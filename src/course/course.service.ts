@@ -74,7 +74,6 @@ export class CourseService {
       place: dto.places,
     });
 
-    // 트랜잭션 처리
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();

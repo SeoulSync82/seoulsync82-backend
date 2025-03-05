@@ -5,6 +5,13 @@ export interface PayloadId {
   id: number;
 }
 
+export interface SocialUser {
+  email: string;
+  nickname: string;
+  photo: string;
+  type: 'google' | 'kakao' | 'naver';
+}
+
 /* Google Strategy */
 type GoogleUser = {
   email: string;

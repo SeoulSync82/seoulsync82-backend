@@ -19,7 +19,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:user": "jest --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
+    "test:user:watch": "jest --watch --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",
@@ -38,7 +40,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "axios": "^1.6.5",
     "bcrypt": "^5.1.1",
-    "blanc-logger": "^1.0.9",
+    "blanc-logger": "^1.1.0",
     "cache-manager": "^5.2.3",
     "chalk": "^4.1.2",
     "class-transformer": "^0.5.1",
@@ -71,6 +73,8 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "@automock/adapters.nestjs": "^2.1.0",
+    "@automock/jest": "^2.1.0",
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^10.4.15",
@@ -106,7 +110,9 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "roots": [
+      "src"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -114,7 +120,23 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coveragePathIgnorePatterns": [
+      "module.ts",
+      "dto.ts",
+      "entity.ts",
+      "guard.ts",
+      "middleware.ts",
+      "strategy.ts",
+      "decorator.ts",
+      "pipe.ts",
+      "common/*",
+      "main.ts",
+      "app/*"
+    ],
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/src/$1"
+    }
   }
 }

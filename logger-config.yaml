@@ -1,6 +1,6 @@
 # logger-config.yaml
 LOG_DIR: logs            # 로그 파일 저장 경로 (기본: 프로젝트 루트/logs)
-CONSOLE_LOG_LEVEL: info  # 콘솔 출력 로그 레벨 (debug, info, warn, error)
-FILE_LOG_LEVEL: error    # 파일 출력 로그 레벨
+CONSOLE_LOG_LEVEL: info  # 콘솔 출력 로그 레벨 (debug, verbose, info, warn, error)
+FILE_LOG_LEVEL: error    # 파일 출력 로그 레벨 (debug, verbose, info, warn, error)
 ROTATION_DAYS: 15d       # 로그 파일 보관 기간 (예: 30일)
 MAX_FILE_SIZE: 20m       # 단일 파일 최대 크기 (예: 20MB)

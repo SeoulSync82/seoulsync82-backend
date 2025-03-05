@@ -65,7 +65,7 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: ['**/*.spec.ts', '**/*.test.ts', '**/test/**'],
+        devDependencies: ['src/**/*.spec.ts','**/*.spec.ts', '**/*.test.ts', '**/test/**'],
       },
     ],
     // 모듈 순환 의존성 검사 및 릴레이션 시 비활성화

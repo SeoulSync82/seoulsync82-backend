@@ -1,6 +1,5 @@
-// src/config/config.service.ts
-import * as fs from 'fs';
 import { parse } from 'dotenv';
+import * as fs from 'fs';
 import * as joi from 'joi';
 
 export interface EnvConfig {

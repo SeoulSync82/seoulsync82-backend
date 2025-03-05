@@ -8,6 +8,38 @@ import {
 import { blancLogger } from 'blanc-logger';
 import { Request, Response } from 'express';
 
+interface ExceptionResponse {
+  status: number;
+  message: string;
+  stack?: string;
+}
+
+/** 예외 객체를 처리하여 상태, 메시지, 스택을 반환하는 함수 */
+const handleException = (exception: unknown, _request: Request): ExceptionResponse => {
+  if (exception instanceof HttpException) {
+    const status = exception.getStatus();
+    const res = exception.getResponse();
+    const message =
+      typeof res === 'object' && res !== null
+        ? (res as any).message ?? exception.message
+        : exception.message;
+    return {
+      status,
+      message: `HTTP Exception: ${message}`,
+      stack: exception instanceof Error ? exception.stack : '',
+    };
+  }
+  if (exception instanceof Error) {
+    const status = new InternalServerErrorException().getStatus();
+    return {
+      status,
+      message: `Unhandled exception: ${exception.message}`,
+      stack: exception.stack,
+    };
+  }
+  return { status: 500, message: 'Unknown error' };
+};
+
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
@@ -15,39 +47,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const moduleName = (request as any).moduleName || 'Global';
+    const moduleName = (request as any)?.moduleName ?? 'Global';
+    const { status, message, stack } = handleException(exception, request);
 
-    let status: number;
-    let message: string;
-
-    if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const resObj = exception.getResponse();
-      message =
-        typeof resObj === 'object' && resObj !== null
-          ? (resObj as any).message || exception.message
-          : exception.message;
-      blancLogger.error(`HTTP Exception: ${message}`, {
-        moduleName,
-        path: request.url,
-        stack: exception instanceof Error ? exception.stack : '',
-      });
-    } else if (exception instanceof Error) {
-      status = new InternalServerErrorException().getStatus();
-      message = 'Internal Server Error';
-      blancLogger.error(`Unhandled exception: ${exception.message}`, {
-        moduleName,
-        path: request.url,
-        stack: exception.stack,
-      });
-    } else {
-      status = 500;
-      message = 'Unknown error';
-      blancLogger.error(`Unknown exception: ${JSON.stringify(exception)}`, {
-        moduleName,
-        path: request.url,
-      });
-    }
+    blancLogger.error(message, {
+      moduleName,
+      path: request.url,
+      stack,
+    });
 
     response.status(status).json({
       statusCode: status,

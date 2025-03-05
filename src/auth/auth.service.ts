@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { ApiAuthPostUserLogoutResponseDto } from 'src/auth/dto/api-auth-post-user-logout-response.dto';
 import { ApiAuthPostUserRefreshResponseDto } from 'src/auth/dto/api-auth-post-user-refresh-response.dto';
+import { SocialUser } from 'src/auth/interfaces/auth.interface';
 import { ERROR } from 'src/commons/constants/error';
 import { verifyJWT } from 'src/commons/helpers/jwt.helper';
 import {
@@ -30,8 +31,8 @@ export class AuthService {
     provider: string,
   ): Promise<{ access_token: string }> {
     try {
-      const user = req.user as any;
-      user.type = provider;
+      const user = req.user as SocialUser;
+      user.type = provider as SocialUser['type'];
       return await this.getOrCreateUserAuth(user, res);
     } catch (e) {
       blancLogger.error(`Error in handleSocialLogin for ${provider} : [${req.user}]`, {
@@ -105,7 +106,7 @@ export class AuthService {
     }
   }
 
-  async getOrCreateUserAuth(user, res: Response): Promise<{ access_token: string }> {
+  async getOrCreateUserAuth(user: SocialUser, res: Response): Promise<{ access_token: string }> {
     let findUser = await this.userQueryRepository.findUser(user);
     if (isEmpty(findUser)) {
       const uuid = generateUUID();

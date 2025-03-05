@@ -42,7 +42,7 @@ export class UserService {
     user: UserDto,
   ): Promise<UuidResponseDto> {
     if (dto.name || dto.profile_image) {
-      await this.userQueryRepository.updateUser(dto, user);
+      await this.userQueryRepository.profileUpdate(dto, user);
     }
     return { uuid: user.uuid };
   }
