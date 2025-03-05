@@ -23,7 +23,9 @@
     "test:user": "jest --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
     "test:user:watch": "jest --watch --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
     "test:auth": "jest --testPathPattern=src/auth --coverage --collectCoverageFrom=src/auth/**",
-    "test:auth:watch": "jest --watch --testPathPattern=src/auth --coverage --collectCoverageFrom=src/auth/**"
+    "test:auth:watch": "jest --watch --testPathPattern=src/auth --coverage --collectCoverageFrom=src/auth/**",
+    "test:bookmark": "jest --testPathPattern=src/bookmark --coverage --collectCoverageFrom=src/bookmark/**",
+    "test:bookmark:watch": "jest --watch --testPathPattern=src/bookmark --coverage --collectCoverageFrom=src/bookmark/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",

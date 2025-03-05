@@ -10,6 +10,7 @@ import { ApiArrayLastItemIdSuccessResponse } from 'src/commons/decorators/api-ar
 import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -29,7 +30,10 @@ export class BookmarkController {
     description: '북마크 목록 조회 성공',
     status: HttpStatus.OK,
   })
-  async bookmarkList(@Query() dto: ApiBookmarkGetRequestQueryDto, @CurrentUser() user: UserDto) {
+  async bookmarkList(
+    @Query() dto: ApiBookmarkGetRequestQueryDto,
+    @CurrentUser() user: UserDto,
+  ): Promise<LastItemIdResponseDto<ApiBookmarkGetResponseDto>> {
     return this.bookmarkService.bookmarkList(dto, user);
   }
 
@@ -53,7 +57,7 @@ export class BookmarkController {
     required: false,
     description: '코스 uuid',
   })
-  async myCourseDetail(@Param('uuid') uuid: string) {
+  async myCourseDetail(@Param('uuid') uuid: string): Promise<ApiBookmarkGetDetailResponseDto> {
     return this.bookmarkService.myCourseDetail(uuid);
   }
 

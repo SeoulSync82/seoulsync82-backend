@@ -8,7 +8,7 @@ import { bookmarkCoursePlaceDetailDto } from 'src/bookmark/dto/bookmark-course-p
 import { ERROR } from 'src/commons/constants/error';
 import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
-import { isEmpty } from 'src/commons/util/is/is-empty';
+import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
@@ -28,7 +28,7 @@ export class BookmarkService {
     user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiBookmarkGetResponseDto>> {
     const courseList = await this.bookmarkQueryRepository.find(dto, user);
-    if (isEmpty(courseList.length)) {
+    if (isEmpty(courseList)) {
       return { items: [], last_item_id: 0 };
     }
 
@@ -43,8 +43,7 @@ export class BookmarkService {
         excludeExtraneousValues: true,
       }).map((bookmark) => ({
         ...bookmark,
-        user_profile_image:
-          userList.find((u) => u.uuid === bookmark.user_uuid).profile_image ?? null,
+        user_profile_image: userList.find((u) => u.uuid === bookmark.user_uuid).profile_image,
       })),
       last_item_id: lastItemId,
     };
@@ -95,14 +94,13 @@ export class BookmarkService {
     bookmarkEntity.user_name = user.nickname;
 
     const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
-
-    if (isEmpty(myBookmark)) {
-      await this.bookmarkQueryRepository.bookmarkSave(bookmarkEntity);
-    } else if (isEmpty(myBookmark.archived_at)) {
+    if (isNotEmpty(myBookmark) && isEmpty(myBookmark.archived_at)) {
       throw new ConflictException(ERROR.DUPLICATION);
-    } else {
-      await this.bookmarkQueryRepository.bookmarkUpdate(bookmarkEntity);
     }
+
+    await (isNotEmpty(myBookmark)
+      ? this.bookmarkQueryRepository.bookmarkUpdate(bookmarkEntity)
+      : this.bookmarkQueryRepository.bookmarkSave(bookmarkEntity));
 
     return { uuid };
   }
@@ -111,7 +109,9 @@ export class BookmarkService {
     const myBookmark = await this.bookmarkQueryRepository.findUserBookmark(user, uuid);
     if (isEmpty(myBookmark)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    } else await this.bookmarkQueryRepository.bookmarkDelete(myBookmark);
+    }
+
+    await this.bookmarkQueryRepository.bookmarkDelete(myBookmark);
 
     return { uuid };
   }

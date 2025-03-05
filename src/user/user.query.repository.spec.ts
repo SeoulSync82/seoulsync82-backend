@@ -4,17 +4,12 @@ import { SocialUser } from 'src/auth/interfaces/auth.interface';
 import { UserEntity } from 'src/entities/user.entity';
 import { ApiUserPutUpdateRequestBodyDto } from 'src/user/dto/api-user-put-update-request-body.dto';
 import { UserDto } from 'src/user/dto/user.dto';
-import { In, UpdateResult } from 'typeorm';
+import { In, Repository, UpdateResult } from 'typeorm';
 import { UserQueryRepository } from './user.query.repository';
 
 describe('UserQueryRepository', () => {
   let userQueryRepository: UserQueryRepository;
-  let repository: jest.Mocked<{
-    findOne: jest.Mock;
-    save: jest.Mock;
-    update: jest.Mock;
-    find: jest.Mock;
-  }>;
+  let repository: jest.Mocked<Repository<UserEntity>>;
 
   beforeEach(async () => {
     const { unit, unitRef } = TestBed.create(UserQueryRepository).compile();
@@ -28,12 +23,16 @@ describe('UserQueryRepository', () => {
       // Given
       const socialUser: SocialUser = {
         email: 'test@example.com',
-        nickname: 'blanc',
-        photo: 'image.png',
+        nickname: '테스터',
+        photo: 'photo.png',
         type: 'kakao',
       };
-      const dummyUser = { id: 1, email: 'test@example.com', type: 'kakao' };
-      repository.findOne.mockResolvedValue(dummyUser);
+      const expectedUser: UserEntity = {
+        id: 1,
+        email: socialUser.email,
+        type: socialUser.type,
+      } as UserEntity;
+      jest.spyOn(repository, 'findOne').mockResolvedValue(expectedUser);
 
       // When
       const result = await userQueryRepository.findUser(socialUser);
@@ -42,20 +41,20 @@ describe('UserQueryRepository', () => {
       expect(repository.findOne).toHaveBeenCalledWith({
         where: { email: socialUser.email, type: socialUser.type },
       });
-      expect(result).toEqual(dummyUser);
+      expect(result).toEqual(expectedUser);
     });
   });
 
   describe('createUser', () => {
-    it('should save user entity with proper fields', async () => {
+    it('should save user with proper fields when type is kakao', async () => {
       // Given
       const socialUser: SocialUser = {
-        email: 'test@example.com',
+        email: 'kakao@example.com',
+        nickname: '카카오유저',
+        photo: 'kakao.png',
         type: 'kakao',
-        nickname: 'Tester',
-        photo: 'photo.png',
       };
-      const uuid = 'test-uuid';
+      const uuid = 'uuid-kakao';
       const expectedPayload = {
         uuid,
         email: socialUser.email,
@@ -63,7 +62,7 @@ describe('UserQueryRepository', () => {
         profile_image: socialUser.photo,
         type: socialUser.type,
       };
-      repository.save.mockResolvedValue(expectedPayload);
+      jest.spyOn(repository, 'save').mockResolvedValue(expectedPayload as UserEntity);
 
       // When
       const result = await userQueryRepository.createUser(socialUser, uuid);
@@ -73,15 +72,15 @@ describe('UserQueryRepository', () => {
       expect(result).toEqual(expectedPayload);
     });
 
-    it('should set photo to null when type is not kakao', async () => {
+    it('should save user with photo set to null when type is not kakao', async () => {
       // Given
       const socialUser: SocialUser = {
-        email: 'test2@example.com',
+        email: 'google@example.com',
+        nickname: '구글유저',
+        photo: 'google.png',
         type: 'google',
-        nickname: 'Tester2',
-        photo: 'photo.png',
       };
-      const uuid = 'test-uuid-2';
+      const uuid = 'uuid-google';
       const expectedPayload = {
         uuid,
         email: socialUser.email,
@@ -89,7 +88,7 @@ describe('UserQueryRepository', () => {
         profile_image: null,
         type: socialUser.type,
       };
-      repository.save.mockResolvedValue(expectedPayload);
+      jest.spyOn(repository, 'save').mockResolvedValue(expectedPayload as UserEntity);
 
       // When
       const result = await userQueryRepository.createUser(socialUser, uuid);
@@ -103,16 +102,15 @@ describe('UserQueryRepository', () => {
   describe('save', () => {
     it('should save and return the user entity', async () => {
       // Given
-      const userEntity = {
+      const userEntity: UserEntity = {
         id: 1,
         uuid: 'uuid-1',
-        email: 'a@b.com',
-        name: 'Test User',
+        email: 'test@a.com',
+        name: 'Test',
         profile_image: 'img.png',
         type: 'kakao',
-        refresh_token: 'some_token',
       } as UserEntity;
-      repository.save.mockResolvedValue(userEntity);
+      jest.spyOn(repository, 'save').mockResolvedValue(userEntity);
 
       // When
       const result = await userQueryRepository.save(userEntity);
@@ -126,34 +124,30 @@ describe('UserQueryRepository', () => {
   describe('findId', () => {
     it('should return user entity when id exists', async () => {
       // Given
-      const dummyUser = { id: 1, uuid: 'uuid-1', email: 'a@b.com' };
-      repository.findOne.mockResolvedValue(dummyUser);
+      const expectedUser: UserEntity = { id: 1, uuid: 'uuid-1', email: 'a@b.com' } as UserEntity;
+      jest.spyOn(repository, 'findOne').mockResolvedValue(expectedUser);
 
       // When
       const result = await userQueryRepository.findId(1);
 
       // Then
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(result).toEqual(dummyUser);
+      expect(repository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(result).toEqual(expectedUser);
     });
   });
 
   describe('findOne', () => {
     it('should return user entity when uuid exists', async () => {
       // Given
-      const dummyUser = { id: 1, uuid: 'uuid-1', email: 'a@b.com' };
-      repository.findOne.mockResolvedValue(dummyUser);
+      const expectedUser: UserEntity = { id: 1, uuid: 'uuid-1', email: 'a@b.com' } as UserEntity;
+      jest.spyOn(repository, 'findOne').mockResolvedValue(expectedUser);
 
       // When
       const result = await userQueryRepository.findOne('uuid-1');
 
       // Then
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { uuid: 'uuid-1' },
-      });
-      expect(result).toEqual(dummyUser);
+      expect(repository.findOne).toHaveBeenCalledWith({ where: { uuid: 'uuid-1' } });
+      expect(result).toEqual(expectedUser);
     });
   });
 
@@ -163,7 +157,7 @@ describe('UserQueryRepository', () => {
       const dto: ApiUserPutUpdateRequestBodyDto = { name: 'NewName', profile_image: 'new.png' };
       const user: UserDto = { id: 1, uuid: 'uuid-1' } as UserDto;
       const updateResult: UpdateResult = { affected: 1, raw: [] } as UpdateResult;
-      repository.update.mockResolvedValue(updateResult);
+      jest.spyOn(repository, 'update').mockResolvedValue(updateResult);
 
       // When
       const result = await userQueryRepository.profileUpdate(dto, user);
@@ -181,7 +175,7 @@ describe('UserQueryRepository', () => {
       const dto: ApiUserPutUpdateRequestBodyDto = { name: 'OnlyName' };
       const user: UserDto = { id: 2, uuid: 'uuid-2' } as UserDto;
       const updateResult: UpdateResult = { affected: 1, raw: [] } as UpdateResult;
-      repository.update.mockResolvedValue(updateResult);
+      jest.spyOn(repository, 'update').mockResolvedValue(updateResult);
 
       // When
       const result = await userQueryRepository.profileUpdate(dto, user);
@@ -196,20 +190,18 @@ describe('UserQueryRepository', () => {
     it('should return a list of user entities matching provided uuids', async () => {
       // Given
       const uuids = ['uuid-1', 'uuid-2'];
-      const dummyUsers = [
-        { id: 1, uuid: 'uuid-1', email: 'a@b.com' },
-        { id: 2, uuid: 'uuid-2', email: 'b@c.com' },
+      const expectedUsers: UserEntity[] = [
+        { id: 1, uuid: 'uuid-1', email: 'a@b.com' } as UserEntity,
+        { id: 2, uuid: 'uuid-2', email: 'b@c.com' } as UserEntity,
       ];
-      repository.find.mockResolvedValue(dummyUsers);
+      jest.spyOn(repository, 'find').mockResolvedValue(expectedUsers);
 
       // When
       const result = await userQueryRepository.findUserList(uuids);
 
       // Then
-      expect(repository.find).toHaveBeenCalledWith({
-        where: { uuid: In(uuids) },
-      });
-      expect(result).toEqual(dummyUsers);
+      expect(repository.find).toHaveBeenCalledWith({ where: { uuid: In(uuids) } });
+      expect(result).toEqual(expectedUsers);
     });
   });
 });

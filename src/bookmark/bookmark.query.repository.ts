@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiBookmarkGetRequestQueryDto } from 'src/bookmark/dto/api-bookmark-get-request-query.dto';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 import { In, IsNull, LessThan, Repository } from 'typeorm';
 
 export class BookmarkQueryRepository {
@@ -9,12 +10,12 @@ export class BookmarkQueryRepository {
     private repository: Repository<BookmarkEntity>,
   ) {}
 
-  async find(dto: ApiBookmarkGetRequestQueryDto, user): Promise<BookmarkEntity[]> {
-    const whereConditions = { user_uuid: user.uuid, archived_at: IsNull() };
-
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
+  async find(dto: ApiBookmarkGetRequestQueryDto, user: UserDto): Promise<BookmarkEntity[]> {
+    const whereConditions = {
+      user_uuid: user.uuid,
+      archived_at: IsNull(),
+      ...(dto.last_id > 0 ? { id: LessThan(dto.last_id) } : {}),
+    };
 
     return this.repository.find({
       where: whereConditions,
@@ -24,19 +25,19 @@ export class BookmarkQueryRepository {
     });
   }
 
-  async findOne(uuid): Promise<BookmarkEntity> {
+  async findOne(uuid: string): Promise<BookmarkEntity> {
     return this.repository.findOne({
       where: { uuid, archived_at: IsNull() },
     });
   }
 
-  async findList(uuids): Promise<BookmarkEntity[]> {
+  async findList(uuids: string[]): Promise<BookmarkEntity[]> {
     return this.repository.find({
       where: { uuid: In(uuids) },
     });
   }
 
-  async findMyCourse(uuid): Promise<BookmarkEntity[]> {
+  async findMyCourse(uuid: string): Promise<BookmarkEntity[]> {
     return this.repository.find({
       where: { course_uuid: uuid, archived_at: IsNull() },
     });
@@ -54,7 +55,7 @@ export class BookmarkQueryRepository {
     return this.repository.update({ id: bookmarkEntity.id }, { archived_at: null });
   }
 
-  async findUserBookmark(user, uuid): Promise<BookmarkEntity> {
+  async findUserBookmark(user: UserDto, uuid: string): Promise<BookmarkEntity> {
     return this.repository.findOne({
       where: { user_uuid: user.uuid, course_uuid: uuid, archived_at: IsNull() },
     });
