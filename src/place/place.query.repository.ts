@@ -162,7 +162,6 @@ export class PlaceQueryRepository {
         theme_uuid: dto.theme_uuid,
       });
     }
-
     return qb.getMany();
   }
 
@@ -177,20 +176,27 @@ export class PlaceQueryRepository {
       .getMany();
   }
 
-  async findSubwayPlaceCustomizeList(
+  async findSubwayPlacesCustomizeList(
     dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
     subwayStationName: string,
   ): Promise<PlaceEntity[]> {
-    return this.repository
+    const qb = this.repository
       .createQueryBuilder('p')
       .innerJoinAndSelect('p.subways', 's')
       .andWhere('s.name = :name', { name: subwayStationName })
       .andWhere('s.place_type = :type', { type: PLACE_TYPE[dto.place_type] })
-      .andWhere('s.kakao_rating = :rating', { rating: 1 })
-      .getMany();
+      .andWhere('s.kakao_rating = :rating', { rating: 1 });
+
+    if (dto.theme_uuid && dto.place_type !== 'SHOPPING' && dto.place_type !== 'ENTERTAINMENT') {
+      qb.innerJoinAndSelect('p.placeThemes', 'pt').andWhere('pt.theme_uuid = :theme_uuid', {
+        theme_uuid: dto.theme_uuid,
+      });
+    }
+
+    return qb.getMany();
   }
 
-  async findSubwayPlaceCustomizeCultureList(subwayStationName: string): Promise<PlaceEntity[]> {
+  async findSubwayPlacesCustomizeCultureList(subwayStationName: string): Promise<PlaceEntity[]> {
     const now = new Date();
 
     return this.repository

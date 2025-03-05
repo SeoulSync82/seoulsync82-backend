@@ -149,37 +149,41 @@ export class CourseRecommendationService {
     dto: ApiCourseGetPlaceCustomizeRequestQueryDto,
     user?: UserDto,
   ): Promise<ApiCourseGetPlaceCustomizeResponseDto> {
-    // 1. 추가 할 지하철역 조회
+    // 1. 지하철역 및 노선 정보 조회
     const subwayStation = await this.subwayQueryRepository.findSubwayStationUuid(dto.station_uuid);
     if (isEmpty(subwayStation)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    // 2. 장소 목록 조회
-    let subwayPlaceCustomizeList: PlaceEntity[];
-    if (dto.place_type === 'CULTURE') {
-      subwayPlaceCustomizeList =
-        await this.placeQueryRepository.findSubwayPlaceCustomizeCultureList(subwayStation.name);
-    } else {
-      subwayPlaceCustomizeList = await this.placeQueryRepository.findSubwayPlaceCustomizeList(
-        dto,
+    // 2. 주변 장소 리스트 조회
+    let subwayPlaceCustomizeList: PlaceEntity[] =
+      dto.place_type === 'CULTURE'
+        ? await this.placeQueryRepository.findSubwayPlacesCustomizeCultureList(subwayStation.name)
+        : await this.placeQueryRepository.findSubwayPlacesCustomizeList(dto, subwayStation.name);
+
+    // 3. 이미 선택되어 있는 장소 제외
+    const placeUuidsSet = new Set(dto.place_uuids);
+    let filteredPlaceList = subwayPlaceCustomizeList.filter(
+      (place) => !placeUuidsSet.has(place.uuid),
+    );
+
+    // 4. 사용자 히스토리 기록 조회
+    const userHistoryCourse: CourseDetailEntity[] = isNotEmpty(user)
+      ? await this.courseQueryRepository.findUserHistoryCourse(user.uuid)
+      : [];
+
+    // 5. 테마에 맞는 추가 장소가 없을 시 재추천
+    if (filteredPlaceList.length === 0) {
+      const dtoWithoutTheme = { ...dto };
+      delete dtoWithoutTheme.theme_uuid;
+
+      filteredPlaceList = await this.placeQueryRepository.findSubwayPlacesCustomizeList(
+        dtoWithoutTheme,
         subwayStation.name,
       );
     }
 
-    // 3. 이미 선택되어 있는 장소 제외
-    const placeUuidsSet = new Set(dto.place_uuids);
-    const filteredPlaceList = subwayPlaceCustomizeList.filter(
-      (place) => !placeUuidsSet.has(place.uuid),
-    );
-
-    // 4. 사용자 방문 기록 조회
-    let userHistoryCourse: CourseDetailEntity[];
-    if (isNotEmpty(user)) {
-      userHistoryCourse = await this.courseQueryRepository.findUserHistoryCourse(user.uuid);
-    }
-
-    // 5. 상위 N개 중 랜덤한 장소 선택
+    // 6. 장소 가중치 계산 및 랜덤 선택
     const topWeightedPlaces = getTopWeight(
       filteredPlaceList,
       RecommendType.TOP_N,
@@ -194,7 +198,7 @@ export class CourseRecommendationService {
     }
     const selectedPlace = selected[0];
 
-    // 6. Response 생성
+    // 7. Response 생성
     const apiCourseGetPlaceCustomizeResponseDto = plainToInstance(
       ApiCourseGetPlaceCustomizeResponseDto,
       {
