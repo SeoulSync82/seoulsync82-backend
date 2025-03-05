@@ -56,7 +56,7 @@ export class AuthService {
       );
 
       const userId = decoded.aud;
-      if (!userId) {
+      if (isEmpty(userId)) {
         res.clearCookie('refresh_token');
         throw new UnauthorizedException(ERROR.AUTHENTICATION);
       }
@@ -88,7 +88,7 @@ export class AuthService {
     }
   }
 
-  async logout(user: UserDto, res): Promise<ApiAuthPostUserLogoutResponseDto> {
+  async logout(user: UserDto, res: Response): Promise<ApiAuthPostUserLogoutResponseDto> {
     try {
       if (isEmpty(user.id)) throw new UnauthorizedException(ERROR.AUTHENTICATION);
 

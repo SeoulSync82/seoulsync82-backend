@@ -21,7 +21,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:user": "jest --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
-    "test:user:watch": "jest --watch --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**"
+    "test:user:watch": "jest --watch --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
+    "test:auth": "jest --testPathPattern=src/auth --coverage --collectCoverageFrom=src/auth/**",
+    "test:auth:watch": "jest --watch --testPathPattern=src/auth --coverage --collectCoverageFrom=src/auth/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",
@@ -130,6 +132,7 @@
       "decorator.ts",
       "pipe.ts",
       "common/*",
+      "types/*",
       "main.ts",
       "app/*"
     ],
