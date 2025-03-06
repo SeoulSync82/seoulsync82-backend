@@ -49,10 +49,10 @@ export class CommentService {
         community_user_uuid: community.user_uuid,
         community_user_name: community.user_name,
         community_user_profile_image: userList.find((u) => u.uuid === community.user_uuid)
-          ?.profile_image,
+          .profile_image,
         comments: comments.map((comment) => ({
           ...comment,
-          user_profile_image: userList.find((u) => u.uuid === comment.user_uuid)?.profile_image,
+          user_profile_image: userList.find((u) => u.uuid === comment.user_uuid).profile_image,
           isAuthor: comment.user_uuid === user.uuid,
         })),
         last_item_id: comments.length === dto.size ? comments[comments.length - 1].id : 0,

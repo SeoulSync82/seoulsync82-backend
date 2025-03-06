@@ -9,22 +9,22 @@ export class CommentQueryRepository {
     private repository: Repository<CommentEntity>,
   ) {}
 
-  async save(commentEntity): Promise<CommentEntity> {
+  async save(commentEntity: CommentEntity): Promise<CommentEntity> {
     return this.repository.save(commentEntity);
   }
 
-  async findOne(uuid): Promise<CommentEntity> {
+  async findOne(uuid: string): Promise<CommentEntity> {
     return this.repository.findOne({
       where: { uuid, archived_at: IsNull() },
     });
   }
 
-  async find(uuid, dto: ApiCommentGetRequestQueryDto): Promise<CommentEntity[]> {
-    const whereConditions = { target_uuid: uuid, archived_at: IsNull() };
-
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
+  async find(uuid: string, dto: ApiCommentGetRequestQueryDto): Promise<CommentEntity[]> {
+    const whereConditions = {
+      target_uuid: uuid,
+      archived_at: IsNull(),
+      ...(dto.last_id > 0 ? { id: LessThan(dto.last_id) } : {}),
+    };
 
     return this.repository.find({
       where: whereConditions,
