@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class CommunityNotificationDetailDto {
+export class ReactionNotificationDetailDto {
   @Expose()
   @ApiProperty({
     example: 'generated-uuid',

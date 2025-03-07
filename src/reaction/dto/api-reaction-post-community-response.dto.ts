@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { CommunityNotificationDetailDto } from 'src/community/dto/community-notification-detail.dto';
+import { ReactionNotificationDetailDto } from 'src/reaction/dto/reaction-notification-detail.dto';
 
-export class ApiCommunityPostReactionResponseDto {
+export class ApiReactionPostCommunityResponseDto {
   @Expose()
   @ApiProperty({
     description: '반응 작업 결과 데이터',
@@ -15,8 +15,8 @@ export class ApiCommunityPostReactionResponseDto {
   @Expose()
   @ApiProperty({
     description: '생성된 Notification 정보 (선택적)',
-    type: CommunityNotificationDetailDto,
+    type: ReactionNotificationDetailDto,
     nullable: true,
   })
-  notification?: CommunityNotificationDetailDto;
+  notification?: ReactionNotificationDetailDto;
 }

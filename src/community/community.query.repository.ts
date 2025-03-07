@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommunityCursorPaginationHelper } from 'src/commons/helpers/community.cursor.helper';
 import { ApiCommunityGetRequestQueryDto } from 'src/community/dto/api-community-get-request-query.dto';
 import { CommunityEntity } from 'src/entities/community.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 import { IsNull, Repository } from 'typeorm';
 
 export class CommunityQueryRepository {
@@ -10,24 +11,24 @@ export class CommunityQueryRepository {
     private repository: Repository<CommunityEntity>,
   ) {}
 
-  async save(communityEntity) {
+  async save(communityEntity: CommunityEntity): Promise<CommunityEntity> {
     return this.repository.save(communityEntity);
   }
 
-  async findOne(uuid): Promise<CommunityEntity> {
+  async findOne(uuid: string): Promise<CommunityEntity> {
     return this.repository.findOne({
       where: { uuid, archived_at: IsNull() },
     });
   }
 
-  async myCommunity(user): Promise<CommunityEntity[]> {
+  async myCommunity(user: UserDto): Promise<CommunityEntity[]> {
     return this.repository.find({
       where: { user_uuid: user.uuid, archived_at: IsNull() },
       order: { created_at: 'DESC' },
     });
   }
 
-  async findCommunityByCourse(uuid: string, user): Promise<CommunityEntity> {
+  async findCommunityByCourse(uuid: string, user: UserDto): Promise<CommunityEntity> {
     return this.repository.findOne({
       where: { course_uuid: uuid, user_uuid: user.uuid, archived_at: IsNull() },
     });
@@ -41,7 +42,7 @@ export class CommunityQueryRepository {
 
   async findCommunityList(
     dto: ApiCommunityGetRequestQueryDto,
-    user,
+    user: UserDto,
   ): Promise<{ communityList: CommunityEntity[]; nextCursor: string | null }> {
     const qb = this.repository
       .createQueryBuilder('community')

@@ -27,7 +27,9 @@
     "test:bookmark": "jest --testPathPattern=src/bookmark --coverage --collectCoverageFrom=src/bookmark/**",
     "test:bookmark:watch": "jest --watch --testPathPattern=src/bookmark --coverage --collectCoverageFrom=src/bookmark/**",
     "test:comment": "jest --testPathPattern=src/comment --coverage --collectCoverageFrom=src/comment/**",
-    "test:comment:watch": "jest --watch --testPathPattern=src/comment --coverage --collectCoverageFrom=src/comment/**"
+    "test:comment:watch": "jest --watch --testPathPattern=src/comment --coverage --collectCoverageFrom=src/comment/**",
+    "test:community": "jest --testPathPattern=src/community --coverage --collectCoverageFrom=src/community/**",
+    "test:community:watch": "jest --watch --testPathPattern=src/community --coverage --collectCoverageFrom=src/community/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",
@@ -44,7 +46,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "@types/cache-manager": "^4.0.3",
     "@types/jsonwebtoken": "^9.0.9",
-    "axios": "^1.6.5",
+    "axios": "^1.8.2",
     "bcrypt": "^5.1.1",
     "blanc-logger": "^1.1.0",
     "cache-manager": "^5.2.3",
@@ -104,7 +106,7 @@
     "jest": "29.3.1",
     "prettier": "^2.8.8",
     "source-map-support": "^0.5.20",
-    "ts-jest": "29.0.3",
+    "ts-jest": "^29.2.6",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.1.1",

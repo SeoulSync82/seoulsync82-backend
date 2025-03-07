@@ -15,7 +15,6 @@ import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-communit
 import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
 import { ApiCommunityGetResponseDto } from 'src/community/dto/api-community-get-response.dto';
 import { CommunityCoursePlaceDetailDto } from 'src/community/dto/community-course-place-detail.dto';
-import { CommunityNotificationDetailDto } from 'src/community/dto/community-notification-detail.dto';
 import { ApiCourseGetDetailResponseDto } from 'src/course/dto/api-course-get-detail-response.dto';
 import { ApiCourseGetMyHistoryResponseDto } from 'src/course/dto/api-course-get-my-history-response.dto';
 import { ApiCourseGetPlaceCustomizeResponseDto } from 'src/course/dto/api-course-get-place-customize-response.dto';
@@ -39,6 +38,7 @@ import { ApiPlaceGetCultureResponseDto } from 'src/place/dto/api-place-get-cultu
 import { ApiPlaceGetDetailResponseDto } from 'src/place/dto/api-place-get-detail-response.dto';
 import { ApiPlaceGetExhibitionResponseDto } from 'src/place/dto/api-place-get-exhibition-response.dto';
 import { ApiPlaceGetPopupResponseDto } from 'src/place/dto/api-place-get-popup-response.dto';
+import { ReactionNotificationDetailDto } from 'src/reaction/dto/reaction-notification-detail.dto';
 import { ApiSearchGetDetailResponseDto } from 'src/search/dto/api-search-get-detail-response.dto';
 import { ApiSearchGetResponseDto } from 'src/search/dto/api-search-get-response.dto';
 import { SearchDetailDto } from 'src/search/dto/search-detail.dto';
@@ -94,7 +94,7 @@ export const SwaggerModels = [
   ApiUserGetTokenResponseDto,
   bookmarkCoursePlaceDetailDto,
   CommentListDto,
-  CommunityNotificationDetailDto,
+  ReactionNotificationDetailDto,
   CommunityCoursePlaceDetailDto,
   CoursePlaceDto,
   CoursePlaceDetailDto,
@@ -104,4 +104,5 @@ export const SwaggerModels = [
   SearchDetailDto,
   SubwaylineDto,
   SubwayStationDto,
+  ReactionNotificationDetailDto,
 ];

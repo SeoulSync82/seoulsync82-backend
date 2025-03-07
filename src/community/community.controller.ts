@@ -8,9 +8,7 @@ import {
   Post,
   Put,
   Query,
-  Req,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -23,7 +21,6 @@ import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
 import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
-import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { CommunityService } from 'src/community/community.service';
 import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
@@ -189,73 +186,5 @@ export class CommunityController {
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
     return this.communityService.communityDelete(user, uuid);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @Post('/:uuid/reaction')
-  @ApiOperation({
-    summary: '커뮤니티 코스 좋아요',
-    description: '커뮤니티 코스 좋아요',
-  })
-  @ApiSuccessResponse(UuidResponseDto, {
-    description: '커뮤니티 코스 좋아요 성공',
-    status: HttpStatus.CREATED,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '커뮤니티 uuid가 존재하지 않은 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  @ApiExceptionResponse([ERROR.DUPLICATION], {
-    description: '이미 좋아요를 누른 게시글일 경우',
-    status: HttpStatus.CONFLICT,
-  })
-  @ApiParam({
-    name: 'uuid',
-    type: 'string',
-    required: false,
-    description: '커뮤니티 uuid',
-  })
-  @UseInterceptors(NotificationInterceptor)
-  async communityReaction(
-    @CurrentUser() user: UserDto,
-    @Param('uuid') uuid: string,
-    @Req() req,
-  ): Promise<UuidResponseDto> {
-    const res = await this.communityService.communityReaction(user, uuid);
-    req.notification = res.notification;
-    return res.data;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
-  @Patch('/:uuid/reaction')
-  @ApiOperation({
-    summary: '커뮤니티 코스 좋아요 취소',
-    description: '커뮤니티 코스 좋아요 취소',
-  })
-  @ApiSuccessResponse(UuidResponseDto, {
-    description: '커뮤니티 코스 좋아요 취소 성공',
-    status: HttpStatus.NO_CONTENT,
-  })
-  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
-    description: '커뮤니티 uuid가 존재하지 않은 경우 || 좋아요를 누르지 않은 경우',
-    status: HttpStatus.NOT_FOUND,
-  })
-  @ApiExceptionResponse([ERROR.DUPLICATION], {
-    description: '이미 좋아요 취소를 누른 게시글일 경우',
-    status: HttpStatus.CONFLICT,
-  })
-  @ApiParam({
-    name: 'uuid',
-    type: 'string',
-    required: false,
-    description: '커뮤니티 uuid',
-  })
-  async communityReactionDelete(
-    @CurrentUser() user: UserDto,
-    @Param('uuid') uuid: string,
-  ): Promise<UuidResponseDto> {
-    return this.communityService.communityReactionDelete(user, uuid);
   }
 }

@@ -14,16 +14,13 @@ import { ApiCommunityGetMyCourseRequestQueryDto } from 'src/community/dto/api-co
 import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
 import { ApiCommunityGetRequestQueryDto } from 'src/community/dto/api-community-get-request-query.dto';
 import { ApiCommunityGetResponseDto } from 'src/community/dto/api-community-get-response.dto';
-import { ApiCommunityPostReactionResponseDto } from 'src/community/dto/api-community-post-reaction-response.dto';
 import { ApiCommunityPostRequestBodyDto } from 'src/community/dto/api-community-post-request-body.dto';
 import { ApiCommunityPutRequestBodyDto } from 'src/community/dto/api-community-put-request-body.dto';
 import { CommunityCoursePlaceDetailDto } from 'src/community/dto/community-course-place-detail.dto';
-import { CommunityNotificationDetailDto } from 'src/community/dto/community-notification-detail.dto';
-import { ReactionQueryRepository } from 'src/community/reaction.query.repository';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { CourseEntity } from 'src/entities/course.entity';
-import { ReactionEntity } from 'src/entities/reaction.entity';
+import { ReactionQueryRepository } from 'src/reaction/reaction.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 
@@ -100,7 +97,7 @@ export class CommunityService {
       this.communityQueryRepository.findCommunityList(dto, user),
     ]);
 
-    if (isEmpty(totalCount)) {
+    if (totalCount === 0) {
       return { items: [], total_count: 0, next_page: null };
     }
 
@@ -119,12 +116,12 @@ export class CommunityService {
         const relatedUser = userList.find((u) => u.uuid === community.user_uuid);
         return {
           ...community,
-          customs: relatedCourse?.customs,
-          line: relatedCourse?.line,
-          subway: relatedCourse?.subway,
-          course_image: relatedCourse?.course_image,
-          user_name: relatedUser?.name,
-          user_profile_image: relatedUser?.profile_image,
+          customs: relatedCourse.customs,
+          line: relatedCourse.line,
+          subway: relatedCourse.subway,
+          course_image: relatedCourse.course_image,
+          user_name: relatedUser.name,
+          user_profile_image: relatedUser.profile_image,
         };
       }),
       total_count: totalCount,
@@ -198,63 +195,6 @@ export class CommunityService {
 
     community.archived_at = new Date();
     await this.communityQueryRepository.save(community);
-
-    return { uuid };
-  }
-
-  async communityReaction(
-    user: UserDto,
-    uuid: string,
-  ): Promise<ApiCommunityPostReactionResponseDto> {
-    const community = await this.communityQueryRepository.findOne(uuid);
-    if (isEmpty(community)) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-    const reaction = await this.reactionQueryRepository.findOne(uuid, user);
-
-    let notification: CommunityNotificationDetailDto | null = null;
-
-    if (!reaction) {
-      const reactionEntity = new ReactionEntity();
-      reactionEntity.uuid = generateUUID();
-      reactionEntity.target_uuid = uuid;
-      reactionEntity.user_uuid = user.uuid;
-      reactionEntity.user_name = user.nickname;
-      reactionEntity.like = 1;
-      await this.reactionQueryRepository.courseLike(reactionEntity);
-
-      notification = {
-        uuid: generateUUID(),
-        user_uuid: user.uuid,
-        target_uuid: community.uuid,
-        target_user_uuid: community.user_uuid,
-        content: `회원님의 게시물을 ${user.nickname}님이 좋아합니다.`,
-      };
-    } else if (reaction.like === 0) {
-      await this.reactionQueryRepository.updateCourseLike(reaction);
-    } else if (reaction.like === 1) {
-      throw new ConflictException(ERROR.DUPLICATION);
-    }
-
-    return {
-      data: { uuid },
-      notification,
-    };
-  }
-
-  async communityReactionDelete(user: UserDto, uuid: string): Promise<UuidResponseDto> {
-    const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
-    if (isEmpty(community)) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-    const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
-    if (!reaction) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    } else if (reaction.like === 1) {
-      await this.reactionQueryRepository.updateCourseLikeDelete(reaction);
-    } else if (reaction.like === 0) {
-      throw new ConflictException(ERROR.DUPLICATION);
-    }
 
     return { uuid };
   }
