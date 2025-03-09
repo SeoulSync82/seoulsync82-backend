@@ -138,7 +138,7 @@ describe('CommunityService', () => {
     });
 
     it('should return last_item_id as 0 when myCourses.length is less than dto.size', async () => {
-      // Given: dto.size is larger than the returned course count.
+      // Given
       const dto: ApiCommunityGetMyCourseRequestQueryDto = { size: 3, last_id: 0 };
       const user = { uuid: 'user-uuid' } as UserDto;
       const myCourses: CourseEntity[] = [
@@ -168,7 +168,7 @@ describe('CommunityService', () => {
       communityQueryRepository.myCommunity.mockResolvedValue(myCommunity);
       // When
       const result = await communityService.communityMyCourseList(dto, user);
-      // Then: Since myCourses.length (2) is less than dto.size (3), last_item_id should be 0.
+      // Then
       expect(result.last_item_id).toBe(0);
       expect(result.items).toHaveLength(myCourses.length);
     });

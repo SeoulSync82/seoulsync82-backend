@@ -1,8 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiCourseGetMyHistoryRequestQueryDto } from 'src/course/dto/api-course-get-my-history-request-query.dto';
-import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { CourseDetailEntity } from 'src/entities/course.detail.entity';
 import { CourseEntity } from 'src/entities/course.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 import { In, LessThan, Repository } from 'typeorm';
 
 export class CourseQueryRepository {
@@ -11,15 +11,13 @@ export class CourseQueryRepository {
     private repository: Repository<CourseEntity>,
     @InjectRepository(CourseDetailEntity)
     private detailRepository: Repository<CourseDetailEntity>,
-    @InjectRepository(BookmarkEntity)
-    private bookmarkRepository: Repository<BookmarkEntity>,
   ) {}
 
-  async saveCourse(courseEntity) {
+  async saveCourse(courseEntity: CourseEntity): Promise<CourseEntity> {
     return this.repository.save(courseEntity);
   }
 
-  async saveCourseDetail(courseDetailEntity) {
+  async saveCourseDetail(courseDetailEntity: CourseDetailEntity): Promise<CourseDetailEntity> {
     return this.detailRepository.save(courseDetailEntity);
   }
 
@@ -36,7 +34,7 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  async findCourse(uuid): Promise<CourseEntity> {
+  async findCourse(uuid: string): Promise<CourseEntity> {
     return this.repository.findOne({
       where: { uuid },
     });
@@ -51,35 +49,31 @@ export class CourseQueryRepository {
       .getMany();
   }
 
-  async findList(uuids): Promise<CourseEntity[]> {
+  async findList(uuids: string[]): Promise<CourseEntity[]> {
     return this.repository.find({
       where: { uuid: In(uuids) },
     });
   }
 
-  async findOne(uuid): Promise<CourseEntity> {
+  async findOne(uuid: string): Promise<CourseEntity> {
     return this.repository.findOne({
       where: { uuid },
     });
   }
 
-  async findMyCourse(dto: ApiCourseGetMyHistoryRequestQueryDto, user): Promise<CourseEntity[]> {
-    const whereConditions = { user_uuid: user.uuid };
-
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
+  async findMyCourse(
+    dto: ApiCourseGetMyHistoryRequestQueryDto,
+    user: UserDto,
+  ): Promise<CourseEntity[]> {
+    const whereConditions = {
+      user_uuid: user.uuid,
+      ...(dto.last_id > 0 ? { id: LessThan(dto.last_id) } : {}),
+    };
 
     return this.repository.find({
       where: whereConditions,
       order: { created_at: 'DESC' },
       take: dto.size,
-    });
-  }
-
-  async findUserCourse(uuid, user): Promise<CourseEntity> {
-    return this.repository.findOne({
-      where: { user_uuid: user.uuid },
     });
   }
 }

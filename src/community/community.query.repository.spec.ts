@@ -116,7 +116,6 @@ describe('CommunityQueryRepository', () => {
   describe('findCommunityList', () => {
     let qb: any;
     const user: UserDto = { uuid: 'user-uuid' } as UserDto;
-    // 기본 dto 세팅
     const baseDto: ApiCommunityGetRequestQueryDto = { size: 2, order: 'latest' };
 
     beforeEach(() => {

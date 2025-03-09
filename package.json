@@ -29,7 +29,9 @@
     "test:comment": "jest --testPathPattern=src/comment --coverage --collectCoverageFrom=src/comment/**",
     "test:comment:watch": "jest --watch --testPathPattern=src/comment --coverage --collectCoverageFrom=src/comment/**",
     "test:community": "jest --testPathPattern=src/community --coverage --collectCoverageFrom=src/community/**",
-    "test:community:watch": "jest --watch --testPathPattern=src/community --coverage --collectCoverageFrom=src/community/**"
+    "test:community:watch": "jest --watch --testPathPattern=src/community --coverage --collectCoverageFrom=src/community/**",
+    "test:course": "jest --testPathPattern=src/course --coverage --collectCoverageFrom=src/course/**",
+    "test:course:watch": "jest --watch --testPathPattern=src/course --coverage --collectCoverageFrom=src/course/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",
@@ -139,6 +141,7 @@
       "pipe.ts",
       "common/*",
       "types/*",
+      "enum/*",
       "main.ts",
       "app/*"
     ],

@@ -103,9 +103,6 @@ export class CourseRecommendationService {
     const sortedPlaces: CoursePlaceInfoDto[] = [];
     DEFAULT_CUSTOMS.forEach((custom, index) => {
       const place = selectionPlaces.find((item) => item.place_type === custom);
-      if (isEmpty(place)) {
-        throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-      }
       const placeDetailDto = plainToInstance(CoursePlaceInfoDto, place, {
         excludeExtraneousValues: true,
       });
@@ -116,15 +113,12 @@ export class CourseRecommendationService {
     });
 
     // 7. 코스 이름 생성
-    let courseName = '';
-    if (isEmpty(theme)) {
-      const randomEmoji = Emojis[Math.floor(Math.random() * Emojis.length)];
-      courseName = `${subwayWithLines[0].name}역, 주변 코스 일정 ${randomEmoji}`;
-    } else {
-      const themeText = theme.theme_name.substring(0, theme.theme_name.length - 2).trim();
-      const themeEmoji = theme.theme_name.substring(theme.theme_name.length - 2);
-      courseName = `${subwayWithLines[0].name}역, ${themeText} 코스 일정 ${themeEmoji}`;
-    }
+    const stationName = subwayWithLines[0].name;
+    const courseName = isEmpty(theme)
+      ? `${stationName}역, 주변 코스 일정 ${Emojis[Math.floor(Math.random() * Emojis.length)]}`
+      : `${stationName}역, ${theme.theme_name
+          .slice(0, -2)
+          .trim()} 코스 일정 ${theme.theme_name.slice(-2)}`;
 
     // 7. Response 생성
     const apiCourseGetRecommendResponseDto = new ApiCourseGetRecommendResponseDto({

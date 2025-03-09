@@ -120,7 +120,6 @@ describe('CommentService', () => {
       commentQueryRepository.find.mockResolvedValue(dummyComments);
       userQueryRepository.findUserList.mockResolvedValue(dummyUserList);
 
-      // 여기서 plainToInstance를 개별적으로 목 처리
       jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue({
         community_review: dummyCommunity.review,
         community_user_uuid: dummyCommunity.user_uuid,

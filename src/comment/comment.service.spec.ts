@@ -169,7 +169,6 @@ describe('CommentService', () => {
         user_name: 'CommunityUser',
       } as CommunityEntity;
 
-      // Only one comment returned, which is less than requested size (3)
       const dummyComments: CommentEntity[] = [
         {
           id: 1,
@@ -220,7 +219,6 @@ describe('CommentService', () => {
             ?.profile_image,
           isAuthor: comment.user_uuid === dummyUser.uuid,
         })),
-        // Since comments.length (1) is less than dto.size (3), last_item_id should be 0
         last_item_id:
           dummyComments.length === dto.size ? dummyComments[dummyComments.length - 1].id : 0,
       };

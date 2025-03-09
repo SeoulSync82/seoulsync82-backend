@@ -55,20 +55,18 @@ export class CourseService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    let theme;
-    if (isNotEmpty(dto.theme_uuid)) {
-      theme = await this.themeQueryRepository.findThemeUuid(dto.theme_uuid);
-    }
+    const theme = isNotEmpty(dto.theme_uuid)
+      ? await this.themeQueryRepository.findThemeUuid(dto.theme_uuid)
+      : null;
 
     /** 비회원일 경우 geust로 저장 */
-    const userUuid = user?.uuid || null;
-    const userName = user?.nickname || 'guest';
+    const { uuid: userUuid = null, nickname: userName = 'guest' } = user ?? {};
 
     const apiCoursePostRecommendSaveResponseDto = new ApiCoursePostRecommendSaveResponseDto({
       uuid: dto.course_uuid,
       subway: subwayWithLines[0].name,
       line: subwayWithLines.map((sub) => sub.line),
-      theme: theme.theme_name,
+      theme: theme?.theme_name ?? null,
       course_name: dto.course_name,
       count: dto.places.length,
       place: dto.places,
@@ -87,7 +85,7 @@ export class CourseService {
       courseEntity.user_uuid = userUuid;
       courseEntity.user_name = userName;
       courseEntity.count = dto.places.length;
-      courseEntity.theme = theme.theme_name;
+      courseEntity.theme = theme?.theme_name ?? null;
       courseEntity.customs = dto.places.map((place) => PLACE_TYPE[place.place_type]).join(', ');
 
       await queryRunner.manager.save(CourseEntity, courseEntity);
@@ -134,10 +132,9 @@ export class CourseService {
     const subwayStation = await this.subwayQueryRepository.findSubwayStationName(course.subway);
     const subway = await this.subwayQueryRepository.findSubway(subwayStation.name);
 
-    let theme;
-    if (isNotEmpty(course.theme)) {
-      theme = await this.themeQueryRepository.findThemeName(course.theme);
-    }
+    const theme = isNotEmpty(course.theme)
+      ? await this.themeQueryRepository.findThemeName(course.theme)
+      : null;
 
     const placeDtos = coursePlaces.map((place) => {
       return plainToInstance(
@@ -181,7 +178,7 @@ export class CourseService {
     dto: ApiCourseGetMyHistoryRequestQueryDto,
     user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiCourseGetMyHistoryResponseDto>> {
-    const courseList = await this.courseQueryRepository.findMyCourse(dto, user);
+    const courseList: CourseEntity[] = await this.courseQueryRepository.findMyCourse(dto, user);
     if (courseList.length === 0) {
       return { items: [], last_item_id: 0 };
     }
