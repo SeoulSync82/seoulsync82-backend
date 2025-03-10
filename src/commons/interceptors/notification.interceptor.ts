@@ -1,4 +1,4 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { NotificationPushDto } from 'src/notification/dto/notification.dto';
@@ -25,7 +25,7 @@ export class NotificationInterceptor implements NestInterceptor {
           target_user_uuid: notification.target_user_uuid,
           content: notification.content,
         });
-        // 직접 알림 서비스를 호출하여 알림을 발송.
+
         await this.notificationQueryRepository.sendNotification(notificationData);
       }),
     );

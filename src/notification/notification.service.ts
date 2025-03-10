@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/commons/constants/error';
 import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { isEmpty } from 'src/commons/util/is/is-empty';
 import { ApiNotificationGetListRequestQueryDto } from 'src/notification/dto/api-notification-get-list-request-query.dto';
 import { ApiNotificationGetListResponseDto } from 'src/notification/dto/api-notification-get-list-response.dto';
 import { NotificationQueryRepository } from 'src/notification/notification.query.repository';
@@ -45,7 +46,7 @@ export class NotificationService {
 
   async notificationRead(uuid: string, user: UserDto): Promise<UuidResponseDto> {
     const notification = await this.notificationQueryRepository.findNotification(uuid);
-    if (!notification || notification.target_user_uuid !== user.uuid) {
+    if (isEmpty(notification) || notification.target_user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 

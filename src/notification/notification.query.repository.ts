@@ -1,7 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotificationEntity } from 'src/entities/notification.entity';
 import { ApiNotificationGetListRequestQueryDto } from 'src/notification/dto/api-notification-get-list-request-query.dto';
-import { LessThan, Repository } from 'typeorm';
+import { NotificationPushDto } from 'src/notification/dto/notification.dto';
+import { UserDto } from 'src/user/dto/user.dto';
+import { LessThan, Repository, UpdateResult } from 'typeorm';
 
 export class NotificationQueryRepository {
   constructor(
@@ -9,16 +11,18 @@ export class NotificationQueryRepository {
     private repository: Repository<NotificationEntity>,
   ) {}
 
-  async sendNotification(notificationData): Promise<NotificationEntity> {
+  async sendNotification(notificationData: NotificationPushDto): Promise<NotificationEntity> {
     return this.repository.save(notificationData);
   }
 
-  async findList(dto: ApiNotificationGetListRequestQueryDto, user): Promise<NotificationEntity[]> {
-    const whereConditions = { target_user_uuid: user.uuid };
-
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
+  async findList(
+    dto: ApiNotificationGetListRequestQueryDto,
+    user: UserDto,
+  ): Promise<NotificationEntity[]> {
+    const whereConditions = {
+      target_user_uuid: user.uuid,
+      ...(dto.last_id > 0 ? { id: LessThan(dto.last_id) } : {}),
+    };
 
     return this.repository.find({
       where: whereConditions,
@@ -27,13 +31,13 @@ export class NotificationQueryRepository {
     });
   }
 
-  async findNotification(uuid): Promise<NotificationEntity> {
+  async findNotification(uuid: string): Promise<NotificationEntity> {
     return this.repository.findOne({
       where: { uuid },
     });
   }
 
-  async updateRead(uuid) {
+  async updateRead(uuid: string): Promise<UpdateResult> {
     return this.repository.update(
       {
         uuid,

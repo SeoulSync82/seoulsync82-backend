@@ -1,358 +1,352 @@
 import { TestBed } from '@automock/jest';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import * as classTransformer from 'class-transformer';
-import { CommentQueryRepository } from 'src/comment/comment.query.repository';
-import { CommentService } from 'src/comment/comment.service';
-import { ApiCommentGetRequestQueryDto } from 'src/comment/dto/api-comment-get-request-query.dto';
-import { ApiCommentPostRequestBodyDto } from 'src/comment/dto/api-community-post-request-body.dto';
-import { ApiCommentPutRequestBodyDto } from 'src/comment/dto/api-community-put-request-body.dto';
-import { CommunityQueryRepository } from 'src/community/community.query.repository';
-import { CommentEntity } from 'src/entities/comment.entity';
-import { CommunityEntity } from 'src/entities/community.entity';
-import { UserEntity } from 'src/entities/user.entity';
+import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { ApiBookmarkGetDetailResponseDto } from 'src/bookmark/dto/api-bookmark-get-detail-response.dto';
+import { ApiBookmarkGetRequestQueryDto } from 'src/bookmark/dto/api-bookmark-get-request-query.dto';
+import { ApiBookmarkGetResponseDto } from 'src/bookmark/dto/api-bookmark-get-response.dto';
+import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
+import { CourseQueryRepository } from 'src/course/course.query.repository';
+import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
+import { BookmarkService } from './bookmark.service';
 
-describe('CommentService', () => {
-  let commentService: CommentService;
-  let commentQueryRepository: jest.Mocked<CommentQueryRepository>;
-  let communityQueryRepository: jest.Mocked<CommunityQueryRepository>;
+describe('BookmarkService', () => {
+  let bookmarkService: BookmarkService;
+  let bookmarkQueryRepository: jest.Mocked<BookmarkQueryRepository>;
+  let courseQueryRepository: jest.Mocked<CourseQueryRepository>;
   let userQueryRepository: jest.Mocked<UserQueryRepository>;
 
   beforeEach(async () => {
-    const { unit, unitRef } = TestBed.create(CommentService).compile();
-    commentService = unit;
-    commentQueryRepository = unitRef.get(CommentQueryRepository);
-    communityQueryRepository = unitRef.get(CommunityQueryRepository);
+    const { unit, unitRef } = TestBed.create(BookmarkService).compile();
+    bookmarkService = unit;
+    bookmarkQueryRepository = unitRef.get(BookmarkQueryRepository);
+    courseQueryRepository = unitRef.get(CourseQueryRepository);
     userQueryRepository = unitRef.get(UserQueryRepository);
     jest.clearAllMocks();
   });
 
-  describe('commentList', () => {
-    it('should throw NotFoundException when community not found', async () => {
-      // Given
-      const dummyCommunityUuid = 'community-uuid';
-      const dto: ApiCommentGetRequestQueryDto = { size: 5, last_id: 0 };
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      communityQueryRepository.findOne.mockResolvedValue(null);
+  describe('bookmarkList', () => {
+    const dummyDto: ApiBookmarkGetRequestQueryDto = { size: 2 };
+    const dummyUser: UserDto = { uuid: 'user-uuid' } as UserDto;
 
-      // When & Then
-      await expect(commentService.commentList(dummyCommunityUuid, dto, dummyUser)).rejects.toThrow(
-        NotFoundException,
-      );
+    it('should return empty response if no courses found', async () => {
+      bookmarkQueryRepository.find.mockResolvedValue([]);
+
+      // When
+      const result: LastItemIdResponseDto<ApiBookmarkGetResponseDto> =
+        await bookmarkService.bookmarkList(dummyDto, dummyUser);
+
+      // Then
+      expect(result).toEqual({ items: [], last_item_id: 0 });
     });
 
-    it('should return ApiCommentGetResponseDto when community and comments exist', async () => {
+    it('should return mapped bookmark list with correct last_item_id when courses found', async () => {
       // Given
-      const dummyCommunityUuid = 'community-uuid';
-      const dto: ApiCommentGetRequestQueryDto = { size: 2, last_id: 0 };
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-
-      const dummyCommunity: CommunityEntity = {
-        uuid: dummyCommunityUuid,
-        review: 'Great community!',
-        user_uuid: 'community-user-uuid',
-        user_name: 'CommunityUser',
-      } as CommunityEntity;
-
-      const dummyComments: CommentEntity[] = [
+      const courseList: BookmarkEntity[] = [
         {
           id: 1,
-          uuid: 'comment-1',
+          uuid: 'bm-1',
           user_uuid: 'user-uuid',
-          comment: 'First comment',
-        } as CommentEntity,
+          course_uuid: 'course-1',
+          course_name: 'Course 1',
+          subway: 'Line 1',
+          line: 'Line A',
+          course_image: 'img1',
+          user_name: 'User One',
+          archived_at: null,
+        },
         {
           id: 2,
-          uuid: 'comment-2',
-          user_uuid: 'other-user-uuid',
-          comment: 'Second comment',
-        } as CommentEntity,
-      ];
+          uuid: 'bm-2',
+          user_uuid: 'other-uuid',
+          course_uuid: 'course-2',
+          course_name: 'Course 2',
+          subway: 'Line 2',
+          line: 'Line B',
+          course_image: 'img2',
+          user_name: 'User Two',
+          archived_at: null,
+        },
+      ] as BookmarkEntity[];
 
-      const dummyUserList: UserEntity[] = [
-        {
-          id: 2,
-          uuid: 'community-user-uuid',
-          email: 'comm@example.com',
-          name: 'CommunityUser',
-          profile_image: 'img-community',
-          type: 'kakao',
-          refresh_token: null,
-          created_at: new Date(),
-          updated_at: new Date(),
-        } as UserEntity,
+      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(courseList as any);
+
+      bookmarkQueryRepository.find.mockResolvedValue(courseList);
+      userQueryRepository.findUserList.mockResolvedValue([
         {
           id: 1,
           uuid: 'user-uuid',
-          email: 'user@example.com',
-          name: 'UserName',
-          profile_image: 'img-user',
+          email: 'user1@example.com',
+          name: 'User One',
+          profile_image: 'img-user1',
           type: 'kakao',
           refresh_token: null,
           created_at: new Date(),
           updated_at: new Date(),
-        } as UserEntity,
+        },
         {
-          id: 3,
-          uuid: 'other-user-uuid',
-          email: 'other@example.com',
-          name: 'OtherUser',
-          profile_image: 'img-other',
+          id: 2,
+          uuid: 'other-uuid',
+          email: 'user2@example.com',
+          name: 'User Two',
+          profile_image: 'img-user2',
           type: 'kakao',
           refresh_token: null,
           created_at: new Date(),
           updated_at: new Date(),
-        } as UserEntity,
-      ];
-
-      communityQueryRepository.findOne.mockResolvedValue(dummyCommunity);
-      commentQueryRepository.find.mockResolvedValue(dummyComments);
-      userQueryRepository.findUserList.mockResolvedValue(dummyUserList);
-
-      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue({
-        community_review: dummyCommunity.review,
-        community_user_uuid: dummyCommunity.user_uuid,
-        community_user_name: dummyCommunity.user_name,
-        community_user_profile_image: dummyUserList.find((u) => u.uuid === dummyCommunity.user_uuid)
-          ?.profile_image,
-        comments: dummyComments.map((comment) => ({
-          ...comment,
-          user_profile_image: dummyUserList.find((u) => u.uuid === comment.user_uuid)
-            ?.profile_image,
-          isAuthor: comment.user_uuid === dummyUser.uuid,
-        })),
-        last_item_id:
-          dummyComments.length === dto.size ? dummyComments[dummyComments.length - 1].id : 0,
-      } as any);
-
-      const expectedResponse = {
-        community_review: dummyCommunity.review,
-        community_user_uuid: dummyCommunity.user_uuid,
-        community_user_name: dummyCommunity.user_name,
-        community_user_profile_image: dummyUserList.find((u) => u.uuid === dummyCommunity.user_uuid)
-          ?.profile_image,
-        comments: dummyComments.map((comment) => ({
-          ...comment,
-          user_profile_image: dummyUserList.find((u) => u.uuid === comment.user_uuid)
-            ?.profile_image,
-          isAuthor: comment.user_uuid === dummyUser.uuid,
-        })),
-        last_item_id:
-          dummyComments.length === dto.size ? dummyComments[dummyComments.length - 1].id : 0,
-      };
+        },
+      ]);
+      const expectedLastId = courseList[courseList.length - 1].id;
 
       // When
-      const result = await commentService.commentList(dummyCommunityUuid, dto, dummyUser);
+      const result = await bookmarkService.bookmarkList(dummyDto, dummyUser);
 
       // Then
-      expect(communityQueryRepository.findOne).toHaveBeenCalledWith(dummyCommunityUuid);
-      expect(commentQueryRepository.find).toHaveBeenCalledWith(dummyCommunityUuid, dto);
       expect(userQueryRepository.findUserList).toHaveBeenCalledWith(
-        Array.from(new Set([...dummyComments.map((c) => c.user_uuid), dummyCommunity.user_uuid])),
+        courseList.map((item) => item.user_uuid),
       );
-      expect(result).toEqual(expectedResponse);
+      expect(result.last_item_id).toEqual(expectedLastId);
+      result.items.forEach((bookmark: any) => {
+        const matchingUser =
+          bookmark.user_uuid === 'user-uuid'
+            ? { profile_image: 'img-user1' }
+            : { profile_image: 'img-user2' };
+        expect(bookmark.user_profile_image).toEqual(matchingUser.profile_image);
+      });
+    });
+
+    it('should set last_item_id to 0 if courseList.length is less than dto.size', async () => {
+      // Given
+      const courseList: BookmarkEntity[] = [
+        {
+          id: 1,
+          uuid: 'bm-1',
+          user_uuid: 'user-uuid',
+          course_uuid: 'course-1',
+          course_name: 'Course 1',
+          subway: 'Line 1',
+          line: 'Line A',
+          course_image: 'img1',
+          user_name: 'User One',
+          archived_at: null,
+        },
+      ] as BookmarkEntity[];
+
+      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(courseList as any);
+
+      bookmarkQueryRepository.find.mockResolvedValue(courseList);
+      userQueryRepository.findUserList.mockResolvedValue([
+        {
+          id: 1,
+          uuid: 'user-uuid',
+          email: 'user1@example.com',
+          name: 'User One',
+          profile_image: 'img-user1',
+          type: 'kakao',
+          refresh_token: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      ]);
+      // When
+      const result = await bookmarkService.bookmarkList(
+        { size: 2 } as ApiBookmarkGetRequestQueryDto,
+        dummyUser,
+      );
+      // Then
+      expect(result.last_item_id).toEqual(0);
     });
   });
 
-  describe('commentPost', () => {
-    it('should throw NotFoundException when community not found', async () => {
-      // Given
-      const dummyCommunityUuid = 'community-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dto: ApiCommentPostRequestBodyDto = { comment: 'New comment' };
-      communityQueryRepository.findOne.mockResolvedValue(null);
+  describe('myCourseDetail', () => {
+    const dummyUuid = 'bookmark-uuid';
 
+    it('should throw NotFoundException when course not found', async () => {
+      // Given
+      bookmarkQueryRepository.findOne.mockResolvedValue(null);
       // When & Then
-      await expect(commentService.commentPost(dummyCommunityUuid, dummyUser, dto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(bookmarkService.myCourseDetail(dummyUuid)).rejects.toThrow(NotFoundException);
     });
 
-    it('should save comment and return UuidResponseDto', async () => {
+    it('should return course detail DTO when course found with course places', async () => {
       // Given
-      const dummyCommunityUuid = 'community-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dto: ApiCommentPostRequestBodyDto = { comment: 'New comment' };
-      const dummyCommunity: CommunityEntity = {
-        uuid: dummyCommunityUuid,
-        user_uuid: 'community-user-uuid',
-      } as CommunityEntity;
-      communityQueryRepository.findOne.mockResolvedValue(dummyCommunity);
-      const generatedUUID = 'generated-uuid';
-      jest.spyOn(global, 'generateUUID' as any).mockReturnValue(generatedUUID);
-      commentQueryRepository.save.mockResolvedValue({} as CommentEntity);
+      const dummyCourse = {
+        course_uuid: 'course-uuid',
+        uuid: 'bookmark-uuid',
+        course_name: 'Test Course',
+        subway: 'Line 1',
+      } as any;
+      const dummyCoursePlaces = [
+        {
+          sort: 1,
+          place: { name: 'Place 1', address: 'Addr 1' },
+          place_uuid: 'place-1',
+        },
+        {
+          sort: 2,
+          place: { name: 'Place 2', address: 'Addr 2' },
+          place_uuid: 'place-2',
+        },
+      ] as any;
+      bookmarkQueryRepository.findOne.mockResolvedValue(dummyCourse);
+      courseQueryRepository.findPlace.mockResolvedValue(dummyCoursePlaces);
+
+      const mappedPlaces = dummyCoursePlaces.map((cp: any) => ({
+        ...cp.place,
+        sort: cp.sort,
+        uuid: cp.place_uuid,
+      }));
+
+      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(mappedPlaces as any);
 
       // When
-      const result = await commentService.commentPost(dummyCommunityUuid, dummyUser, dto);
+      const result = await bookmarkService.myCourseDetail(dummyUuid);
 
       // Then
-      expect(communityQueryRepository.findOne).toHaveBeenCalledWith(dummyCommunityUuid);
-      expect(commentQueryRepository.save).toHaveBeenCalled();
-      expect(result).toEqual({ uuid: generatedUUID });
-    });
-  });
-
-  describe('commentUpdate', () => {
-    it('should throw NotFoundException when comment not found', async () => {
-      // Given
-      const dummyCommentUuid = 'comment-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dto: ApiCommentPutRequestBodyDto = { comment: 'Updated comment' };
-      commentQueryRepository.findOne.mockResolvedValue(null);
-
-      // When & Then
-      await expect(commentService.commentUpdate(dummyUser, dto, dummyCommentUuid)).rejects.toThrow(
-        NotFoundException,
-      );
+      expect(bookmarkQueryRepository.findOne).toHaveBeenCalledWith(dummyUuid);
+      expect(courseQueryRepository.findPlace).toHaveBeenCalledWith(dummyCourse.course_uuid);
+      expect(result).toBeInstanceOf(ApiBookmarkGetDetailResponseDto);
+      expect(result.course_uuid).toEqual(dummyCourse.course_uuid);
+      expect(result.my_course_uuid).toEqual(dummyCourse.uuid);
+      expect(result.count).toEqual(dummyCoursePlaces.length);
+      result.place.forEach((p: any, idx: number) => {
+        expect(p.uuid).toEqual(dummyCoursePlaces[idx].place_uuid);
+        expect(p.sort).toEqual(dummyCoursePlaces[idx].sort);
+      });
     });
 
-    it('should throw NotFoundException when user is not the author', async () => {
-      // Given
-      const dummyCommentUuid = 'comment-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dto: ApiCommentPutRequestBodyDto = { comment: 'Updated comment' };
-      const dummyComment: CommentEntity = {
-        uuid: dummyCommentUuid,
-        user_uuid: 'other-uuid',
-        comment: 'Old comment',
-      } as CommentEntity;
-      commentQueryRepository.findOne.mockResolvedValue(dummyComment);
+    it('should return course detail DTO with count 0 when no course places found', async () => {
+      const dummyCourse = {
+        course_uuid: 'course-uuid',
+        uuid: 'bookmark-uuid',
+        course_name: 'Test Course',
+        subway: 'Line 1',
+      } as any;
+      bookmarkQueryRepository.findOne.mockResolvedValue(dummyCourse);
+      courseQueryRepository.findPlace.mockResolvedValue([]);
 
-      // When & Then
-      await expect(commentService.commentUpdate(dummyUser, dto, dummyCommentUuid)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should update comment and return UuidResponseDto', async () => {
-      // Given
-      const dummyCommentUuid = 'comment-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dto: ApiCommentPutRequestBodyDto = { comment: 'Updated comment' };
-      const dummyComment: CommentEntity = {
-        uuid: dummyCommentUuid,
-        user_uuid: dummyUser.uuid,
-        comment: 'Old comment',
-      } as CommentEntity;
-      commentQueryRepository.findOne.mockResolvedValue(dummyComment);
-      commentQueryRepository.save.mockResolvedValue({
-        ...dummyComment,
-        comment: dto.comment,
-      } as CommentEntity);
+      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue([]);
 
       // When
-      const result = await commentService.commentUpdate(dummyUser, dto, dummyCommentUuid);
+      const result = await bookmarkService.myCourseDetail(dummyUuid);
 
       // Then
-      expect(commentQueryRepository.findOne).toHaveBeenCalledWith(dummyCommentUuid);
-      expect(commentQueryRepository.save).toHaveBeenCalled();
-      expect(result).toEqual({ uuid: dummyCommentUuid });
+      expect(result.count).toEqual(0);
+      expect(result.place).toEqual([]);
     });
   });
 
-  describe('commentDelete', () => {
-    it('should throw NotFoundException when comment not found', async () => {
-      // Given
-      const dummyCommentUuid = 'comment-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      commentQueryRepository.findOne.mockResolvedValue(null);
+  describe('bookmarkSave', () => {
+    const dummyUser: UserDto = { uuid: 'user-uuid', nickname: 'UserName' } as UserDto;
+    const courseUuid = 'course-uuid';
 
+    it('should throw NotFoundException if course not found', async () => {
+      // Given
+      courseQueryRepository.findCourse.mockResolvedValue(null);
       // When & Then
-      await expect(commentService.commentDelete(dummyUser, dummyCommentUuid)).rejects.toThrow(
+      await expect(bookmarkService.bookmarkSave(dummyUser, courseUuid)).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('should throw NotFoundException when user is not the author', async () => {
+    it('should save new bookmark if no existing bookmark found', async () => {
       // Given
-      const dummyCommentUuid = 'comment-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
+      const dummyCourse = {
+        subway: 'Line 1',
+        line: 'L1',
+        course_name: 'Test Course',
+        course_image: 'img-course',
+      } as any;
+      courseQueryRepository.findCourse.mockResolvedValue(dummyCourse);
+      bookmarkQueryRepository.findUserBookmark.mockResolvedValue(undefined);
+      bookmarkQueryRepository.bookmarkSave.mockResolvedValue(undefined);
+
+      // When
+      const result = await bookmarkService.bookmarkSave(dummyUser, courseUuid);
+
+      // Then
+      expect(courseQueryRepository.findCourse).toHaveBeenCalledWith(courseUuid);
+      expect(bookmarkQueryRepository.findUserBookmark).toHaveBeenCalledWith(dummyUser, courseUuid);
+      expect(bookmarkQueryRepository.bookmarkSave).toHaveBeenCalled();
+      expect(result).toEqual({ uuid: courseUuid });
+    });
+
+    it('should throw ConflictException if bookmark exists and not archived', async () => {
+      // Given
+      const dummyCourse = {
         id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dummyComment: CommentEntity = {
-        uuid: dummyCommentUuid,
-        user_uuid: 'other-uuid',
-        comment: 'Some comment',
-      } as CommentEntity;
-      commentQueryRepository.findOne.mockResolvedValue(dummyComment);
+        uuid: courseUuid,
+        user_uuid: 'some-user-uuid',
+        user_name: 'Some Name',
+        subway: 'Line 1',
+        line: 'L1',
+        course_name: 'Test Course',
+        course_image: 'img-course',
+      } as any;
+      courseQueryRepository.findCourse.mockResolvedValue(dummyCourse);
+      bookmarkQueryRepository.findUserBookmark.mockResolvedValue({ archived_at: null } as any);
 
       // When & Then
-      await expect(commentService.commentDelete(dummyUser, dummyCommentUuid)).rejects.toThrow(
-        NotFoundException,
+      await expect(bookmarkService.bookmarkSave(dummyUser, courseUuid)).rejects.toThrow(
+        ConflictException,
       );
     });
 
-    it('should mark comment as deleted and return UuidResponseDto', async () => {
+    it('should update bookmark if bookmark exists and archived', async () => {
       // Given
-      const dummyCommentUuid = 'comment-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
+      const dummyCourse = {
         id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dummyComment: CommentEntity = {
-        uuid: dummyCommentUuid,
-        user_uuid: dummyUser.uuid,
-        comment: 'Some comment',
-      } as CommentEntity;
-      commentQueryRepository.findOne.mockResolvedValue(dummyComment);
-      commentQueryRepository.save.mockResolvedValue({
-        ...dummyComment,
+        uuid: courseUuid,
+        user_uuid: 'some-user-uuid',
+        user_name: 'Some Name',
+        subway: 'Line 1',
+        line: 'L1',
+        course_name: 'Test Course',
+        course_image: 'img-course',
+      } as any;
+      courseQueryRepository.findCourse.mockResolvedValue(dummyCourse);
+      bookmarkQueryRepository.findUserBookmark.mockResolvedValue({
         archived_at: new Date(),
-      } as CommentEntity);
+      } as any);
+      bookmarkQueryRepository.bookmarkUpdate.mockResolvedValue(undefined);
 
       // When
-      const result = await commentService.commentDelete(dummyUser, dummyCommentUuid);
+      const result = await bookmarkService.bookmarkSave(dummyUser, courseUuid);
 
       // Then
-      expect(commentQueryRepository.findOne).toHaveBeenCalledWith(dummyCommentUuid);
-      expect(commentQueryRepository.save).toHaveBeenCalled();
-      expect(result).toEqual({ uuid: dummyCommentUuid });
+      expect(bookmarkQueryRepository.bookmarkUpdate).toHaveBeenCalled();
+      expect(result).toEqual({ uuid: courseUuid });
+    });
+  });
+
+  describe('bookmarkDelete', () => {
+    const dummyUser: UserDto = { uuid: 'user-uuid' } as UserDto;
+    const courseUuid = 'course-uuid';
+
+    it('should throw NotFoundException if no bookmark found', async () => {
+      // Given
+      bookmarkQueryRepository.findUserBookmark.mockResolvedValue(null);
+      // When & Then
+      await expect(bookmarkService.bookmarkDelete(dummyUser, courseUuid)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should delete bookmark if found and return uuid', async () => {
+      // Given
+      const dummyBookmark = { uuid: courseUuid } as any;
+      bookmarkQueryRepository.findUserBookmark.mockResolvedValue(dummyBookmark);
+      bookmarkQueryRepository.bookmarkDelete.mockResolvedValue(undefined);
+
+      // When
+      const result = await bookmarkService.bookmarkDelete(dummyUser, courseUuid);
+
+      // Then
+      expect(bookmarkQueryRepository.findUserBookmark).toHaveBeenCalledWith(dummyUser, courseUuid);
+      expect(bookmarkQueryRepository.bookmarkDelete).toHaveBeenCalledWith(dummyBookmark);
+      expect(result).toEqual({ uuid: courseUuid });
     });
   });
 });

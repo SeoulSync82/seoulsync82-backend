@@ -165,7 +165,7 @@ describe('AuthController', () => {
   describe('silentRefresh', () => {
     it('should return refresh response from authService', async () => {
       // Given
-      const req = {} as any;
+      const req = {} as Request;
       const res = {} as Response;
       const dummyResponse: ApiAuthPostUserRefreshResponseDto = {
         ok: true,

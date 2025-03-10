@@ -9,6 +9,7 @@ import * as jwtHelper from 'src/commons/helpers/jwt.helper';
 import * as tokenHelper from 'src/commons/helpers/token.helper';
 import * as uuidUtil from 'src/commons/util/uuid';
 import { UserEntity } from 'src/entities/user.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { AuthService } from './auth.service';
 
@@ -156,7 +157,7 @@ describe('AuthService', () => {
 
     it('should logout user successfully', async () => {
       // Given
-      const user = { id: dummyUser.id, uuid: dummyUser.uuid } as any;
+      const user = { id: dummyUser.id, uuid: dummyUser.uuid } as UserDto;
       const res = { clearCookie: jest.fn() } as unknown as Response;
       jest.spyOn(userQueryRepository, 'findId').mockResolvedValue(dummyUser);
       const savedUser = { ...dummyUser, refresh_token: null };
@@ -174,7 +175,7 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException if user id is empty', async () => {
       // Given
-      const user = { id: null } as any;
+      const user = { id: null } as UserDto;
       const res = { clearCookie: jest.fn() } as unknown as Response;
 
       // When & Then
@@ -183,7 +184,7 @@ describe('AuthService', () => {
 
     it('should throw UnauthorizedException on error during logout', async () => {
       // Given
-      const user = { id: dummyUser.id, uuid: dummyUser.uuid } as any;
+      const user = { id: dummyUser.id, uuid: dummyUser.uuid } as UserDto;
       const res = { clearCookie: jest.fn() } as unknown as Response;
       jest.spyOn(userQueryRepository, 'findId').mockRejectedValue(new Error('Logout error'));
       jest.spyOn(console, 'error').mockImplementation(() => {});
