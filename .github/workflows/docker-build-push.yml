@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [master] # Change to your target branch
+    branches: [master]
 
 jobs:
   build-and-push:
@@ -11,11 +11,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set environment variables for Debug
-        run: echo "${{ secrets.ENV_DEBUG }}" > .env.debug
-
-      - name: Set environment variables for Staging
-        run: echo "${{ secrets.ENV_STAGING }}" > .env.staging
+      - name: Set environment variables for Debug and Staging
+        run: |
+          echo "${{ secrets.ENV_DEBUG }}" > .env.debug
+          echo "${{ secrets.ENV_STAGING }}" > .env.staging
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -36,19 +35,17 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY_URL }}/seoulsync-backend:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY_URL }}/seoulsync-backend:cache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY_URL }}/seoulsync-backend:cache,mode=max
 
       - name: Send HTTP API POST Request
         run: |
-          curl -X 'POST' \
-            "http://${HOST_NAME}/container/update/seoulsync" \
+          curl --fail -X POST "http://${{ secrets.NAS_MANAGE_HOST }}/container/update/seoulsync" \
             -H "accept: application/json" \
             -H "Content-Type: application/json" \
-            -H "Authorization: ${API_TOKEN}" \
+            -H "Authorization: ${{ secrets.NAS_MANAGE_PASSWORD }}" \
             -d '{
                   "type": "backend",
                   "host_port": 7008,
                   "container_port": 3456
               }'
-        env:
-          HOST_NAME: ${{ secrets.NAS_MANAGE_HOST }}
-          API_TOKEN: ${{ secrets.NAS_MANAGE_PASSWORD }}
