@@ -35,7 +35,9 @@
     "test:notification": "jest --testPathPattern=src/notification --coverage --collectCoverageFrom=src/notification/**",
     "test:notification:watch": "jest --watch --testPathPattern=src/notification --coverage --collectCoverageFrom=src/notification/**",
     "test:place": "jest --testPathPattern=src/place --coverage --collectCoverageFrom=src/place/**",
-    "test:place:watch": "jest --watch --testPathPattern=src/place --coverage --collectCoverageFrom=src/place/**"
+    "test:place:watch": "jest --watch --testPathPattern=src/place --coverage --collectCoverageFrom=src/place/**",
+    "test:reaction": "jest --testPathPattern=src/reaction --coverage --collectCoverageFrom=src/reaction/**",
+    "test:reaction:watch": "jest --watch --testPathPattern=src/reaction --coverage --collectCoverageFrom=src/reaction/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",

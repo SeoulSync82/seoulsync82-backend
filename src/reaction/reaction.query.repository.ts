@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
 import { ReactionEntity } from 'src/entities/reaction.entity';
+import { UserDto } from 'src/user/dto/user.dto';
+import { In, Repository } from 'typeorm';
 
 export class ReactionQueryRepository {
   constructor(
@@ -8,29 +9,29 @@ export class ReactionQueryRepository {
     private repository: Repository<ReactionEntity>,
   ) {}
 
-  async findOne(uuid, user): Promise<ReactionEntity> {
+  async findOne(uuid: string, user: UserDto): Promise<ReactionEntity> {
     return this.repository.findOne({
       where: { target_uuid: uuid, user_uuid: user.uuid },
     });
   }
 
-  async courseLike(reaction): Promise<ReactionEntity> {
+  async courseLike(reaction: ReactionEntity): Promise<ReactionEntity> {
     return this.repository.save(reaction);
   }
 
-  async updateCourseLike(reaction) {
+  async updateCourseLike(reaction: ReactionEntity) {
     return this.repository.update({ id: reaction.id }, { like: 1 });
   }
 
-  async updateCourseLikeDelete(reaction) {
+  async updateCourseLikeDelete(reaction: ReactionEntity) {
     return this.repository.update({ id: reaction.id }, { like: 0 });
   }
 
-  async findCommunityReaction(uuids): Promise<ReactionEntity[]> {
+  async findCommunityReaction(uuids: string[]): Promise<ReactionEntity[]> {
     return this.repository.find({ where: { target_uuid: In(uuids), like: 1 } });
   }
 
-  async findCommunityDetailReaction(uuid): Promise<ReactionEntity[]> {
+  async findCommunityDetailReaction(uuid: string): Promise<ReactionEntity[]> {
     return this.repository.find({ where: { target_uuid: uuid, like: 1 } });
   }
 }

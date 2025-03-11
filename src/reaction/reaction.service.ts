@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { generateUUID } from 'blanc-logger';
 import { ERROR } from 'src/commons/constants/error';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
+import { generateUUID } from 'src/commons/util/uuid';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
@@ -28,43 +28,41 @@ export class ReactionService {
     }
     const reaction = await this.reactionQueryRepository.findOne(uuid, user);
 
-    let notification: ReactionNotificationDetailDto | null = null;
+    if (reaction) {
+      if (reaction.like === 1) {
+        throw new ConflictException(ERROR.DUPLICATION);
+      }
 
-    if (isEmpty(reaction)) {
-      const reactionEntity = new ReactionEntity();
-      reactionEntity.uuid = generateUUID();
-      reactionEntity.target_uuid = uuid;
-      reactionEntity.user_uuid = user.uuid;
-      reactionEntity.user_name = user.nickname;
-      reactionEntity.like = 1;
-      await this.reactionQueryRepository.courseLike(reactionEntity);
-
-      notification = {
-        uuid: generateUUID(),
-        user_uuid: user.uuid,
-        target_uuid: community.uuid,
-        target_user_uuid: community.user_uuid,
-        content: `회원님의 게시물을 ${user.nickname}님이 좋아합니다.`,
-      };
-    } else if (reaction.like === 0) {
-      await this.reactionQueryRepository.updateCourseLike(reaction);
-    } else if (reaction.like === 1) {
-      throw new ConflictException(ERROR.DUPLICATION);
+      if (reaction.like === 0) {
+        await this.reactionQueryRepository.updateCourseLike(reaction);
+        return { data: { uuid }, notification: null };
+      }
     }
 
-    return {
-      data: { uuid },
-      notification,
+    const newReaction = new ReactionEntity();
+    newReaction.uuid = generateUUID();
+    newReaction.target_uuid = uuid;
+    newReaction.user_uuid = user.uuid;
+    newReaction.user_name = user.nickname;
+    newReaction.like = 1;
+    await this.reactionQueryRepository.courseLike(newReaction);
+
+    const notification: ReactionNotificationDetailDto = {
+      uuid: generateUUID(),
+      user_uuid: user.uuid,
+      target_uuid: community.uuid,
+      target_user_uuid: community.user_uuid,
+      content: `회원님의 게시물을 ${user.nickname}님이 좋아합니다.`,
     };
+
+    return { data: { uuid }, notification };
   }
 
   async reactionDeleteToCommunity(user: UserDto, uuid: string): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
-    if (isEmpty(community)) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
+
     const reaction: ReactionEntity = await this.reactionQueryRepository.findOne(uuid, user);
-    if (isEmpty(reaction)) {
+    if (isEmpty(reaction) || isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
