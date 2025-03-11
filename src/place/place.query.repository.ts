@@ -5,19 +5,16 @@ import { ApiCourseGetPlaceCustomizeRequestQueryDto } from 'src/course/dto/api-co
 import { ApiCourseGetRecommendRequestQueryDto } from 'src/course/dto/api-course-get-recommend-request-query.dto';
 import { ApiCoursePostRecommendRequestBodyDto } from 'src/course/dto/api-course-post-recommend-request-body.dto';
 import { PlaceEntity } from 'src/entities/place.entity';
-import { SubwayEntity } from 'src/entities/subway.entity';
 import { ApiPlaceGetCultureRequestQueryDto } from 'src/place/dto/api-place-get-culture-request-query.dto';
 import { ApiPlaceGetExhibitionRequestQueryDto } from 'src/place/dto/api-place-get-exhibition-request-query.dto';
 import { ApiPlaceGetPopupRequestQueryDto } from 'src/place/dto/api-place-get-popup-request-query.dto';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
-import { Brackets, In, LessThan, Like, MoreThan, Repository } from 'typeorm';
+import { Brackets, FindOptionsOrder, In, LessThan, Like, MoreThan, Repository } from 'typeorm';
 
 export class PlaceQueryRepository {
   constructor(
     @InjectRepository(PlaceEntity)
     private repository: Repository<PlaceEntity>,
-    @InjectRepository(SubwayEntity)
-    private subwayRepository: Repository<SubwayEntity>,
   ) {}
 
   async findList(dto: ApiPlaceGetCultureRequestQueryDto): Promise<PlaceEntity[]> {
@@ -33,7 +30,7 @@ export class PlaceQueryRepository {
     return q.getMany();
   }
 
-  async findOne(uuid): Promise<PlaceEntity> {
+  async findOne(uuid: string): Promise<PlaceEntity> {
     return this.repository.findOne({
       where: { uuid },
     });
@@ -92,13 +89,9 @@ export class PlaceQueryRepository {
   }
 
   async countPopup(): Promise<number> {
-    const now = new Date();
-    const whereConditions = {
-      place_type: '팝업',
-      end_date: MoreThan(now),
-    };
-
-    return this.repository.count({ where: whereConditions });
+    return this.repository.count({
+      where: { place_type: '팝업', end_date: MoreThan(new Date()) },
+    });
   }
 
   async countExhibition(): Promise<number> {
@@ -108,28 +101,16 @@ export class PlaceQueryRepository {
   }
 
   async search(dto: ApiSearchGetRequestQueryDto): Promise<PlaceEntity[]> {
-    const whereConditions = {
-      place_name: Like(`%${dto.search}%`),
+    const { search, last_id: lastId, size, place_type: placeType } = dto;
+    const where = {
+      place_name: Like(`%${search}%`),
+      ...(lastId > 0 ? { id: LessThan(lastId) } : {}),
+      place_type: In(placeType === 'culture' ? ['전시회', '팝업'] : ['음식점', '카페', '술집']),
     };
-    let orderType = {};
-
-    if (dto.last_id > 0) {
-      Object.assign(whereConditions, { id: LessThan(dto.last_id) });
-    }
-
-    if (dto.place_type === 'restaurant' || null || '') {
-      Object.assign(whereConditions, { place_type: In(['음식점', '카페', '술집']) });
-      orderType = { review_count: 'DESC' };
-    } else if (dto.place_type === 'culture') {
-      Object.assign(whereConditions, { place_type: In(['전시회', '팝업']) });
-      orderType = { start_date: 'DESC' };
-    }
-
-    return this.repository.find({
-      where: whereConditions,
-      order: orderType,
-      take: dto.size,
-    });
+    const order = (
+      placeType === 'culture' ? { start_date: 'DESC' } : { review_count: 'DESC' }
+    ) as FindOptionsOrder<PlaceEntity>;
+    return this.repository.find({ where, order, take: size });
   }
 
   async old_findSubwayPlaceList(
