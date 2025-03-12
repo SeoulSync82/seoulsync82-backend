@@ -1,2 +1,21 @@
-.vscode
+# 로그 파일들
+logs/
+*.log
+
+# 테스트 파일 및 디렉토리
+**/*.spec.ts
+**/*.test.ts
+test/
+__tests__
+
+# 버전 관리 관련 파일들
 .git
+.gitignore
+
+# 문서 및 커버리지 폴더 (불필요한 파일)
+docs/
+coverage/
+
+# OS에서 생성하는 파일들
+.DS_Store
+Thumbs.db
