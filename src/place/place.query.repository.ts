@@ -100,7 +100,7 @@ export class PlaceQueryRepository {
     });
   }
 
-  async search(dto: ApiSearchGetRequestQueryDto): Promise<PlaceEntity[]> {
+  async getSearchPlace(dto: ApiSearchGetRequestQueryDto): Promise<PlaceEntity[]> {
     const { search, last_id: lastId, size, place_type: placeType } = dto;
     const where = {
       place_name: Like(`%${search}%`),

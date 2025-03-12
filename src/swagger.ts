@@ -40,6 +40,7 @@ import { ApiPlaceGetExhibitionResponseDto } from 'src/place/dto/api-place-get-ex
 import { ApiPlaceGetPopupResponseDto } from 'src/place/dto/api-place-get-popup-response.dto';
 import { ReactionNotificationDetailDto } from 'src/reaction/dto/reaction-notification-detail.dto';
 import { ApiSearchGetDetailResponseDto } from 'src/search/dto/api-search-get-detail-response.dto';
+import { ApiSearchGetRecentResponseDto } from 'src/search/dto/api-search-get-recent-response.dto';
 import { ApiSearchGetResponseDto } from 'src/search/dto/api-search-get-response.dto';
 import { SearchDetailDto } from 'src/search/dto/search-detail.dto';
 import { ApiSubwayGetCheckResponseDto } from 'src/subway/dto/api-subway-get-check-response.dto';
@@ -105,4 +106,5 @@ export const SwaggerModels = [
   SubwaylineDto,
   SubwayStationDto,
   ReactionNotificationDetailDto,
+  ApiSearchGetRecentResponseDto,
 ];

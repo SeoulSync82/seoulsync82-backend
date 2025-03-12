@@ -10,10 +10,10 @@ import { PlaceEntity } from 'src/entities/place.entity';
 import { SearchLogEntity } from 'src/entities/search_log.entity';
 import { PlaceQueryRepository } from 'src/place/place.query.repository';
 import { ApiSearchGetDetailResponseDto } from 'src/search/dto/api-search-get-detail-response.dto';
+import { ApiSearchGetRecentResponseDto } from 'src/search/dto/api-search-get-recent-response.dto';
 import { ApiSearchGetRequestQueryDto } from 'src/search/dto/api-search-get-request-query.dto';
 import { ApiSearchGetResponseDto } from 'src/search/dto/api-search-get-response.dto';
 import { SearchDetailDto } from 'src/search/dto/search-detail.dto';
-import { SearchQueryLogRepository } from 'src/search/search.log.query.repository';
 import { SearchQueryRepository } from 'src/search/search.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -22,27 +22,27 @@ export class SearchService {
   constructor(
     private readonly searchQueryRepository: SearchQueryRepository,
     private readonly placeQueryRepository: PlaceQueryRepository,
-    private readonly searchQueryLogRepository: SearchQueryLogRepository,
   ) {}
 
-  async searchPlace(
+  async getSearchPlace(
     dto: ApiSearchGetRequestQueryDto,
     user: UserDto,
   ): Promise<LastItemIdResponseDto<ApiSearchGetResponseDto>> {
-    const searchLog: SearchLogEntity[] = await this.searchQueryLogRepository.findLog(
+    const userSearchLog: SearchLogEntity[] = await this.searchQueryRepository.findUserSearchLog(
       dto.search,
       user,
     );
-    if (!searchLog.map((item) => item.search).includes(dto.search)) {
+    const existingLog = userSearchLog.find((log) => log.search === dto.search);
+
+    if (isEmpty(existingLog)) {
       const uuid = generateUUID();
-      await this.searchQueryLogRepository.insert(dto.search, uuid, user);
+      await this.searchQueryRepository.addLog(dto.search, uuid, user);
     } else {
-      const id = searchLog.filter((item) => item.search === dto.search).map((item) => item.id);
-      await this.searchQueryLogRepository.update(id);
+      await this.searchQueryRepository.updateSearchDate(existingLog.id);
     }
 
-    const searchList = await this.placeQueryRepository.search(dto);
-    if (!searchList || searchList.length === 0) {
+    const searchList = await this.placeQueryRepository.getSearchPlace(dto);
+    if (isEmpty(searchList)) {
       return { items: [], last_item_id: 0 };
     }
 
@@ -55,9 +55,50 @@ export class SearchService {
     return { items: apiSearchGetResponseDto, last_item_id: lastItemId };
   }
 
-  async searchDetail(uuid): Promise<ApiSearchGetDetailResponseDto> {
+  async getPopularSearches(): Promise<ListResponseDto<string>> {
+    const result = ['마라탕', '더현대', '스시', '아쿠아리움', '감자탕'];
+    return { items: result };
+  }
+
+  async getRecentSearches(user: UserDto): Promise<ListResponseDto<ApiSearchGetRecentResponseDto>> {
+    const searchLog: SearchLogEntity[] = await this.searchQueryRepository.findRecentUserLog(user);
+    if (isEmpty(searchLog)) {
+      return { items: [] };
+    }
+
+    return {
+      items: plainToInstance(ApiSearchGetRecentResponseDto, searchLog, {
+        excludeExtraneousValues: true,
+      }),
+    };
+  }
+
+  async deleteSearchLog(uuid: string, user: UserDto): Promise<UuidResponseDto> {
+    const userSearchLog = await this.searchQueryRepository.findUserLogToUuid(uuid, user);
+    if (isEmpty(userSearchLog)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    await this.searchQueryRepository.deleteSearchLog(userSearchLog);
+
+    return { uuid };
+  }
+
+  async deleteAllSearchLog(user: UserDto): Promise<UuidResponseDto> {
+    const userTotalSearchLog: SearchLogEntity[] =
+      await this.searchQueryRepository.findUserTotalSearchLog(user);
+    if (isEmpty(userTotalSearchLog)) {
+      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
+    }
+
+    await this.searchQueryRepository.updateDateDelete(userTotalSearchLog);
+
+    return { uuid: user.uuid };
+  }
+
+  async getSearchDetail(uuid: string): Promise<ApiSearchGetDetailResponseDto> {
     const searchDetail: PlaceEntity = await this.placeQueryRepository.findOne(uuid);
-    if (!searchDetail) {
+    if (isEmpty(searchDetail)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
@@ -70,48 +111,5 @@ export class SearchService {
     );
 
     return apiSearchDetailGetResponseDto;
-  }
-
-  async searchPopular(): Promise<ListResponseDto<string>> {
-    const result = ['마라탕', '더현대', '스시', '아쿠아리움', '감자탕'];
-    return { items: result };
-  }
-
-  async searchRecent(user: UserDto): Promise<LastItemIdResponseDto<SearchLogEntity>> {
-    const searchLog: SearchLogEntity[] = await this.searchQueryLogRepository.find(user);
-    if (isEmpty(searchLog.length)) {
-      return { items: [], last_item_id: 0 };
-    }
-
-    let lastItemId = 0;
-    return { items: searchLog, last_item_id: lastItemId };
-  }
-
-  async deleteSearchLog(uuid, user: UserDto): Promise<UuidResponseDto> {
-    const userSearchLog = await this.searchQueryLogRepository.findUserSearchLog(uuid, user);
-    if (isEmpty(userSearchLog)) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-
-    await this.searchQueryLogRepository.deleteSearchLog(userSearchLog);
-
-    return { uuid };
-  }
-
-  async deleteAllSearchLog(user: UserDto): Promise<UuidResponseDto> {
-    let userAllSearchLog: SearchLogEntity[] =
-      await this.searchQueryLogRepository.findUserSearchLogList(user);
-    if (userAllSearchLog.length === 0) {
-      throw new NotFoundException(ERROR.NOT_EXIST_DATA);
-    }
-
-    userAllSearchLog = userAllSearchLog.map((log) => ({
-      ...log,
-      archived_at: new Date(),
-    }));
-
-    await this.searchQueryLogRepository.save(userAllSearchLog);
-
-    return { uuid: user.uuid };
   }
 }

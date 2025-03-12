@@ -234,7 +234,7 @@ describe('PlaceQueryRepository', () => {
       const fakeResults: PlaceEntity[] = [{ uuid: 'p1' } as PlaceEntity];
       repository.find.mockResolvedValue(fakeResults);
       // When
-      const result = await placeQueryRepository.search(dto);
+      const result = await placeQueryRepository.getSearchPlace(dto);
       // Then
       expect(repository.find).toHaveBeenCalledWith({
         where: {
@@ -259,7 +259,7 @@ describe('PlaceQueryRepository', () => {
       const fakeResults: PlaceEntity[] = [{ uuid: 'p2' } as PlaceEntity];
       repository.find.mockResolvedValue(fakeResults);
       // When
-      const result = await placeQueryRepository.search(dto);
+      const result = await placeQueryRepository.getSearchPlace(dto);
       // Then
       expect(repository.find).toHaveBeenCalledWith({
         where: {
