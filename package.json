@@ -39,7 +39,9 @@
     "test:reaction": "jest --testPathPattern=src/reaction --coverage --collectCoverageFrom=src/reaction/**",
     "test:reaction:watch": "jest --watch --testPathPattern=src/reaction --coverage --collectCoverageFrom=src/reaction/**",
     "test:search": "jest --testPathPattern=src/search --coverage --collectCoverageFrom=src/search/**",
-    "test:search:watch": "jest --watch --testPathPattern=src/search --coverage --collectCoverageFrom=src/search/**"
+    "test:search:watch": "jest --watch --testPathPattern=src/search --coverage --collectCoverageFrom=src/search/**",
+    "test:subway": "jest --testPathPattern=src/subway --coverage --collectCoverageFrom=src/subway/**",
+    "test:subway:watch": "jest --watch --testPathPattern=src/subway --coverage --collectCoverageFrom=src/subway/**"
   },
   "dependencies": {
     "@fastify/static": "^6.11.0",
