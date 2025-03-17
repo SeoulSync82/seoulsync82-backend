@@ -26,7 +26,7 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 10, nullable: false })
   type: 'google' | 'kakao' | 'naver';
 
-  @Column({ type: 'longtext', nullable: true })
+  @Column({ type: 'text', nullable: true })
   refresh_token: string;
 
   @CreateDateColumn({

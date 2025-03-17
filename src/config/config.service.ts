@@ -17,7 +17,7 @@ export class ConfigService {
 
   private static validateInput(envConfig: EnvConfig): EnvConfig {
     const envVarsSchema = joi.object({
-      APP_ENV: joi.string().valid('debug', 'dev', 'staging', 'production').required(),
+      APP_ENV: joi.string().valid('debug', 'dev', 'staging', 'production', 'test').required(),
       APP_PORT: joi.number().default(3456),
       APP_URL: joi.string().uri({
         scheme: [/https?/],

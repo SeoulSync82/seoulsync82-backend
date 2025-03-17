@@ -38,4 +38,5 @@ lerna-debug.log*
 .env.debug
 .env.staging
 .env.production
+.env.test
 
