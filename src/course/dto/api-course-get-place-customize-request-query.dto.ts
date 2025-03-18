@@ -5,7 +5,7 @@ import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class ApiCourseGetPlaceCustomizeRequestQueryDto {
   @IsNotEmpty()
   @IsArray()
-  @Transform(({ value }) => value.split(',')) // 콤마로 구분된 문자열을 배열로 변환
+  @Transform(({ value }) => (typeof value === 'string' ? value.split(',') : value))
   @ApiProperty({
     example:
       '00145054384a4b0d85b4198c6e54404f,00f239d44c7141e5942957c2219dd885,00f2fb983eec41a5a980747855752a6b',

@@ -1,4 +1,9 @@
-import { ConflictException, NotFoundException, ValidationPipe } from '@nestjs/common';
+import {
+  ConflictException,
+  INestApplication,
+  NotFoundException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
@@ -25,7 +30,7 @@ import { UserQueryRepository } from 'src/user/user.query.repository';
 import { DataSource, Repository } from 'typeorm';
 
 describe('CourseService Integration Test', () => {
-  let app;
+  let app: INestApplication;
   let courseService: CourseService;
   let dataSource: DataSource;
   let courseRepository: Repository<CourseEntity>;

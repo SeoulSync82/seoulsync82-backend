@@ -194,7 +194,7 @@ export class CourseService {
         excludeExtraneousValues: true,
       }).map((myHistory) => ({
         ...myHistory,
-        user_profile_image: userList.find((u) => u.uuid === myHistory.user_uuid).profile_image,
+        user_profile_image: userList.find((u) => u.uuid === myHistory.user_uuid)?.profile_image,
       })),
       last_item_id: lastItemId,
     };
