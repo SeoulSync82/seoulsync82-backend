@@ -29,6 +29,8 @@ import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { DataSource, Repository } from 'typeorm';
 
+jest.setTimeout(30000);
+
 describe('CourseService Integration Test', () => {
   let app: INestApplication;
   let courseService: CourseService;

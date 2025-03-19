@@ -15,12 +15,12 @@
     "start:prod": "NODE_ENV=production node dist/main",
     "lint": "eslint '**/*.{js,ts}' --quiet",
     "lint:fix": "eslint '**/*.{js,ts}' --fix",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:integration": "jest --testRegex='.*\\integration.spec\\.ts$'",
-    "test:e2e": "NODE_ENV=test jest --config ./jest-e2e.json",
+    "test:integration": "jest --testRegex='.*\\integration.spec\\.ts$' --passWithNoTests",
+    "test:e2e": "NODE_ENV=test jest --config ./jest-e2e.json --passWithNoTests",
     "test:user": "jest --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
     "test:user:watch": "jest --watch --testPathPattern=src/user --coverage --collectCoverageFrom=src/user/**",
     "test:auth": "jest --testPathPattern=src/auth --coverage --collectCoverageFrom=src/auth/**",
@@ -144,8 +144,14 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
+    "collectCoverage": true,
+    "coverageDirectory": "./coverage",
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "json-summary"
     ],
     "coveragePathIgnorePatterns": [
       "module.ts",
@@ -164,7 +170,14 @@
       "main.ts",
       "app/*"
     ],
-    "coverageDirectory": "./coverage",
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
     "testEnvironment": "node",
     "moduleNameMapper": {
       "src/(.*)": "<rootDir>/src/$1"

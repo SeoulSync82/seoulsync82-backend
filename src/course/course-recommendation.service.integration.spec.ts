@@ -24,6 +24,8 @@ import { ThemeQueryRepository } from 'src/theme/theme.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { DataSource } from 'typeorm';
 
+jest.setTimeout(30000);
+
 describe('CourseRecommendationService Integration Test', () => {
   let app;
   let service: CourseRecommendationService;

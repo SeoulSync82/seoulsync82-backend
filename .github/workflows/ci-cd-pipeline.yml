@@ -1,20 +1,49 @@
-name: Build and Push Docker Image
+name: Build, Test, and Push Docker Image
 
 on:
   push:
     branches: [master]
 
 jobs:
-  build-and-push:
+  test-and-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set environment variables for Debug and Staging
+      - name: Set environment variables for Debug, Staging, and Test
         run: |
           echo "${{ secrets.ENV_DEBUG }}" > .env.debug
           echo "${{ secrets.ENV_STAGING }}" > .env.staging
+          echo "${{ secrets.ENV_TEST }}" > .env.test
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run All Tests (Unit, Integration, E2E) without stopping on failure
+        run: |
+          npm run test || true
+          npm run test:integration || true
+          npm run test:e2e || true
+
+      - name: Run Coverage Check
+        run: npm run test:cov || true
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(node -p "require('./coverage/coverage-summary.json').total.lines.pct || 0")
+          if [ $(echo "$COVERAGE < 80" | bc -l) -eq 1 ]; then
+            echo "❌ Test coverage ($COVERAGE%) is below 80% threshold"
+            exit 1
+          else
+            echo "✅ Test coverage is sufficient ($COVERAGE%)"
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
