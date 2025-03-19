@@ -51,7 +51,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SeoulSync82')
     .setDescription('The SeoulSync82 API description')
-    .setVersion('0.2.0')
+    .setVersion('0.3.0')
     .addTag('swagger')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },

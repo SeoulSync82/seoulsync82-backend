@@ -3,7 +3,7 @@
 # seoulsync82-backend
 
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-brightgreen?style=flat&logo=node.js)](https://nodejs.org/)
-[![Jest](https://img.shields.io/badge/Jest-100%25_Coverage-success?style=flat&logo=jest)](https://jestjs.io/)
+[![Jest](https://img.shields.io/badge/Jest-100%25_Coverage-success?style=flat&logo=jest)](https://seoulsync82.github.io/seoulsync82-backend/lcov-report/index.html)
 [![ESLint](https://img.shields.io/badge/ESLint-Airbnb_Style_Guide-%23734CC2?style=flat&logo=eslint)](https://eslint.org/)
 [![License: MIT](https://img.shields.io/github/license/SeoulSync82/seoulsync82-backend?color=blue)](https://github.com/SeoulSync82/seoulsync82-backend/blob/master/LICENSE)
 
@@ -119,27 +119,52 @@ cd SeoulSync82
 # 의존성 설치
 npm install
 
-# 환경 변수 설정
-cp .env.staging .env
-
 # 서버 실행
-npm run start:dev
+npm run start:debug
 ```
 
 ---
 
 # 테스트 (Testing)
 
+> 프로젝트는 **Jest**를 활용하여 **유닛(Unit), 통합(Integration), E2E(End-to-End) 테스트**를 진행하였으며,  
+> **모든 테스트의 커버리지가 100% 달성**되었습니다.
+
+🔗 **[테스트 커버리지 상세 리포트](https://seoulsync82.github.io/seoulsync82-backend/lcov-report/index.html)**  
+
+- **API 응답 검증**: `supertest` 활용
+- **테스트 데이터 초기화 및 정리**: `typeorm` 활용
+
 ```bash
-# 단위 테스트 실행
+# Unit tests
 npm run test
 
-# E2E 테스트 실행
+# Integation tests
+npm run test:integration
+
+# E2E tests
 npm run test:e2e
 
-# 테스트 커버리지 확인
+# Test coverage
 npm run test:cov
 ```
+
+| File                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line |
+| ---------------------- | ------- | -------- | ------- | ------- | -------------- |
+| **auth**               | 100.00  | 100.00   | 100.00  | 100.00  |
+| **bookmark**           | 100.00  | 100.00   | 100.00  | 100.00  |
+| **comment**            | 100.00  | 100.00   | 100.00  | 100.00  |
+| **community**          | 100.00  | 100.00   | 100.00  | 100.00  |
+| **course**             | 100.00  | 100.00   | 100.00  | 100.00  |
+| **notification**       | 100.00  | 100.00   | 100.00  | 100.00  |
+| **place**              | 100.00  | 100.00   | 100.00  | 100.00  |
+| **reaction**           | 100.00  | 100.00   | 100.00  | 100.00  |
+| **search**             | 100.00  | 100.00   | 100.00  | 100.00  |
+| **subway**             | 100.00  | 100.00   | 100.00  | 100.00  |
+| **theme**              | 100.00  | 100.00   | 100.00  | 100.00  |
+| **user**               | 100.00  | 100.00   | 100.00  | 100.00  |
+
+[![Test Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat&logo=jest)](https://seoulsync82.github.io/seoulsync82-backend/lcov-report/index.html) [![Tests Passed](https://img.shields.io/badge/Tests-389%20Passed-success?style=flat)](https://seoulsync82.github.io/seoulsync82-backend/lcov-report/index.html) [![Test Duration](https://img.shields.io/badge/Duration-30.548s-blue?style=flat)](https://seoulsync82.github.io/seoulsync82-backend/lcov-report/index.html)
 
 ---
 

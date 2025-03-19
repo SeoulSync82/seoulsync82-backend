@@ -1,6 +1,6 @@
 {
   "name": "seoulsync82-backend",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "SeoulSync82 backend API for AI-driven course recommendations.",
   "author": "Yoo SeungMo (https://github.com/yooseungmo)",
   "private": true,
