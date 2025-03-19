@@ -97,11 +97,11 @@ export class AuthController {
   }
 
   @Get('/login/naver')
-  @UseGuards(AuthGuard('naver'))
   @ApiOperation({
     summary: '네이버 로그인',
     description: '네이버 로그인',
   })
+  @UseGuards(AuthGuard('naver'))
   async naverAuth(@Req() _req: Request) {}
 
   @Get('/naver/callback')
@@ -114,7 +114,6 @@ export class AuthController {
     description: '네이버 로그인 실패',
     status: HttpStatus.UNAUTHORIZED,
   })
-  @UseGuards(AuthGuard('naver'))
   async naverCallback(@Req() req: NaverRequest, @Res() res: Response) {
     return this.handleSocialLoginCallback(req, res, 'naver');
   }
