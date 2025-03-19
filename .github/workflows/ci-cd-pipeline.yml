@@ -45,6 +45,15 @@ jobs:
             echo "✅ Test coverage is sufficient ($COVERAGE%)"
           fi
 
+      - name: Deploy Coverage to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./coverage
+          publish_branch: gh-pages
+          keep_files: true
+          force_orphan: true
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
