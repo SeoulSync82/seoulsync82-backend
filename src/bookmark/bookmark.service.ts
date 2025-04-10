@@ -10,6 +10,7 @@ import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dt
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { isEmpty, isNotEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
+import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
 import { BookmarkEntity } from 'src/entities/bookmark.entity';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -20,6 +21,7 @@ export class BookmarkService {
   constructor(
     private readonly bookmarkQueryRepository: BookmarkQueryRepository,
     private readonly courseQueryRepository: CourseQueryRepository,
+    private readonly communityQueryRepository: CommunityQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
@@ -32,19 +34,27 @@ export class BookmarkService {
       return { items: [], last_item_id: 0 };
     }
 
-    const userList = await this.userQueryRepository.findUserList(
-      courseList.map((item) => item.user_uuid),
-    );
+    const [userList, postedCourses] = await Promise.all([
+      this.userQueryRepository.findUserList(courseList.map((item) => item.user_uuid)),
+      this.communityQueryRepository.findExistingCourse(courseList.map((item) => item.course_uuid)),
+    ]);
 
     const lastItemId = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
     return {
       items: plainToInstance(ApiBookmarkGetResponseDto, courseList, {
         excludeExtraneousValues: true,
-      }).map((bookmark) => ({
-        ...bookmark,
-        user_profile_image: userList.find((u) => u.uuid === bookmark.user_uuid).profile_image,
-      })),
+      }).map((bookmark) => {
+        const communityMeta = postedCourses.find((c) => c.course_uuid === bookmark.course_uuid);
+        return {
+          ...bookmark,
+          user_profile_image:
+            userList.find((u) => u.uuid === bookmark.user_uuid)?.profile_image ?? null,
+          is_posted: !!communityMeta,
+          score: communityMeta?.score ?? '0.0',
+          like_count: communityMeta?.like_count ?? 0,
+        };
+      }),
       last_item_id: lastItemId,
     };
   }

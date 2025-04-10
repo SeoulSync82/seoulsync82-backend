@@ -86,7 +86,7 @@ export class ApiCommunityGetDetailResponseDto {
   @Expose()
   @ApiProperty({
     example: true,
-    description: '구독여부',
+    description: '북마크 여부',
   })
   is_bookmarked: boolean;
 

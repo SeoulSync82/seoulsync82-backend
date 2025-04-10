@@ -184,19 +184,27 @@ export class CourseService {
       return { items: [], last_item_id: 0 };
     }
 
-    const userList = await this.userQueryRepository.findUserList(
-      courseList.map((item) => item.user_uuid),
-    );
+    const [userList, postedCourses] = await Promise.all([
+      this.userQueryRepository.findUserList(courseList.map((item) => item.user_uuid)),
+      this.communityQueryRepository.findExistingCourse(courseList.map((item) => item.uuid)),
+    ]);
 
     const lastItemId = courseList.length === dto.size ? courseList[courseList.length - 1].id : 0;
 
     return {
       items: plainToInstance(ApiCourseGetMyHistoryResponseDto, courseList, {
         excludeExtraneousValues: true,
-      }).map((myHistory) => ({
-        ...myHistory,
-        user_profile_image: userList.find((u) => u.uuid === myHistory.user_uuid)?.profile_image,
-      })),
+      }).map((myHistory) => {
+        const communityMeta = postedCourses.find((c) => c.course_uuid === myHistory.course_uuid);
+        return {
+          ...myHistory,
+          user_profile_image:
+            userList.find((u) => u.uuid === myHistory.user_uuid)?.profile_image ?? null,
+          is_posted: !!communityMeta,
+          score: communityMeta?.score ?? '0.0',
+          like_count: communityMeta?.like_count ?? 0,
+        };
+      }),
       last_item_id: lastItemId,
     };
   }

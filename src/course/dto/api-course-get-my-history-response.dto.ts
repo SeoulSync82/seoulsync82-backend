@@ -71,6 +71,27 @@ export class ApiCourseGetMyHistoryResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: 'true',
+    description: '내가 작성한 글인지',
+  })
+  is_posted: boolean;
+
+  @Expose()
+  @ApiProperty({
+    example: 4.0,
+    description: '평점',
+  })
+  score: number;
+
+  @Expose()
+  @ApiProperty({
+    example: '1',
+    description: '좋아요 개수',
+  })
+  like_count: number;
+
+  @Expose()
+  @ApiProperty({
     example: '음식점, 카페, 술집',
     description: '커스텀',
   })

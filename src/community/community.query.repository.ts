@@ -101,4 +101,24 @@ export class CommunityQueryRepository {
 
     return { communityList, nextCursor };
   }
+
+  async findExistingCourse(courseUuids: string[]) {
+    const result = await this.repository
+      .createQueryBuilder('community')
+      .leftJoin('community.reactions', 'reaction', 'reaction.like = 1')
+      .select('community.course_uuid', 'course_uuid')
+      .addSelect('community.score', 'score')
+      .addSelect('COUNT(reaction.id)', 'like_count')
+      .where('community.course_uuid IN (:...courseUuids)', { courseUuids })
+      .andWhere('community.archived_at IS NULL')
+      .groupBy('community.course_uuid')
+      .addGroupBy('community.score')
+      .getRawMany();
+
+    return result.map((row) => ({
+      course_uuid: row.course_uuid,
+      score: row.score,
+      like_count: parseInt(row.like_count, 10),
+    }));
+  }
 }
