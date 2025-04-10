@@ -47,6 +47,13 @@ export class ApiCourseGetDetailResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: '음식점, 카페, 술집',
+    description: '커스텀',
+  })
+  customs: string;
+
+  @Expose()
+  @ApiProperty({
     example: true,
     description: '작성된 글인지 체크',
   })

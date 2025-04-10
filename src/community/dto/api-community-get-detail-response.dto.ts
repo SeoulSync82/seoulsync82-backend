@@ -64,6 +64,13 @@ export class ApiCommunityGetDetailResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: '음식점, 카페, 술집',
+    description: '커스텀',
+  })
+  customs: string;
+
+  @Expose()
+  @ApiProperty({
     example: '이 코스는 최고에요 ㅎㅎ',
     description: '리뷰',
   })

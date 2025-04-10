@@ -154,6 +154,7 @@ export class CommunityService {
       is_bookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
       course_name: community.course_name,
       course_image: course.course_image,
+      customs: course.customs,
       subway: course.subway,
       count: coursePlaces.length,
       like: reactions.length,

@@ -167,6 +167,7 @@ export class CourseService {
             theme: theme.theme_name,
           }
         : undefined,
+      customs: course.customs,
       is_bookmarked: isNotEmpty(bookmark),
       is_posted: isNotEmpty(community),
       created_at: course.created_at,
