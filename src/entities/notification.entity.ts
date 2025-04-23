@@ -11,6 +11,9 @@ export class NotificationEntity {
   @Column({ type: 'varchar', length: 36, nullable: false })
   user_uuid: string;
 
+  @Column({ type: 'varchar', length: 10, nullable: false })
+  target_type: string;
+
   @Column({ type: 'varchar', length: 36, nullable: false })
   target_uuid: string;
 

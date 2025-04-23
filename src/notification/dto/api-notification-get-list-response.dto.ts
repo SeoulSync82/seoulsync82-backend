@@ -25,15 +25,22 @@ export class ApiNotificationGetListResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: 'reaction',
+    description: '타겟 type',
+  })
+  target_type: string;
+
+  @Expose()
+  @ApiProperty({
     example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '커뮤니티 uuid',
+    description: '타겟 uuid',
   })
   target_uuid: string;
 
   @Expose()
   @ApiProperty({
     example: '6e6df92a8af35a16af80c358d73d54bb',
-    description: '좋아요한 유저 uuid',
+    description: '타겟 유저 uuid',
   })
   user_uuid: string;
 
@@ -50,7 +57,7 @@ export class ApiNotificationGetListResponseDto {
     example: '2023-10-21 00:00:00',
     description: '읽은 날짜',
   })
-  reat_at: Date;
+  read_at: Date;
 
   @Expose()
   @ApiProperty({

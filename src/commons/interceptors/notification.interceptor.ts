@@ -21,6 +21,7 @@ export class NotificationInterceptor implements NestInterceptor {
         const notificationData = new NotificationPushDto({
           uuid: notification.uuid,
           user_uuid: notification.user_uuid,
+          target_type: notification.target_type,
           target_uuid: notification.target_uuid,
           target_user_uuid: notification.target_user_uuid,
           content: notification.content,

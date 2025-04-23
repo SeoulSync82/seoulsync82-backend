@@ -18,15 +18,22 @@ export class ReactionNotificationDetailDto {
 
   @Expose()
   @ApiProperty({
+    example: 'reaction',
+    description: '타켓 type',
+  })
+  target_type: string;
+
+  @Expose()
+  @ApiProperty({
     example: 'target-uuid',
-    description: '대상 커뮤니티 UUID',
+    description: '타켓 UUID',
   })
   target_uuid: string;
 
   @Expose()
   @ApiProperty({
     example: 'target-user-uuid',
-    description: '대상 사용자 UUID',
+    description: '타켓 사용자 UUID',
   })
   target_user_uuid: string;
 
