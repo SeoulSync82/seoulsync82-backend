@@ -42,6 +42,13 @@ export class ApiUserGetProfileResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: 'kakao',
+    description: '로그인 타입',
+  })
+  type: string;
+
+  @Expose()
+  @ApiProperty({
     example: '2023-10-21 00:00:00',
     description: '생성일',
   })
