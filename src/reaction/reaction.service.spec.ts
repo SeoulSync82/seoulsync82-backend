@@ -4,7 +4,7 @@ import * as generateUUID from 'src/commons/util/uuid';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
-import { ReactionNotificationDetailDto } from 'src/reaction/dto/reaction-notification-detail.dto';
+import { NotificationDetailDto } from 'src/notification/dto/notification-detail.dto';
 import { ReactionQueryRepository } from 'src/reaction/reaction.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 import { ReactionService } from './reaction.service';
@@ -82,7 +82,7 @@ describe('ReactionService', () => {
       // Then
       expect(reactionQueryRepository.courseLike).toHaveBeenCalled();
       expect(result.data).toEqual({ uuid });
-      const notif: ReactionNotificationDetailDto = result.notification;
+      const notif: NotificationDetailDto = result.notification;
       expect(notif).toEqual({
         uuid: 'new-notif-uuid',
         user_uuid: user.uuid,

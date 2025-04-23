@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class ReactionNotificationDetailDto {
+export class NotificationDetailDto {
   @Expose()
   @ApiProperty({
     example: 'generated-uuid',
@@ -39,7 +39,7 @@ export class ReactionNotificationDetailDto {
 
   @Expose()
   @ApiProperty({
-    example: '회원님의 게시물을 JohnDoe님이 좋아합니다.',
+    example: '회원님의 게시물을 승모님이 좋아합니다.',
     description: 'Notification 메시지',
   })
   content: string;

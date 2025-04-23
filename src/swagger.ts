@@ -5,6 +5,7 @@ import { ApiBookmarkGetDetailResponseDto } from 'src/bookmark/dto/api-bookmark-g
 import { ApiBookmarkGetResponseDto } from 'src/bookmark/dto/api-bookmark-get-response.dto';
 import { bookmarkCoursePlaceDetailDto } from 'src/bookmark/dto/bookmark-course-place-detail.dto';
 import { ApiCommentGetResponseDto } from 'src/comment/dto/api-comment-get-response.dto';
+import { ApiCommentPostNotificationResponseDto } from 'src/comment/dto/api-comment-post-notification-response.dto';
 import { CommentListDto } from 'src/comment/dto/comment-list.dto';
 import { ApiResponseDto } from 'src/commons/dtos/api-response.dto';
 import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
@@ -33,12 +34,12 @@ import { CoursePlaceDto } from 'src/course/dto/course-place.dto';
 import { CourseSubwayLineDetailDto } from 'src/course/dto/course-subway-line-detail.dto';
 import { CourseThemeDetailDto } from 'src/course/dto/course-theme-detail.dto';
 import { ApiNotificationGetListResponseDto } from 'src/notification/dto/api-notification-get-list-response.dto';
+import { NotificationDetailDto } from 'src/notification/dto/notification-detail.dto';
 import { ApiPlaceGetCultureDetailResponseDto } from 'src/place/dto/api-place-get-culture-detail-response.dto';
 import { ApiPlaceGetCultureResponseDto } from 'src/place/dto/api-place-get-culture-response.dto';
 import { ApiPlaceGetDetailResponseDto } from 'src/place/dto/api-place-get-detail-response.dto';
 import { ApiPlaceGetExhibitionResponseDto } from 'src/place/dto/api-place-get-exhibition-response.dto';
 import { ApiPlaceGetPopupResponseDto } from 'src/place/dto/api-place-get-popup-response.dto';
-import { ReactionNotificationDetailDto } from 'src/reaction/dto/reaction-notification-detail.dto';
 import { ApiSearchGetDetailResponseDto } from 'src/search/dto/api-search-get-detail-response.dto';
 import { ApiSearchGetRecentResponseDto } from 'src/search/dto/api-search-get-recent-response.dto';
 import { ApiSearchGetResponseDto } from 'src/search/dto/api-search-get-response.dto';
@@ -95,7 +96,7 @@ export const SwaggerModels = [
   ApiUserGetTokenResponseDto,
   bookmarkCoursePlaceDetailDto,
   CommentListDto,
-  ReactionNotificationDetailDto,
+  NotificationDetailDto,
   CommunityCoursePlaceDetailDto,
   CoursePlaceDto,
   CoursePlaceDetailDto,
@@ -105,6 +106,7 @@ export const SwaggerModels = [
   SearchDetailDto,
   SubwaylineDto,
   SubwayStationDto,
-  ReactionNotificationDetailDto,
+  NotificationDetailDto,
   ApiSearchGetRecentResponseDto,
+  ApiCommentPostNotificationResponseDto,
 ];

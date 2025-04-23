@@ -8,7 +8,9 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -22,6 +24,7 @@ import { ApiExceptionResponse } from 'src/commons/decorators/api-exception-respo
 import { ApiSuccessResponse } from 'src/commons/decorators/api-success-response.decorator';
 import { CurrentUser } from 'src/commons/decorators/user.decorator';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
+import { NotificationInterceptor } from 'src/commons/interceptors/notification.interceptor';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -78,12 +81,16 @@ export class CommentController {
     required: false,
     description: '커뮤니티 uuid',
   })
+  @UseInterceptors(NotificationInterceptor)
   async commentPost(
     @Param('uuid') uuid: string,
     @CurrentUser() user: UserDto,
     @Body(BadWordsPipe) dto: ApiCommentPostRequestBodyDto,
+    @Req() req,
   ): Promise<UuidResponseDto> {
-    return this.commentService.commentPost(uuid, user, dto);
+    const res = await this.commentService.commentPost(uuid, user, dto);
+    req.notification = res.notification;
+    return res.data;
   }
 
   @Put('/:uuid')

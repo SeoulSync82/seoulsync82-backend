@@ -6,8 +6,8 @@ import { generateUUID } from 'src/commons/util/uuid';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { ReactionEntity } from 'src/entities/reaction.entity';
+import { NotificationDetailDto } from 'src/notification/dto/notification-detail.dto';
 import { ApiReactionPostCommunityResponseDto } from 'src/reaction/dto/api-reaction-post-community-response.dto';
-import { ReactionNotificationDetailDto } from 'src/reaction/dto/reaction-notification-detail.dto';
 import { ReactionQueryRepository } from 'src/reaction/reaction.query.repository';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -47,7 +47,7 @@ export class ReactionService {
     newReaction.like = 1;
     await this.reactionQueryRepository.courseLike(newReaction);
 
-    const notification: ReactionNotificationDetailDto = {
+    const notification: NotificationDetailDto = {
       uuid: generateUUID(),
       user_uuid: user.uuid,
       target_type: 'reaction',

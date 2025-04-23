@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { CommentQueryRepository } from 'src/comment/comment.query.repository';
 import { ApiCommentGetRequestQueryDto } from 'src/comment/dto/api-comment-get-request-query.dto';
 import { ApiCommentGetResponseDto } from 'src/comment/dto/api-comment-get-response.dto';
+import { ApiCommentPostNotificationResponseDto } from 'src/comment/dto/api-comment-post-notification-response.dto';
 import { ApiCommentPostRequestBodyDto } from 'src/comment/dto/api-community-post-request-body.dto';
 import { ApiCommentPutRequestBodyDto } from 'src/comment/dto/api-community-put-request-body.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
@@ -12,6 +13,7 @@ import { CommunityQueryRepository } from 'src/community/community.query.reposito
 import { CommentEntity } from 'src/entities/comment.entity';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { UserEntity } from 'src/entities/user.entity';
+import { NotificationDetailDto } from 'src/notification/dto/notification-detail.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 import { UserQueryRepository } from 'src/user/user.query.repository';
 import { ERROR } from '../commons/constants/error';
@@ -65,7 +67,7 @@ export class CommentService {
     uuid: string,
     user: UserDto,
     dto: ApiCommentPostRequestBodyDto,
-  ): Promise<UuidResponseDto> {
+  ): Promise<ApiCommentPostNotificationResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community)) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
@@ -80,7 +82,17 @@ export class CommentService {
     commentEntity.target_user_uuid = community.user_uuid;
 
     await this.commentQueryRepository.save(commentEntity);
-    return { uuid: commentEntity.uuid };
+
+    const notification: NotificationDetailDto = {
+      uuid: generateUUID(),
+      user_uuid: user.uuid,
+      target_type: 'comment',
+      target_uuid: community.uuid,
+      target_user_uuid: community.user_uuid,
+      content: `회원님의 게시물에 ${user.nickname}님이 한줄평을 남겼어요.`,
+    };
+
+    return { data: { uuid }, notification };
   }
 
   async commentUpdate(

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { NotificationDetailDto } from 'src/notification/dto/notification-detail.dto';
 
-export class ApiReactionPostCommunityResponseDto {
+export class ApiCommentPostNotificationResponseDto {
   @Expose()
   @ApiProperty({
     description: '반응 작업 결과 데이터',
