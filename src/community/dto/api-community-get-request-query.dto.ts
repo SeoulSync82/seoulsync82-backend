@@ -9,7 +9,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { NextPageTransform } from 'src/commons/decorators/next-page-transform.decorator';
+import { Cursor } from 'src/commons/decorators/next-page-transform.decorator';
 import { ToBoolean } from 'src/commons/decorators/to-boolean.decorator';
 
 export class ApiCommunityGetRequestQueryDto {
@@ -21,11 +21,7 @@ export class ApiCommunityGetRequestQueryDto {
     required: false,
     type: String,
   })
-  @NextPageTransform<{
-    created_at?: string;
-    like?: number;
-    id?: number;
-  }>((val) => val)
+  @Cursor()
   next_page?: {
     created_at?: string;
     like?: number;

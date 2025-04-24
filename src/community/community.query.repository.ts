@@ -34,44 +34,44 @@ export class CommunityQueryRepository {
     });
   }
 
-  async countCommunity(): Promise<number> {
-    return this.repository.count({
-      where: { archived_at: IsNull() },
-    });
+  async countTotalCommunity(dto: ApiCommunityGetRequestQueryDto, user: UserDto): Promise<number> {
+    const qb = this.repository
+      .createQueryBuilder('community')
+      .where('community.archived_at IS NULL');
+
+    if (dto.me) {
+      qb.andWhere('community.user_uuid = :userUuid', { userUuid: user.uuid });
+    }
+
+    return qb.getCount();
   }
 
   async findCommunityList(
     dto: ApiCommunityGetRequestQueryDto,
     user: UserDto,
   ): Promise<{ communityList: CommunityEntity[]; nextCursor: string | null }> {
-    const qb = this.repository
-      .createQueryBuilder('community')
-      .leftJoin('community.reactions', 'reaction', 'reaction.like = 1')
-      .addSelect('COUNT(reaction.id)', 'like_count')
-      .addSelect(`MAX(CASE WHEN reaction.user_uuid = :userUuid THEN 1 ELSE 0 END)`, 'isLiked')
-      .setParameter('userUuid', user.uuid)
-      .where('community.archived_at IS NULL')
-      .groupBy('community.uuid')
-      .addGroupBy('community.id')
-      .addGroupBy('community.user_uuid')
-      .addGroupBy('community.user_name')
-      .addGroupBy('community.course_uuid')
-      .addGroupBy('community.course_name')
-      .addGroupBy('community.score')
-      .addGroupBy('community.review')
-      .addGroupBy('community.archived_at')
-      .addGroupBy('community.created_at')
-      .addGroupBy('community.updated_at');
+    const qb = this.repository.createQueryBuilder('community');
 
-    if (dto.me === true) {
+    // 1. 서브쿼리 생성
+    const likeCountSub = CommunityCursorPaginationHelper.buildLikeCountSub(qb);
+    const isLikedSub = CommunityCursorPaginationHelper.buildIsLikedSub(qb);
+
+    // 2. SELECT에 서브쿼리 추가
+    qb.addSelect(`${likeCountSub}`, 'like_count')
+      .addSelect(`${isLikedSub}`, 'isLikedCount')
+      .where('community.archived_at IS NULL')
+      .setParameter('userUuid', user.uuid);
+
+    if (dto.me) {
       qb.andWhere('community.user_uuid = :userUuid', { userUuid: user.uuid });
     }
 
-    const cursorData = dto.next_page
-      ? CommunityCursorPaginationHelper.decodeCursor(dto.next_page)
-      : undefined;
-    CommunityCursorPaginationHelper.applyCursor(qb, dto.order, cursorData);
+    // 3. 커서 필터
+    if (dto.next_page) {
+      CommunityCursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page, likeCountSub);
+    }
 
+    // 4. 정렬 및 페이징
     if (dto.order === 'latest') {
       qb.orderBy('community.created_at', 'DESC').addOrderBy('community.id', 'DESC');
     } else {
@@ -79,27 +79,24 @@ export class CommunityQueryRepository {
         .addOrderBy('community.created_at', 'DESC')
         .addOrderBy('community.id', 'DESC');
     }
-
     qb.take(dto.size + 1);
 
+    // 5. 실행 후 매핑
     const { entities, raw } = await qb.getRawAndEntities();
-
-    const updatedEntities = entities.map((community, idx) => ({
-      ...community,
-      like_count: parseInt(raw[idx].like_count, 10),
-      isLiked: parseInt(raw[idx].isLiked, 10) === 1,
+    const updated = entities.map((c, i) => ({
+      ...c,
+      like_count: parseInt(raw[i].like_count, 10),
+      isLiked: parseInt(raw[i].isLikedCount, 10) > 0,
     }));
 
-    const hasNext = updatedEntities.length > dto.size;
-    const communityList = hasNext ? updatedEntities.slice(0, dto.size) : updatedEntities;
+    // 6. nextCursor 계산
+    const hasNext = updated.length > dto.size;
+    const pageItems = hasNext ? updated.slice(0, dto.size) : updated;
     const nextCursor = hasNext
-      ? CommunityCursorPaginationHelper.generateCursor(
-          communityList[communityList.length - 1],
-          dto.order,
-        )
+      ? CommunityCursorPaginationHelper.generateCursor(pageItems[pageItems.length - 1], dto.order)
       : null;
 
-    return { communityList, nextCursor };
+    return { communityList: pageItems, nextCursor };
   }
 
   async findExistingCourse(courseUuids: string[]) {

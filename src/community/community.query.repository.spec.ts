@@ -101,10 +101,13 @@ describe('CommunityQueryRepository', () => {
 
   describe('countCommunity', () => {
     it('should return count of communities with archived_at null', async () => {
+      const user: UserDto = { uuid: 'user-uuid' } as UserDto;
+      const baseDto: ApiCommunityGetRequestQueryDto = { size: 2, order: 'latest' };
+
       // Given
       repository.count.mockResolvedValue(5);
       // When
-      const result = await communityQueryRepository.countCommunity();
+      const result = await communityQueryRepository.countTotalCommunity(baseDto, user);
       // Then
       expect(repository.count).toHaveBeenCalledWith({
         where: { archived_at: IsNull() },
@@ -160,7 +163,7 @@ describe('CommunityQueryRepository', () => {
           { like_count: '3', isLiked: '1' },
         ],
       });
-      jest.spyOn(CommunityCursorPaginationHelper, 'decodeCursor').mockReturnValue(undefined);
+
       jest.spyOn(CommunityCursorPaginationHelper, 'applyCursor').mockImplementation(() => {});
       jest.spyOn(CommunityCursorPaginationHelper, 'generateCursor').mockReturnValue('next-cursor');
       // When
@@ -193,7 +196,7 @@ describe('CommunityQueryRepository', () => {
           { like_count: '5', isLiked: '0' },
         ],
       });
-      jest.spyOn(CommunityCursorPaginationHelper, 'decodeCursor').mockReturnValue(undefined);
+
       jest.spyOn(CommunityCursorPaginationHelper, 'applyCursor').mockImplementation(() => {});
       jest.spyOn(CommunityCursorPaginationHelper, 'generateCursor').mockReturnValue(null);
       // When

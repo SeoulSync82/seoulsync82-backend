@@ -93,7 +93,7 @@ export class CommunityService {
     user: UserDto,
   ): Promise<CursorPaginatedResponseDto<ApiCommunityGetResponseDto>> {
     const [totalCount, communityResult] = await Promise.all([
-      this.communityQueryRepository.countCommunity(),
+      this.communityQueryRepository.countTotalCommunity(dto, user),
       this.communityQueryRepository.findCommunityList(dto, user),
     ]);
 

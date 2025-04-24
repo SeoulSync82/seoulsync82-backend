@@ -1,23 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
-import { Transform, TransformFnParams } from 'class-transformer';
-import { isNotEmpty } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-export function NextPageTransform<T>(transformFn: (TValue: T) => any) {
-  return Transform(({ value }: TransformFnParams) => {
-    if (isNotEmpty(value)) {
-      try {
-        const decodedValue = decodeURIComponent(value);
-        const base64 = decodedValue
-          .replace(/-/g, '+') // '-' → '+'
-          .replace(/_/g, '/'); // '_' → '/'
-
-        const decoded = Buffer.from(base64, 'base64').toString('utf-8');
-        return transformFn(JSON.parse(decoded));
-      } catch (_) {
-        throw new BadRequestException();
-      }
+export function Cursor() {
+  return Transform(({ value }) => {
+    if (!value) return undefined;
+    try {
+      const b64 = value.replace(/-/g, '+').replace(/_/g, '/');
+      const str = Buffer.from(b64, 'base64').toString('utf-8');
+      return JSON.parse(str);
+    } catch {
+      throw new BadRequestException('Invalid cursor');
     }
-
-    return undefined;
   });
 }

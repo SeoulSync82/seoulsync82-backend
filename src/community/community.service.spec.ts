@@ -179,7 +179,7 @@ describe('CommunityService', () => {
       // Given
       const dto: ApiCommunityGetRequestQueryDto = { size: 5 } as ApiCommunityGetRequestQueryDto;
       const user = { uuid: 'user-uuid' } as UserDto;
-      communityQueryRepository.countCommunity.mockResolvedValue(0);
+      communityQueryRepository.countTotalCommunity.mockResolvedValue(0);
       communityQueryRepository.findCommunityList.mockResolvedValue({
         communityList: [],
         nextCursor: null,
@@ -214,7 +214,7 @@ describe('CommunityService', () => {
         } as CommunityEntity,
       ];
       const nextCursor = 'next-cursor';
-      communityQueryRepository.countCommunity.mockResolvedValue(totalCount);
+      communityQueryRepository.countTotalCommunity.mockResolvedValue(totalCount);
       communityQueryRepository.findCommunityList.mockResolvedValue({ communityList, nextCursor });
       const courseList: CourseEntity[] = [
         {

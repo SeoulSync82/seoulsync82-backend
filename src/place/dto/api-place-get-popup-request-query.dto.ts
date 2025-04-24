@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
-import { NextPageTransform } from 'src/commons/decorators/next-page-transform.decorator';
+import { Cursor } from 'src/commons/decorators/next-page-transform.decorator';
 
 export class ApiPlaceGetPopupRequestQueryDto {
   @IsOptional()
@@ -11,11 +11,7 @@ export class ApiPlaceGetPopupRequestQueryDto {
     required: false,
     type: String,
   })
-  @NextPageTransform<{
-    start_date?: string;
-    end_date?: string;
-    id?: number;
-  }>((val) => val)
+  @Cursor()
   next_page?: {
     start_date?: string;
     end_date?: string;
