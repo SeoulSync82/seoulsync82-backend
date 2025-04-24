@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 
 export class ApiPlaceGetPopupResponseDto {
+  @Expose()
   @ApiProperty({
     example: 535,
     description: '장소 아이디',

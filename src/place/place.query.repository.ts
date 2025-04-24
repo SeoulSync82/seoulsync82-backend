@@ -42,24 +42,27 @@ export class PlaceQueryRepository {
       .where('place.place_type = :type', { type: '전시' })
       .andWhere('place.end_date > NOW()');
 
-    CursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page);
+    // 커서 적용
+    if (dto.next_page) {
+      CursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page);
+    }
 
+    // 정렬 & 페이징
     if (dto.order === 'latest') {
       qb.orderBy('place.start_date', 'DESC').addOrderBy('place.id', 'DESC');
     } else {
       qb.orderBy('place.end_date', 'ASC').addOrderBy('place.id', 'ASC');
     }
-
     qb.take(dto.size + 1);
+
     const results = await qb.getMany();
     const hasNext = results.length > dto.size;
+    const pageItems = hasNext ? results.slice(0, dto.size) : results;
+    const nextCursor = hasNext
+      ? CursorPaginationHelper.generateCursor(pageItems[pageItems.length - 1], dto.order)
+      : null;
 
-    return {
-      items: hasNext ? results.slice(0, -1) : results,
-      nextCursor: hasNext
-        ? CursorPaginationHelper.generateCursor(results[dto.size - 1], dto.order)
-        : null,
-    };
+    return { items: pageItems, nextCursor };
   }
 
   async findPopupList(dto: ApiPlaceGetPopupRequestQueryDto) {
@@ -68,24 +71,27 @@ export class PlaceQueryRepository {
       .where('place.place_type = :type', { type: '팝업' })
       .andWhere('place.end_date > NOW()');
 
-    CursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page);
+    // 커서 적용
+    if (dto.next_page) {
+      CursorPaginationHelper.applyCursor(qb, dto.order, dto.next_page);
+    }
 
+    // 정렬 & 페이징
     if (dto.order === 'latest') {
       qb.orderBy('place.start_date', 'DESC').addOrderBy('place.id', 'DESC');
     } else {
       qb.orderBy('place.end_date', 'ASC').addOrderBy('place.id', 'ASC');
     }
-
     qb.take(dto.size + 1);
+
     const results = await qb.getMany();
     const hasNext = results.length > dto.size;
+    const pageItems = hasNext ? results.slice(0, dto.size) : results;
+    const nextCursor = hasNext
+      ? CursorPaginationHelper.generateCursor(pageItems[pageItems.length - 1], dto.order)
+      : null;
 
-    return {
-      items: hasNext ? results.slice(0, -1) : results,
-      nextCursor: hasNext
-        ? CursorPaginationHelper.generateCursor(results[dto.size - 1], dto.order)
-        : null,
-    };
+    return { items: pageItems, nextCursor };
   }
 
   async countPopup(): Promise<number> {

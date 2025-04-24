@@ -29,6 +29,7 @@ export class CommunityCursorPaginationHelper {
       .from(ReactionEntity, 'r2')
       .where('r2.user_uuid = :userUuid')
       .andWhere('r2.target_uuid = community.uuid')
+      .andWhere('r2.like = true')
       .getQuery();
   }
 
