@@ -3,6 +3,7 @@ import { CommentController } from 'src/comment/comment.controller';
 import { CommentService } from 'src/comment/comment.service';
 import { ApiCommentGetRequestQueryDto } from 'src/comment/dto/api-comment-get-request-query.dto';
 import { ApiCommentGetResponseDto } from 'src/comment/dto/api-comment-get-response.dto';
+import { ApiCommentPostRequestBodyDto } from 'src/comment/dto/api-community-post-request-body.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -47,16 +48,34 @@ describe('CommentController', () => {
   });
 
   describe('commentPost', () => {
-    it('should return UuidResponseDto when comment is posted successfully', async () => {
+    it('should set req.notification and return only data part', async () => {
       // Given
       const dummyCommunityUuid = 'community-uuid';
       const dummyUser = { uuid: 'user-uuid', nickname: 'TestUser' } as UserDto;
-      const dummyDto = { comment: 'New comment' };
-      const dummyResponse: UuidResponseDto = { uuid: 'generated-uuid' };
-      jest.spyOn(commentService, 'commentPost').mockResolvedValue(dummyResponse);
+      const dummyDto: ApiCommentPostRequestBodyDto = { comment: 'New comment' };
+      const dummyUuid = 'generated-uuid';
+      const dummyNotification = {
+        uuid: 'notif-uuid',
+        content: '회원님의 게시물에 TestUser님이 한줄평을 남겼어요.',
+        target_type: 'comment',
+        target_user_uuid: 'community-user-uuid',
+        target_uuid: dummyCommunityUuid,
+        user_uuid: dummyUser.uuid,
+      };
+      const dummyServiceResponse = {
+        data: { uuid: dummyUuid },
+        notification: dummyNotification,
+      };
+      jest.spyOn(commentService, 'commentPost').mockResolvedValue(dummyServiceResponse);
+      const req: any = {};
 
       // When
-      const result = await commentController.commentPost(dummyCommunityUuid, dummyUser, dummyDto);
+      const result = await commentController.commentPost(
+        dummyCommunityUuid,
+        dummyUser,
+        dummyDto,
+        req,
+      );
 
       // Then
       expect(commentService.commentPost).toHaveBeenCalledWith(
@@ -64,7 +83,8 @@ describe('CommentController', () => {
         dummyUser,
         dummyDto,
       );
-      expect(result).toEqual(dummyResponse);
+      expect(req.notification).toEqual(dummyNotification);
+      expect(result).toEqual({ uuid: dummyUuid });
     });
   });
 

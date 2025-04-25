@@ -86,6 +86,7 @@ describe('ReactionService', () => {
       expect(notif).toEqual({
         uuid: 'new-notif-uuid',
         user_uuid: user.uuid,
+        target_type: 'reaction',
         target_uuid: community.uuid,
         target_user_uuid: community.user_uuid,
         content: `회원님의 게시물을 ${user.nickname}님이 좋아합니다.`,

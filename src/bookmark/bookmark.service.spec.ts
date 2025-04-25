@@ -117,6 +117,87 @@ describe('BookmarkService', () => {
       });
     });
 
+    it('should default to is_posted=false, score "0.0" and like_count 0 when no community data', async () => {
+      const courseList: BookmarkEntity[] = [
+        {
+          id: 1,
+          uuid: 'bm-1',
+          user_uuid: 'user-uuid',
+          course_uuid: 'course-1',
+          course_name: 'Course 1',
+          subway: 'Line 1',
+          line: 'Line A',
+          course_image: 'img1',
+          user_name: 'User One',
+          archived_at: null,
+        },
+      ] as BookmarkEntity[];
+
+      bookmarkQueryRepository.find.mockResolvedValue(courseList);
+      userQueryRepository.findUserList.mockResolvedValue([
+        {
+          id: 1,
+          uuid: 'user-uuid',
+          profile_image: 'img-user1',
+          email: 'test@naver.com',
+          name: 'test',
+          type: 'kakao',
+          refresh_token: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      ]);
+
+      jest
+        .spyOn((bookmarkService as any).communityQueryRepository, 'findExistingCourse')
+        .mockResolvedValue(undefined);
+      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(courseList as any);
+
+      // When
+      const res = await bookmarkService.bookmarkList(dummyDto, dummyUser);
+
+      // Then
+      expect(res.items).toHaveLength(1);
+      expect(res.items[0].is_posted).toBe(false);
+      expect(res.items[0].score).toBe('0.0');
+      expect(res.items[0].like_count).toBe(0);
+      expect(res.last_item_id).toBe(0);
+    });
+
+    it('should set user_profile_image to null when no matching user in userList', async () => {
+      // Given
+      const courseList: BookmarkEntity[] = [
+        {
+          id: 2,
+          uuid: 'bm-2',
+          user_uuid: 'no-such-user',
+          course_uuid: 'course-2',
+          course_name: 'Course 2',
+          subway: 'Line 2',
+          line: 'Line B',
+          course_image: 'img2',
+          user_name: 'User Two',
+          archived_at: null,
+        },
+      ] as BookmarkEntity[];
+      bookmarkQueryRepository.find.mockResolvedValue(courseList);
+
+      userQueryRepository.findUserList.mockResolvedValue([]);
+      jest
+        .spyOn((bookmarkService as any).communityQueryRepository, 'findExistingCourse')
+        .mockResolvedValue([{ course_uuid: 'course-2', score: '3.2', like_count: 2 }]);
+      jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(courseList as any);
+
+      // When
+      const res = await bookmarkService.bookmarkList(dummyDto, dummyUser);
+
+      // Then
+      expect(res.items[0].user_profile_image).toBeNull();
+      expect(res.items[0].is_posted).toBe(true);
+      expect(res.items[0].score).toBe('3.2');
+      expect(res.items[0].like_count).toBe(2);
+    });
+
     it('should set last_item_id to 0 if courseList.length is less than dto.size', async () => {
       // Given
       const courseList: BookmarkEntity[] = [

@@ -104,6 +104,34 @@ describe('PlaceQueryRepository', () => {
       expect(result).toEqual({ items: fakeResults.slice(0, -1), nextCursor: 'cursor123' });
     });
 
+    it('should apply cursor filtering when next_page is provided', async () => {
+      // Given
+      const dto = {
+        size: 1,
+        order: 'deadline',
+        next_page: { end_date: '2024-01-02T00:00:00.000Z', id: 42 },
+      } as ApiPlaceGetExhibitionRequestQueryDto;
+
+      const fakeQb = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        addOrderBy: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([{ uuid: 'p1' } as PlaceEntity]),
+      };
+      jest.spyOn(repository, 'createQueryBuilder').mockReturnValue(fakeQb as any);
+      const applySpy = jest
+        .spyOn(CursorPaginationHelper, 'applyCursor')
+        .mockImplementation(() => {});
+
+      // When
+      await placeQueryRepository.findExhibitionList(dto);
+
+      // Then
+      expect(applySpy).toHaveBeenCalledWith(fakeQb, dto.order, dto.next_page);
+    });
+
     it('should return exhibition list with ascending order when order is not "latest"', async () => {
       // Given
       const dto = {
@@ -160,6 +188,34 @@ describe('PlaceQueryRepository', () => {
       expect(fakeQb.orderBy).toHaveBeenCalledWith('place.start_date', 'DESC');
       expect(fakeQb.addOrderBy).toHaveBeenCalledWith('place.id', 'DESC');
       expect(result).toEqual({ items: fakeResults.slice(0, -1), nextCursor: 'cursor456' });
+    });
+
+    it('should apply cursor filtering when next_page is provided', async () => {
+      // Given
+      const dto = {
+        size: 3,
+        order: 'latest',
+        next_page: { start_date: '2025-01-01T00:00:00.000Z', id: 7 },
+      } as ApiPlaceGetPopupRequestQueryDto;
+
+      const fakeQb = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        addOrderBy: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([{ uuid: 'p2' } as PlaceEntity]),
+      };
+      jest.spyOn(repository, 'createQueryBuilder').mockReturnValue(fakeQb as any);
+      const applySpy = jest
+        .spyOn(CursorPaginationHelper, 'applyCursor')
+        .mockImplementation(() => {});
+
+      // When
+      await placeQueryRepository.findPopupList(dto);
+
+      // Then
+      expect(applySpy).toHaveBeenCalledWith(fakeQb, dto.order, dto.next_page);
     });
 
     it('should return popup list with ascending order when order is not "latest"', async () => {

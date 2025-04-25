@@ -184,7 +184,7 @@ export class CourseService {
       return { items: [], last_item_id: 0 };
     }
 
-    const [userList, postedCourses] = await Promise.all([
+    const [userList, postedCourses = []] = await Promise.all([
       this.userQueryRepository.findUserList(courseList.map((item) => item.user_uuid)),
       this.communityQueryRepository.findExistingCourse(courseList.map((item) => item.uuid)),
     ]);

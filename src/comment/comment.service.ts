@@ -80,7 +80,6 @@ export class CommentService {
     commentEntity.comment = dto.comment;
     commentEntity.target_uuid = community.uuid;
     commentEntity.target_user_uuid = community.user_uuid;
-
     await this.commentQueryRepository.save(commentEntity);
 
     const notification: NotificationDetailDto = {
@@ -92,7 +91,10 @@ export class CommentService {
       content: `회원님의 게시물에 ${user.nickname}님이 한줄평을 남겼어요.`,
     };
 
-    return { data: { uuid }, notification };
+    return {
+      data: { uuid: commentEntity.uuid },
+      notification,
+    };
   }
 
   async commentUpdate(

@@ -141,6 +141,7 @@ describe('CourseController', () => {
         is_posted: false,
         is_bookmarked: false,
         created_at: new Date(),
+        customs: 'restaurant',
       };
       jest.spyOn(courseService, 'getCourseDetail').mockResolvedValue(expectedResponse);
       // When

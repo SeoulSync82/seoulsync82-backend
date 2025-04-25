@@ -99,36 +99,52 @@ describe('CommunityQueryRepository', () => {
     });
   });
 
-  describe('countCommunity', () => {
-    it('should return count of communities with archived_at null', async () => {
-      const user: UserDto = { uuid: 'user-uuid' } as UserDto;
-      const baseDto: ApiCommunityGetRequestQueryDto = { size: 2, order: 'latest' };
+  describe('countTotalCommunity', () => {
+    let qb: any;
+    const user: UserDto = { uuid: 'user-uuid' } as any;
+    const baseDto: ApiCommunityGetRequestQueryDto = { size: 2, order: 'latest' };
 
-      // Given
-      repository.count.mockResolvedValue(5);
+    beforeEach(() => {
+      qb = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getCount: jest.fn().mockResolvedValue(5),
+      };
+      repository.createQueryBuilder = jest.fn().mockReturnValue(qb);
+    });
+
+    it('should return count of communities with archived_at null', async () => {
       // When
       const result = await communityQueryRepository.countTotalCommunity(baseDto, user);
       // Then
-      expect(repository.count).toHaveBeenCalledWith({
-        where: { archived_at: IsNull() },
-      });
+      expect(repository.createQueryBuilder).toHaveBeenCalledWith('community');
+      expect(qb.where).toHaveBeenCalledWith('community.archived_at IS NULL');
+      expect(qb.getCount).toHaveBeenCalled();
       expect(result).toBe(5);
+    });
+
+    it('should apply me filter when dto.me is true', async () => {
+      // Given
+      const dto = { ...baseDto, me: true } as ApiCommunityGetRequestQueryDto;
+      // When
+      await communityQueryRepository.countTotalCommunity(dto, user);
+      // Then
+      expect(qb.andWhere).toHaveBeenCalledWith('community.user_uuid = :userUuid', {
+        userUuid: user.uuid,
+      });
     });
   });
 
   describe('findCommunityList', () => {
     let qb: any;
-    const user: UserDto = { uuid: 'user-uuid' } as UserDto;
+    const user: UserDto = { uuid: 'user-uuid' } as any;
     const baseDto: ApiCommunityGetRequestQueryDto = { size: 2, order: 'latest' };
 
     beforeEach(() => {
       qb = {
-        leftJoin: jest.fn().mockReturnThis(),
         addSelect: jest.fn().mockReturnThis(),
         setParameter: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
-        groupBy: jest.fn().mockReturnThis(),
-        addGroupBy: jest.fn().mockReturnThis(),
         andWhere: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         addOrderBy: jest.fn().mockReturnThis(),
@@ -136,106 +152,92 @@ describe('CommunityQueryRepository', () => {
         getRawAndEntities: jest.fn(),
       };
       repository.createQueryBuilder = jest.fn().mockReturnValue(qb);
+
+      jest
+        .spyOn(CommunityCursorPaginationHelper, 'buildLikeCountSub')
+        .mockReturnValue('LIKE_COUNT_SUBQ');
+      jest
+        .spyOn(CommunityCursorPaginationHelper, 'buildIsLikedSub')
+        .mockReturnValue('IS_LIKED_SUBQ');
     });
 
     it('should apply pagination and return community list with nextCursor when entities exceed size', async () => {
       // Given
-      const community1: CommunityEntity = {
-        uuid: 'c1',
-        id: 1,
-        created_at: new Date(),
-      } as CommunityEntity;
-      const community2: CommunityEntity = {
-        uuid: 'c2',
-        id: 2,
-        created_at: new Date(),
-      } as CommunityEntity;
-      const extraCommunity: CommunityEntity = {
-        uuid: 'c3',
-        id: 3,
-        created_at: new Date(),
-      } as CommunityEntity;
+      const c1 = { uuid: 'c1', id: 1, created_at: new Date() } as CommunityEntity;
+      const c2 = { uuid: 'c2', id: 2, created_at: new Date() } as CommunityEntity;
+      const c3 = { uuid: 'c3', id: 3, created_at: new Date() } as CommunityEntity;
       qb.getRawAndEntities.mockResolvedValue({
-        entities: [community1, community2, extraCommunity],
+        entities: [c1, c2, c3],
         raw: [
           { like_count: '10', isLiked: '1' },
           { like_count: '5', isLiked: '0' },
           { like_count: '3', isLiked: '1' },
         ],
       });
-
       jest.spyOn(CommunityCursorPaginationHelper, 'applyCursor').mockImplementation(() => {});
       jest.spyOn(CommunityCursorPaginationHelper, 'generateCursor').mockReturnValue('next-cursor');
+
       // When
-      const result = await communityQueryRepository.findCommunityList(baseDto, user);
+      const { communityList, nextCursor } = await communityQueryRepository.findCommunityList(
+        baseDto,
+        user,
+      );
+
       // Then
+      expect(qb.addSelect).toHaveBeenCalledWith('LIKE_COUNT_SUBQ', 'like_count');
+      expect(qb.addSelect).toHaveBeenCalledWith('IS_LIKED_SUBQ', 'isLiked');
       expect(qb.take).toHaveBeenCalledWith(baseDto.size + 1);
-      expect(result.communityList).toEqual([
-        { ...community1, like_count: 10, isLiked: true },
-        { ...community2, like_count: 5, isLiked: false },
+      expect(communityList).toEqual([
+        { ...c1, like_count: 10, isLiked: true },
+        { ...c2, like_count: 5, isLiked: false },
       ]);
-      expect(result.nextCursor).toBe('next-cursor');
+      expect(nextCursor).toBe('next-cursor');
     });
 
-    it('should return community list without nextCursor when entities count is less than or equal to dto.size', async () => {
+    it('should return community list without nextCursor when entities count is <= dto.size', async () => {
       // Given
-      const community1: CommunityEntity = {
-        uuid: 'c1',
-        id: 1,
-        created_at: new Date(),
-      } as CommunityEntity;
-      const community2: CommunityEntity = {
-        uuid: 'c2',
-        id: 2,
-        created_at: new Date(),
-      } as CommunityEntity;
+      const c1 = { uuid: 'c1', id: 1, created_at: new Date() } as CommunityEntity;
+      const c2 = { uuid: 'c2', id: 2, created_at: new Date() } as CommunityEntity;
       qb.getRawAndEntities.mockResolvedValue({
-        entities: [community1, community2],
+        entities: [c1, c2],
         raw: [
           { like_count: '10', isLiked: '1' },
           { like_count: '5', isLiked: '0' },
         ],
       });
-
       jest.spyOn(CommunityCursorPaginationHelper, 'applyCursor').mockImplementation(() => {});
       jest.spyOn(CommunityCursorPaginationHelper, 'generateCursor').mockReturnValue(null);
+
       // When
-      const result = await communityQueryRepository.findCommunityList(baseDto, user);
+      const { communityList, nextCursor } = await communityQueryRepository.findCommunityList(
+        baseDto,
+        user,
+      );
+
       // Then
-      expect(result.communityList).toEqual([
-        { ...community1, like_count: 10, isLiked: true },
-        { ...community2, like_count: 5, isLiked: false },
+      expect(communityList).toEqual([
+        { ...c1, like_count: 10, isLiked: true },
+        { ...c2, like_count: 5, isLiked: false },
       ]);
-      expect(result.nextCursor).toBeNull();
+      expect(nextCursor).toBeNull();
     });
 
-    it('should apply me filter and like_count ordering when dto.me is true and order is not latest', async () => {
+    it('should apply me filter and popular ordering when dto.me is true and order is "popular"', async () => {
       // Given
-      const dto: ApiCommunityGetRequestQueryDto = {
+      const dto = {
         size: 2,
         order: 'popular',
         me: true,
-        next_page: 'cursorString',
+        next_page: 'ignored',
       } as ApiCommunityGetRequestQueryDto;
-      const community1: CommunityEntity = {
-        uuid: 'c1',
-        id: 1,
-        created_at: new Date(),
-      } as CommunityEntity;
-      const community2: CommunityEntity = {
-        uuid: 'c2',
-        id: 2,
-        created_at: new Date(),
-      } as CommunityEntity;
       qb.getRawAndEntities.mockResolvedValue({
-        entities: [community1, community2],
-        raw: [
-          { like_count: '20', isLiked: '1' },
-          { like_count: '15', isLiked: '0' },
-        ],
+        entities: [],
+        raw: [],
       });
+
       // When
-      const result = await communityQueryRepository.findCommunityList(dto, user);
+      await communityQueryRepository.findCommunityList(dto, user);
+
       // Then
       expect(qb.andWhere).toHaveBeenCalledWith('community.user_uuid = :userUuid', {
         userUuid: user.uuid,
@@ -243,11 +245,60 @@ describe('CommunityQueryRepository', () => {
       expect(qb.orderBy).toHaveBeenCalledWith('like_count', 'DESC');
       expect(qb.addOrderBy).toHaveBeenCalledWith('community.created_at', 'DESC');
       expect(qb.addOrderBy).toHaveBeenCalledWith('community.id', 'DESC');
-      expect(result.communityList).toEqual([
-        { ...community1, like_count: 20, isLiked: true },
-        { ...community2, like_count: 15, isLiked: false },
+    });
+  });
+
+  describe('findExistingCourse', () => {
+    let qb: any;
+    const courseUuids = ['c1', 'c2'];
+
+    beforeEach(() => {
+      qb = {
+        leftJoin: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        addGroupBy: jest.fn().mockReturnThis(),
+        getRawMany: jest.fn(),
+      };
+      repository.createQueryBuilder = jest.fn().mockReturnValue(qb);
+    });
+
+    it('should return mapped existing courses with correct types', async () => {
+      // Given
+      const rawRows = [
+        { course_uuid: 'c1', score: '4.5', like_count: '10' },
+        { course_uuid: 'c2', score: '3.0', like_count: '0' },
+      ];
+      qb.getRawMany.mockResolvedValue(rawRows);
+
+      // When
+      const result = await communityQueryRepository.findExistingCourse(courseUuids);
+
+      // Then
+      expect(repository.createQueryBuilder).toHaveBeenCalledWith('community');
+      expect(qb.leftJoin).toHaveBeenCalledWith(
+        'community.reactions',
+        'reaction',
+        'reaction.like = 1',
+      );
+      expect(qb.select).toHaveBeenCalledWith('community.course_uuid', 'course_uuid');
+      expect(qb.addSelect).toHaveBeenCalledWith('community.score', 'score');
+      expect(qb.addSelect).toHaveBeenCalledWith('COUNT(reaction.id)', 'like_count');
+      expect(qb.where).toHaveBeenCalledWith('community.course_uuid IN (:...courseUuids)', {
+        courseUuids,
+      });
+      expect(qb.andWhere).toHaveBeenCalledWith('community.archived_at IS NULL');
+      expect(qb.groupBy).toHaveBeenCalledWith('community.course_uuid');
+      expect(qb.addGroupBy).toHaveBeenCalledWith('community.score');
+      expect(qb.getRawMany).toHaveBeenCalled();
+
+      expect(result).toEqual([
+        { course_uuid: 'c1', score: '4.5', like_count: 10 },
+        { course_uuid: 'c2', score: '3.0', like_count: 0 },
       ]);
-      expect(result.nextCursor).toBeNull();
     });
   });
 });

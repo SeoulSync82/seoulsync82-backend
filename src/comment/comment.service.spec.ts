@@ -258,32 +258,71 @@ describe('CommentService', () => {
       );
     });
 
-    it('should save comment and return UuidResponseDto', async () => {
+    // it('should save comment and return UuidResponseDto', async () => {
+    //   // Given
+    //   const dummyCommunityUuid = 'community-uuid';
+    //   const dummyUser = {
+    //     uuid: 'user-uuid',
+    //     nickname: 'UserName',
+    //     id: 1,
+    //     profile_image: 'img-user',
+    //   } as UserDto;
+    //   const dto: ApiCommentPostRequestBodyDto = { comment: 'New comment' };
+    //   const dummyCommunity: CommunityEntity = {
+    //     uuid: dummyCommunityUuid,
+    //     user_uuid: 'community-user-uuid',
+    //   } as CommunityEntity;
+    //   communityQueryRepository.findOne.mockResolvedValue(dummyCommunity);
+    //   const generatedUUID = 'generated-uuid';
+    //   jest.spyOn(generateUUID, 'generateUUID').mockReturnValue(generatedUUID);
+    //   commentQueryRepository.save.mockResolvedValue({} as CommentEntity);
+
+    //   // When
+    //   const result = await commentService.commentPost(dummyCommunityUuid, dummyUser, dto);
+
+    //   // Then
+    //   expect(communityQueryRepository.findOne).toHaveBeenCalledWith(dummyCommunityUuid);
+    //   expect(commentQueryRepository.save).toHaveBeenCalled();
+    //   expect(result).toEqual({ uuid: generatedUUID });
+    // });
+
+    it('should save comment and return both data and notification', async () => {
       // Given
-      const dummyCommunityUuid = 'community-uuid';
-      const dummyUser = {
-        uuid: 'user-uuid',
-        nickname: 'UserName',
-        id: 1,
-        profile_image: 'img-user',
-      } as UserDto;
-      const dto: ApiCommentPostRequestBodyDto = { comment: 'New comment' };
-      const dummyCommunity: CommunityEntity = {
-        uuid: dummyCommunityUuid,
+      const communityUuid = 'community-uuid';
+      const user = { uuid: 'user-uuid', nickname: 'UserName' } as UserDto;
+      const dto: ApiCommentPostRequestBodyDto = { comment: 'Hello!' };
+      const generatedCommentUuid = 'comment-uuid';
+      const generatedNotifUuid = 'notif-uuid';
+
+      const community = {
+        uuid: communityUuid,
         user_uuid: 'community-user-uuid',
       } as CommunityEntity;
-      communityQueryRepository.findOne.mockResolvedValue(dummyCommunity);
-      const generatedUUID = 'generated-uuid';
-      jest.spyOn(generateUUID, 'generateUUID').mockReturnValue(generatedUUID);
+      communityQueryRepository.findOne.mockResolvedValue(community);
+
+      jest
+        .spyOn(generateUUID, 'generateUUID')
+        .mockReturnValueOnce(generatedCommentUuid)
+        .mockReturnValueOnce(generatedNotifUuid);
       commentQueryRepository.save.mockResolvedValue({} as CommentEntity);
 
       // When
-      const result = await commentService.commentPost(dummyCommunityUuid, dummyUser, dto);
+      const result = await commentService.commentPost(communityUuid, user, dto);
 
       // Then
-      expect(communityQueryRepository.findOne).toHaveBeenCalledWith(dummyCommunityUuid);
+      expect(communityQueryRepository.findOne).toHaveBeenCalledWith(communityUuid);
       expect(commentQueryRepository.save).toHaveBeenCalled();
-      expect(result).toEqual({ uuid: generatedUUID });
+      expect(result).toEqual({
+        data: { uuid: generatedCommentUuid },
+        notification: {
+          uuid: generatedNotifUuid,
+          user_uuid: user.uuid,
+          target_type: 'comment',
+          target_uuid: communityUuid,
+          target_user_uuid: community.user_uuid,
+          content: `회원님의 게시물에 ${user.nickname}님이 한줄평을 남겼어요.`,
+        },
+      });
     });
   });
 

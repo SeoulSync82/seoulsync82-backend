@@ -430,6 +430,76 @@ describe('CourseService', () => {
       expect(result.items.length).toBe(courseList.length);
     });
 
+    it('should map is_posted, score and like_count when community exists', async () => {
+      // Given
+      const apiCourseGetMyHistoryRequestQueryDto = {
+        size: 1,
+        last_id: 0,
+      } as ApiCourseGetMyHistoryRequestQueryDto;
+      const userDto = { uuid: 'user-uuid' } as UserDto;
+      const courseList = [
+        {
+          id: 1,
+          uuid: 'course-1',
+          course_name: 'Course 1',
+          user_uuid: 'user-uuid',
+          created_at: new Date(),
+        },
+      ] as CourseEntity[];
+      courseQueryRepository.findMyCourse.mockResolvedValue(courseList);
+      userQueryRepository.findUserList.mockResolvedValue([
+        { uuid: 'user-uuid', profile_image: 'url-profile' },
+      ] as any);
+      communityQueryRepository.findExistingCourse.mockResolvedValue([
+        { course_uuid: 'course-1', score: '4.5', like_count: 10 },
+      ] as any);
+
+      // When
+      const result = await courseService.getMyCourseHistory(
+        apiCourseGetMyHistoryRequestQueryDto,
+        userDto,
+      );
+
+      // Then
+      expect(result.items[0].is_posted).toBe(true);
+      expect(result.items[0].score).toBe('4.5');
+      expect(result.items[0].like_count).toBe(10);
+    });
+
+    it('should default score "0.0" and like_count 0 when no community exists', async () => {
+      // Given
+      const apiCourseGetMyHistoryRequestQueryDto = {
+        size: 1,
+        last_id: 0,
+      } as ApiCourseGetMyHistoryRequestQueryDto;
+      const userDto = { uuid: 'user-uuid' } as UserDto;
+      const courseList = [
+        {
+          id: 1,
+          uuid: 'course-2',
+          course_name: 'Course 2',
+          user_uuid: 'user-uuid',
+          created_at: new Date(),
+        },
+      ] as CourseEntity[];
+      courseQueryRepository.findMyCourse.mockResolvedValue(courseList);
+      userQueryRepository.findUserList.mockResolvedValue([
+        { uuid: 'user-uuid', profile_image: 'url-profile' },
+      ] as any);
+      communityQueryRepository.findExistingCourse.mockResolvedValue([] as any);
+
+      // When
+      const result = await courseService.getMyCourseHistory(
+        apiCourseGetMyHistoryRequestQueryDto,
+        userDto,
+      );
+
+      // Then
+      expect(result.items[0].is_posted).toBe(false);
+      expect(result.items[0].score).toBe('0.0');
+      expect(result.items[0].like_count).toBe(0);
+    });
+
     it('should return my course history with last_item_id as 0 when courseList length is less than dto.size', async () => {
       // Given
       const dtoExtended: ApiCourseGetMyHistoryRequestQueryDto = { size: 3, last_id: 0 };
