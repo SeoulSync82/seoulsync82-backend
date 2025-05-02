@@ -55,7 +55,7 @@ export class CommunityEntity {
   like_count: number;
 
   @Expose()
-  isLiked: boolean;
+  is_liked: boolean;
 
   @OneToMany(() => ReactionEntity, (reaction) => reaction.community, { cascade: true })
   reactions: ReactionEntity[];

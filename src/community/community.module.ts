@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookmarkModule } from 'src/bookmark/bookmark.module';
+import { CommentModule } from 'src/comment/comment.module';
 import { CommunityController } from 'src/community/community.controller';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { CommunityService } from 'src/community/community.service';
@@ -16,6 +17,7 @@ import { UserModule } from 'src/user/user.module';
     forwardRef(() => ReactionModule),
     forwardRef(() => CourseModule),
     forwardRef(() => BookmarkModule),
+    forwardRef(() => CommentModule),
     NotificationModule,
     TypeOrmModule.forFeature([CommunityEntity]),
   ],

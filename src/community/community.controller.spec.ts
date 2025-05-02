@@ -96,7 +96,7 @@ describe('CommunityController', () => {
         subway: 'subway',
         count: 0,
         like: 0,
-        isLiked: false,
+        is_liked: false,
         place: [],
       });
       jest.spyOn(communityService, 'communityDetail').mockResolvedValue(expected);

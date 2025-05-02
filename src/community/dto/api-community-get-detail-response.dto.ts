@@ -92,6 +92,13 @@ export class ApiCommunityGetDetailResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: true,
+    description: '한줄평 작성 여부',
+  })
+  is_commented: boolean;
+
+  @Expose()
+  @ApiProperty({
     example: '분위기 있는🌃',
     description: '코스 테마',
   })
@@ -116,7 +123,7 @@ export class ApiCommunityGetDetailResponseDto {
     example: 'true',
     description: '내가 좋아요 눌렀는 지',
   })
-  isLiked: boolean;
+  is_liked: boolean;
 
   @Expose()
   @ApiProperty()

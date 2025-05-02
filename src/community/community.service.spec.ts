@@ -1,6 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { CommentQueryRepository } from 'src/comment/comment.query.repository';
 import * as generateUUID from 'src/commons/util/uuid';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
 import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
@@ -9,6 +10,7 @@ import { ApiCommunityGetRequestQueryDto } from 'src/community/dto/api-community-
 import { ApiCommunityPostRequestBodyDto } from 'src/community/dto/api-community-post-request-body.dto';
 import { ApiCommunityPutRequestBodyDto } from 'src/community/dto/api-community-put-request-body.dto';
 import { CourseQueryRepository } from 'src/course/course.query.repository';
+import { CommentEntity } from 'src/entities/comment.entity';
 import { CommunityEntity } from 'src/entities/community.entity';
 import { CourseEntity } from 'src/entities/course.entity';
 import { ReactionQueryRepository } from 'src/reaction/reaction.query.repository';
@@ -23,6 +25,7 @@ describe('CommunityService', () => {
   let courseQueryRepository: jest.Mocked<CourseQueryRepository>;
   let reactionQueryRepository: jest.Mocked<ReactionQueryRepository>;
   let userQueryRepository: jest.Mocked<UserQueryRepository>;
+  let commentQueryRepository: jest.Mocked<CommentQueryRepository>;
 
   beforeEach(async () => {
     const { unit, unitRef } = TestBed.create(CommunityService).compile();
@@ -32,6 +35,7 @@ describe('CommunityService', () => {
     courseQueryRepository = unitRef.get(CourseQueryRepository);
     reactionQueryRepository = unitRef.get(ReactionQueryRepository);
     userQueryRepository = unitRef.get(UserQueryRepository);
+    commentQueryRepository = unitRef.get(CommentQueryRepository);
     jest.clearAllMocks();
   });
 
@@ -362,22 +366,80 @@ describe('CommunityService', () => {
         created_at: new Date(),
         updated_at: new Date(),
       };
+      const comment = {
+        id: 1,
+        uuid: 'comment-1',
+        user_uuid: 'user-uuid',
+        comment: 'Only comment',
+      };
+
       bookmarkQueryRepository.findMyCourse.mockResolvedValue(bookmark as any);
       courseQueryRepository.findOne.mockResolvedValue(course);
       courseQueryRepository.findPlace.mockResolvedValue(coursePlaces as any);
       reactionQueryRepository.findCommunityDetailReaction.mockResolvedValue(reactions as any);
       userQueryRepository.findOne.mockResolvedValue(communityUser as any);
+      commentQueryRepository.findMyComment.mockResolvedValue(comment as CommentEntity);
       // When
       const result = await communityService.communityDetail(commUuid, user);
       // Then
       expect(result).toBeInstanceOf(ApiCommunityGetDetailResponseDto);
       expect(result.uuid).toBe(commUuid);
       expect(result.is_bookmarked).toBe(true);
+      expect(result.is_commented).toBe(true);
       expect(result.course_image).toBe('img-course');
       expect(result.subway).toBe('subway');
       expect(result.count).toBe(coursePlaces.length);
       expect(result.like).toBe(reactions.length);
-      expect(result.isLiked).toBe(false);
+      expect(result.is_liked).toBe(false);
+    });
+
+    it('should set is_commented as false when no comment and user is not author', async () => {
+      // Given
+      const commUuid = 'comm-uuid';
+      const user = { uuid: 'user-uuid' } as UserDto;
+      const communityUser = {
+        id: 3,
+        uuid: 'comm-user-uuid',
+        email: 'comm@example.com',
+        name: 'Community User',
+        profile_image: 'img-user',
+        type: 'dummy',
+        refresh_token: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      const course = {
+        id: 1,
+        uuid: 'course-uuid',
+        course_name: 'Course Name',
+        course_image: 'img-course',
+        subway: 'subway',
+        line: 'line',
+        customs: 'customs',
+        created_at: new Date(),
+      } as CourseEntity;
+      const community: CommunityEntity = {
+        uuid: commUuid,
+        course_uuid: 'course-uuid',
+        user_uuid: 'someone-else',
+        review: 'Nice',
+        score: 4,
+        course_name: 'Course 1',
+      } as CommunityEntity;
+
+      communityQueryRepository.findOne.mockResolvedValue(community);
+      bookmarkQueryRepository.findMyCourse.mockResolvedValue([]);
+      courseQueryRepository.findOne.mockResolvedValue(course);
+      courseQueryRepository.findPlace.mockResolvedValue([]);
+      reactionQueryRepository.findCommunityDetailReaction.mockResolvedValue([]);
+      userQueryRepository.findOne.mockResolvedValue(communityUser as any);
+      commentQueryRepository.findMyComment.mockResolvedValue(null);
+
+      // When
+      const result = await communityService.communityDetail(commUuid, user);
+
+      // Then
+      expect(result.is_commented).toBe(false);
     });
   });
 

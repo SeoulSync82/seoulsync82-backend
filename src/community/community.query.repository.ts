@@ -58,7 +58,7 @@ export class CommunityQueryRepository {
 
     // 2. SELECT에 서브쿼리 추가
     qb.addSelect(`${likeCountSub}`, 'like_count')
-      .addSelect(`${isLikedSub}`, 'isLiked')
+      .addSelect(`${isLikedSub}`, 'is_liked')
       .where('community.archived_at IS NULL')
       .setParameter('userUuid', user.uuid);
 
@@ -86,7 +86,7 @@ export class CommunityQueryRepository {
     const updated = entities.map((c, i) => ({
       ...c,
       like_count: parseInt(raw[i].like_count, 10),
-      isLiked: raw[i].isLiked === '1',
+      is_liked: raw[i].is_liked === '1',
     }));
 
     // 6. nextCursor 계산

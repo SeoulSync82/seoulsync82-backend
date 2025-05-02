@@ -169,9 +169,9 @@ describe('CommunityQueryRepository', () => {
       qb.getRawAndEntities.mockResolvedValue({
         entities: [c1, c2, c3],
         raw: [
-          { like_count: '10', isLiked: '1' },
-          { like_count: '5', isLiked: '0' },
-          { like_count: '3', isLiked: '1' },
+          { like_count: '10', is_liked: '1' },
+          { like_count: '5', is_liked: '0' },
+          { like_count: '3', is_liked: '1' },
         ],
       });
       jest.spyOn(CommunityCursorPaginationHelper, 'applyCursor').mockImplementation(() => {});
@@ -185,11 +185,11 @@ describe('CommunityQueryRepository', () => {
 
       // Then
       expect(qb.addSelect).toHaveBeenCalledWith('LIKE_COUNT_SUBQ', 'like_count');
-      expect(qb.addSelect).toHaveBeenCalledWith('IS_LIKED_SUBQ', 'isLiked');
+      expect(qb.addSelect).toHaveBeenCalledWith('IS_LIKED_SUBQ', 'is_liked');
       expect(qb.take).toHaveBeenCalledWith(baseDto.size + 1);
       expect(communityList).toEqual([
-        { ...c1, like_count: 10, isLiked: true },
-        { ...c2, like_count: 5, isLiked: false },
+        { ...c1, like_count: 10, is_liked: true },
+        { ...c2, like_count: 5, is_liked: false },
       ]);
       expect(nextCursor).toBe('next-cursor');
     });
@@ -201,8 +201,8 @@ describe('CommunityQueryRepository', () => {
       qb.getRawAndEntities.mockResolvedValue({
         entities: [c1, c2],
         raw: [
-          { like_count: '10', isLiked: '1' },
-          { like_count: '5', isLiked: '0' },
+          { like_count: '10', is_liked: '1' },
+          { like_count: '5', is_liked: '0' },
         ],
       });
       jest.spyOn(CommunityCursorPaginationHelper, 'applyCursor').mockImplementation(() => {});
@@ -216,8 +216,8 @@ describe('CommunityQueryRepository', () => {
 
       // Then
       expect(communityList).toEqual([
-        { ...c1, like_count: 10, isLiked: true },
-        { ...c2, like_count: 5, isLiked: false },
+        { ...c1, like_count: 10, is_liked: true },
+        { ...c2, like_count: 5, is_liked: false },
       ]);
       expect(nextCursor).toBeNull();
     });

@@ -108,7 +108,7 @@ export class ApiCommunityGetResponseDto {
     example: 'true',
     description: '내가 좋아요 눌렀는 지',
   })
-  isLiked: boolean;
+  is_liked: boolean;
 
   @Expose()
   @ApiProperty({

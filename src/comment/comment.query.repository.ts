@@ -1,6 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiCommentGetRequestQueryDto } from 'src/comment/dto/api-comment-get-request-query.dto';
 import { CommentEntity } from 'src/entities/comment.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 import { IsNull, LessThan, Repository } from 'typeorm';
 
 export class CommentQueryRepository {
@@ -30,6 +31,12 @@ export class CommentQueryRepository {
       where: whereConditions,
       order: { created_at: 'DESC' },
       take: dto.size,
+    });
+  }
+
+  async findMyComment(uuid: string, user: UserDto): Promise<CommentEntity> {
+    return this.repository.findOne({
+      where: { target_uuid: uuid, user_uuid: user.uuid, archived_at: IsNull() },
     });
   }
 }

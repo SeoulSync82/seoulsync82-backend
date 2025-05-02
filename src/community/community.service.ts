@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { plainToInstance } from 'class-transformer';
 import { isNotEmpty } from 'class-validator';
 import { BookmarkQueryRepository } from 'src/bookmark/bookmark.query.repository';
+import { CommentQueryRepository } from 'src/comment/comment.query.repository';
 import { ERROR } from 'src/commons/constants/error';
 import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-response.dto';
 import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
@@ -32,6 +33,7 @@ export class CommunityService {
     private readonly courseQueryRepository: CourseQueryRepository,
     private readonly reactionQueryRepository: ReactionQueryRepository,
     private readonly userQueryRepository: UserQueryRepository,
+    private readonly commentQueryRepository: CommentQueryRepository,
   ) {}
 
   async communityPost(
@@ -135,12 +137,13 @@ export class CommunityService {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);
     }
 
-    const [bookmark, course, coursePlaces, reactions, communityUser] = await Promise.all([
+    const [bookmark, course, coursePlaces, reactions, communityUser, comment] = await Promise.all([
       this.bookmarkQueryRepository.findMyCourse(community.course_uuid),
       this.courseQueryRepository.findOne(community.course_uuid),
       this.courseQueryRepository.findPlace(community.course_uuid),
       this.reactionQueryRepository.findCommunityDetailReaction(uuid),
       this.userQueryRepository.findOne(community.user_uuid),
+      this.commentQueryRepository.findMyComment(uuid, user),
     ]);
 
     return new ApiCommunityGetDetailResponseDto({
@@ -152,13 +155,14 @@ export class CommunityService {
       review: community.review,
       score: community.score,
       is_bookmarked: bookmark.map((item) => item.user_uuid).includes(user.uuid),
+      is_commented: !!(comment || community.user_uuid === user.uuid),
       course_name: community.course_name,
       course_image: course.course_image,
       customs: course.customs,
       subway: course.subway,
       count: coursePlaces.length,
       like: reactions.length,
-      isLiked: reactions.map((item) => item.user_uuid).includes(user.uuid),
+      is_liked: reactions.map((item) => item.user_uuid).includes(user.uuid),
       place: plainToInstance(
         CommunityCoursePlaceDetailDto,
         coursePlaces.map((coursePlace) => ({
