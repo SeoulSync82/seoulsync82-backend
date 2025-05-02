@@ -21,6 +21,7 @@ import { SearchModule } from 'src/search/search.module';
 import { SubwayModule } from 'src/subway/subway.module';
 import { ThemeModule } from 'src/theme/theme.module';
 import { UserModule } from 'src/user/user.module';
+import { NoticeModule } from './notice/notice.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { UserModule } from 'src/user/user.module';
     CommunityModule,
     SubwayModule,
     CommentModule,
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [

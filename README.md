@@ -99,7 +99,7 @@ seoulsync82-backend
 
 ## Database Schema (ERD)
 
-![SEOULSYNC82_ERD](https://github.com/user-attachments/assets/07376fbc-87f7-4599-b3b5-babab1943ad7)
+![SEOULSYNC82_ERD](https://github.com/user-attachments/assets/025adf65-d2ee-40e2-90d8-b8024b569185)
 
 ---
 

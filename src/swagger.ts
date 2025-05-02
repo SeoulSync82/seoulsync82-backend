@@ -33,6 +33,8 @@ import { CoursePlaceInfoDto } from 'src/course/dto/course-place-info.dto';
 import { CoursePlaceDto } from 'src/course/dto/course-place.dto';
 import { CourseSubwayLineDetailDto } from 'src/course/dto/course-subway-line-detail.dto';
 import { CourseThemeDetailDto } from 'src/course/dto/course-theme-detail.dto';
+import { ApiNoticeGetDetailResponseDto } from 'src/notice/dto/api-notice-get-detail-response.dto';
+import { ApiNoticeGetResponseDto } from 'src/notice/dto/api-notice-get-response.dto';
 import { ApiNotificationGetListResponseDto } from 'src/notification/dto/api-notification-get-list-response.dto';
 import { NotificationDetailDto } from 'src/notification/dto/notification-detail.dto';
 import { ApiPlaceGetCultureDetailResponseDto } from 'src/place/dto/api-place-get-culture-detail-response.dto';
@@ -109,4 +111,6 @@ export const SwaggerModels = [
   NotificationDetailDto,
   ApiSearchGetRecentResponseDto,
   ApiCommentPostNotificationResponseDto,
+  ApiNoticeGetDetailResponseDto,
+  ApiNoticeGetResponseDto,
 ];
