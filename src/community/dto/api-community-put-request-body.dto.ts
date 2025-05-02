@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, Min, Max, IsString, Length, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Length, Max, Min } from 'class-validator';
 
 export class ApiCommunityPutRequestBodyDto {
   @IsNotEmpty()
@@ -14,7 +14,7 @@ export class ApiCommunityPutRequestBodyDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(1, 50)
+  @Length(1, 100)
   @ApiProperty({
     example: '추천받은 코스가 정말 좋아요!',
     description: '한줄리뷰',

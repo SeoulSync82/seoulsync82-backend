@@ -4,7 +4,7 @@ import { IsOptional, IsString, Length } from 'class-validator';
 export class ApiUserPutUpdateRequestBodyDto {
   @IsOptional()
   @IsString()
-  @Length(1)
+  @Length(1, 20)
   @ApiProperty({
     example: '대파',
     description: '유저 이름',

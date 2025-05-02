@@ -258,34 +258,6 @@ describe('CommentService', () => {
       );
     });
 
-    // it('should save comment and return UuidResponseDto', async () => {
-    //   // Given
-    //   const dummyCommunityUuid = 'community-uuid';
-    //   const dummyUser = {
-    //     uuid: 'user-uuid',
-    //     nickname: 'UserName',
-    //     id: 1,
-    //     profile_image: 'img-user',
-    //   } as UserDto;
-    //   const dto: ApiCommentPostRequestBodyDto = { comment: 'New comment' };
-    //   const dummyCommunity: CommunityEntity = {
-    //     uuid: dummyCommunityUuid,
-    //     user_uuid: 'community-user-uuid',
-    //   } as CommunityEntity;
-    //   communityQueryRepository.findOne.mockResolvedValue(dummyCommunity);
-    //   const generatedUUID = 'generated-uuid';
-    //   jest.spyOn(generateUUID, 'generateUUID').mockReturnValue(generatedUUID);
-    //   commentQueryRepository.save.mockResolvedValue({} as CommentEntity);
-
-    //   // When
-    //   const result = await commentService.commentPost(dummyCommunityUuid, dummyUser, dto);
-
-    //   // Then
-    //   expect(communityQueryRepository.findOne).toHaveBeenCalledWith(dummyCommunityUuid);
-    //   expect(commentQueryRepository.save).toHaveBeenCalled();
-    //   expect(result).toEqual({ uuid: generatedUUID });
-    // });
-
     it('should save comment and return both data and notification', async () => {
       // Given
       const communityUuid = 'community-uuid';
