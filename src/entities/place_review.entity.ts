@@ -7,13 +7,13 @@ export class PlaceReviewEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
+  @Column({ type: 'char', length: 32, nullable: false, unique: true })
   uuid: string;
 
   @Column({ type: 'text', nullable: true })
   content: string;
 
-  @Column({ type: 'varchar', length: 36, nullable: false })
+  @Column({ type: 'char', length: 32, nullable: false })
   place_uuid: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })

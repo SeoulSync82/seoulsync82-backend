@@ -14,13 +14,13 @@ export class CourseDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 36, nullable: false })
+  @Column({ type: 'char', length: 32, nullable: false })
   course_uuid: string; // FK -> course.uuid
 
   @Column({ type: 'int', default: 0 })
   sort: number;
 
-  @Column({ type: 'varchar', length: 36, nullable: false })
+  @Column({ type: 'char', length: 32, nullable: false })
   place_uuid: string; // FK -> place.uuid
 
   @Column({ type: 'varchar', length: 100, nullable: false })

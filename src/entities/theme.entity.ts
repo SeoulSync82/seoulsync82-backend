@@ -5,7 +5,7 @@ export class ThemeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 36, nullable: false, unique: true })
+  @Column({ type: 'char', length: 32, nullable: false, unique: true })
   uuid: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
