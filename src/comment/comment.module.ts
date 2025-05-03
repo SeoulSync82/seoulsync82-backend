@@ -12,7 +12,7 @@ import { UserModule } from 'src/user/user.module';
 @Module({
   imports: [
     UserModule,
-    CourseModule,
+    forwardRef(() => CourseModule),
     forwardRef(() => CommunityModule),
     NotificationModule,
     TypeOrmModule.forFeature([CommentEntity]),

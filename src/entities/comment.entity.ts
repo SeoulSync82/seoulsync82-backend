@@ -14,10 +14,10 @@ export class CommentEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'char', length: 32, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: 32, nullable: false, unique: true })
   uuid: string;
 
-  @Column({ type: 'char', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false })
   user_uuid: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
@@ -26,10 +26,10 @@ export class CommentEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   comment: string;
 
-  @Column({ type: 'char', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false })
   target_uuid: string;
 
-  @Column({ type: 'char', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false })
   target_user_uuid: string;
 
   @Column({ type: 'datetime', nullable: true })

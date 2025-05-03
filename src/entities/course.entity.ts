@@ -7,7 +7,7 @@ export class CourseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({ type: 'char', length: 32, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: 32, nullable: false, unique: true })
   uuid: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })
@@ -22,7 +22,7 @@ export class CourseEntity {
   @Column({ type: 'varchar', length: 100, nullable: false })
   course_name: string;
 
-  @Column({ type: 'char', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false })
   user_uuid: string; // 비회원
 
   @Column({ type: 'varchar', length: 100, nullable: false })

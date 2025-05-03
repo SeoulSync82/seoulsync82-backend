@@ -6,13 +6,13 @@ export class PlaceThemeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'char', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false })
   place_uuid: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
   place_name: string;
 
-  @Column({ type: 'char', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false })
   theme_uuid: string;
 
   @Column({ type: 'varchar', length: 20, nullable: false })

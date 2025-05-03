@@ -14,7 +14,7 @@ import { UserModule } from 'src/user/user.module';
     forwardRef(() => CourseModule),
     UserModule,
     PlaceModule,
-    CommunityModule,
+    forwardRef(() => CommunityModule),
     TypeOrmModule.forFeature([BookmarkEntity]),
   ],
   controllers: [BookmarkController],
