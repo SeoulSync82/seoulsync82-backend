@@ -33,6 +33,8 @@
     "test:community:watch": "jest --watch --testPathPattern=src/community --coverage --collectCoverageFrom=src/community/**",
     "test:course": "jest --testPathPattern=src/course --coverage --collectCoverageFrom=src/course/**",
     "test:course:watch": "jest --watch --testPathPattern=src/course --coverage --collectCoverageFrom=src/course/**",
+    "test:notice": "jest --testPathPattern=src/notice --coverage --collectCoverageFrom=src/notice/**",
+    "test:notice:watch": "jest --watch --testPathPattern=src/notice --coverage --collectCoverageFrom=src/notice/**",
     "test:notification": "jest --testPathPattern=src/notification --coverage --collectCoverageFrom=src/notification/**",
     "test:notification:watch": "jest --watch --testPathPattern=src/notification --coverage --collectCoverageFrom=src/notification/**",
     "test:place": "jest --testPathPattern=src/place --coverage --collectCoverageFrom=src/place/**",

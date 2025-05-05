@@ -2,6 +2,7 @@ import { TestBed } from '@automock/jest';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ApiCommentGetRequestQueryDto } from 'src/comment/dto/api-comment-get-request-query.dto';
 import { CommentEntity } from 'src/entities/comment.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 import { IsNull, LessThan, Repository } from 'typeorm';
 import { CommentQueryRepository } from './comment.query.repository';
 
@@ -86,6 +87,23 @@ describe('CommentQueryRepository', () => {
         take: dto.size,
       });
       expect(result).toEqual(dummyComments);
+    });
+  });
+
+  describe('findMyComment', () => {
+    it("should return the user's comment when it exists", async () => {
+      // Given
+      const targetUuid = 'community-uuid';
+      const user = { uuid: 'user-uuid' } as UserDto;
+      const dummyComment = { uuid: 'comment-uuid', user_uuid: user.uuid } as CommentEntity;
+      repository.findOne.mockResolvedValue(dummyComment);
+      // When
+      const result = await commentQueryRepository.findMyComment(targetUuid, user);
+      // Then
+      expect(repository.findOne).toHaveBeenCalledWith({
+        where: { target_uuid: targetUuid, user_uuid: user.uuid, archived_at: IsNull() },
+      });
+      expect(result).toEqual(dummyComment);
     });
   });
 });

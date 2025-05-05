@@ -192,7 +192,7 @@ export class CommunityService {
     return { uuid };
   }
 
-  async communityDelete(user: UserDto, uuid): Promise<UuidResponseDto> {
+  async communityDelete(user: UserDto, uuid: string): Promise<UuidResponseDto> {
     const community: CommunityEntity = await this.communityQueryRepository.findOne(uuid);
     if (isEmpty(community) || community.user_uuid !== user.uuid) {
       throw new NotFoundException(ERROR.NOT_EXIST_DATA);

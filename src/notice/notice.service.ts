@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { generateUUID } from 'blanc-logger';
 import { plainToInstance } from 'class-transformer';
 import { ERROR } from 'src/commons/constants/error';
 import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
+import { generateUUID } from 'src/commons/util/uuid';
 import { NoticeEntity } from 'src/entities/notice.entity';
 import { ApiNoticeGetDetailResponseDto } from 'src/notice/dto/api-notice-get-detail-response.dto';
 import { ApiNoticeGetRequestQueryDto } from 'src/notice/dto/api-notice-get-request-query.dto';
