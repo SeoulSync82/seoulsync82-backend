@@ -158,7 +158,7 @@ export class CourseService {
         station: subwayStation.name,
       },
       line: subway.map((subwayLine) => ({
-        uuid: subwayLine.uuid,
+        uuid: subwayLine.line_uuid,
         line: subwayLine.line,
       })),
       theme: theme

@@ -163,7 +163,7 @@ export class CommunityService {
       count: coursePlaces.length,
       like: reactions.length,
       is_liked: reactions.map((item) => item.user_uuid).includes(user.uuid),
-      place: plainToInstance(
+      places: plainToInstance(
         CommunityCoursePlaceDetailDto,
         coursePlaces.map((coursePlace) => ({
           ...coursePlace.place,

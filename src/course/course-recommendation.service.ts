@@ -171,10 +171,12 @@ export class CourseRecommendationService {
       const dtoWithoutTheme = { ...dto };
       delete dtoWithoutTheme.theme_uuid;
 
-      filteredPlaceList = await this.placeQueryRepository.findSubwayPlacesCustomizeList(
+      const fallbackList = await this.placeQueryRepository.findSubwayPlacesCustomizeList(
         dtoWithoutTheme,
         subwayStation.name,
       );
+
+      filteredPlaceList = fallbackList.filter((place) => !placeUuidsSet.has(place.uuid));
     }
 
     // 6. 장소 가중치 계산 및 랜덤 선택

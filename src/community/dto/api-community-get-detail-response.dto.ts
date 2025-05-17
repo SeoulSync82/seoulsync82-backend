@@ -127,7 +127,7 @@ export class ApiCommunityGetDetailResponseDto {
 
   @Expose()
   @ApiProperty()
-  place: CommunityCoursePlaceDetailDto[];
+  places: CommunityCoursePlaceDetailDto[];
 
   constructor(data?: Partial<ApiCommunityGetDetailResponseDto>) {
     if (data) {
