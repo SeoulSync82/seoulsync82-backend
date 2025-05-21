@@ -544,4 +544,30 @@ describe('CommunityService', () => {
       expect(result).toEqual({ uuid: commUuid });
     });
   });
+
+  it('should return { is_posted: true } when a community exists for the given uuid', async () => {
+    // Given
+    const courseUuid = 'course-exists';
+    communityQueryRepository.findCourse.mockResolvedValue({ uuid: courseUuid } as any);
+
+    // When
+    const result = await communityService.checkPosted(courseUuid);
+
+    // Then
+    expect(communityQueryRepository.findCourse).toHaveBeenCalledWith(courseUuid);
+    expect(result).toEqual({ is_posted: true });
+  });
+
+  it('should return { is_posted: false } when no community exists for the given uuid', async () => {
+    // Given
+    const courseUuid = 'course-missing';
+    communityQueryRepository.findCourse.mockResolvedValue(null);
+
+    // When
+    const result = await communityService.checkPosted(courseUuid);
+
+    // Then
+    expect(communityQueryRepository.findCourse).toHaveBeenCalledWith(courseUuid);
+    expect(result).toEqual({ is_posted: false });
+  });
 });

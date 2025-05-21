@@ -3,6 +3,7 @@ import { CursorPaginatedResponseDto } from 'src/commons/dtos/cursor-paginated-re
 import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dto';
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { CommunityService } from 'src/community/community.service';
+import { ApiCommunityGetCheckPostedResponseDto } from 'src/community/dto/api-community-get-check-posted-response.dto';
 import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
 import { ApiCommunityGetMyCourseRequestQueryDto } from 'src/community/dto/api-community-get-my-course-request-query.dto';
 import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
@@ -97,7 +98,7 @@ describe('CommunityController', () => {
         count: 0,
         like: 0,
         is_liked: false,
-        place: [],
+        places: [],
       });
       jest.spyOn(communityService, 'communityDetail').mockResolvedValue(expected);
       // When
@@ -135,6 +136,20 @@ describe('CommunityController', () => {
       const result = await controller.communityDelete(user, communityUuid);
       // Then
       expect(communityService.communityDelete).toHaveBeenCalledWith(user, communityUuid);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('checkPosted', () => {
+    it('should call communityService.checkPosted and return its result', async () => {
+      // Given
+      const courseUuid = 'course-uuid';
+      const expected: ApiCommunityGetCheckPostedResponseDto = { is_posted: true };
+      jest.spyOn(communityService, 'checkPosted').mockResolvedValue(expected);
+      // When
+      const result = await controller.checkPosted(courseUuid);
+      // Then
+      expect(communityService.checkPosted).toHaveBeenCalledWith(courseUuid);
       expect(result).toEqual(expected);
     });
   });

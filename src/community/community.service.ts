@@ -10,6 +10,7 @@ import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { isEmpty } from 'src/commons/util/is/is-empty';
 import { generateUUID } from 'src/commons/util/uuid';
 import { CommunityQueryRepository } from 'src/community/community.query.repository';
+import { ApiCommunityGetCheckPostedResponseDto } from 'src/community/dto/api-community-get-check-posted-response.dto';
 import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
 import { ApiCommunityGetMyCourseRequestQueryDto } from 'src/community/dto/api-community-get-my-course-request-query.dto';
 import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
@@ -202,5 +203,17 @@ export class CommunityService {
     await this.communityQueryRepository.save(community);
 
     return { uuid };
+  }
+
+  async checkPosted(uuid: string): Promise<ApiCommunityGetCheckPostedResponseDto> {
+    const community: CommunityEntity = await this.communityQueryRepository.findCourse(uuid);
+
+    return plainToInstance(
+      ApiCommunityGetCheckPostedResponseDto,
+      { is_posted: !isEmpty(community) },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 }

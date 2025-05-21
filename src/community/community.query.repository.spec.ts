@@ -301,4 +301,26 @@ describe('CommunityQueryRepository', () => {
       ]);
     });
   });
+
+  describe('findCourse', () => {
+    it('should find one community entity by course_uuid and archived_at null', async () => {
+      // Given
+      const courseUuid = 'course-123';
+      const entity: CommunityEntity = {
+        uuid: 'c1',
+        course_uuid: courseUuid,
+        archived_at: null,
+      } as CommunityEntity;
+      repository.findOne.mockResolvedValue(entity);
+
+      // When
+      const result = await communityQueryRepository.findCourse(courseUuid);
+
+      // Then
+      expect(repository.findOne).toHaveBeenCalledWith({
+        where: { course_uuid: courseUuid, archived_at: IsNull() },
+      });
+      expect(result).toEqual(entity);
+    });
+  });
 });

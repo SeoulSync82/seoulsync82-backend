@@ -23,6 +23,7 @@ import { LastItemIdResponseDto } from 'src/commons/dtos/last-item-id-response.dt
 import { UuidResponseDto } from 'src/commons/dtos/uuid-response.dto';
 import { BadWordsPipe } from 'src/commons/pipe/badwords.pipe';
 import { CommunityService } from 'src/community/community.service';
+import { ApiCommunityGetCheckPostedResponseDto } from 'src/community/dto/api-community-get-check-posted-response.dto';
 import { ApiCommunityGetDetailResponseDto } from 'src/community/dto/api-community-get-detail-response.dto';
 import { ApiCommunityGetMyCourseRequestQueryDto } from 'src/community/dto/api-community-get-my-course-request-query.dto';
 import { ApiCommunityGetMyCourseResponseDto } from 'src/community/dto/api-community-get-my-course-response.dto';
@@ -186,5 +187,24 @@ export class CommunityController {
     @Param('uuid') uuid: string,
   ): Promise<UuidResponseDto> {
     return this.communityService.communityDelete(user, uuid);
+  }
+
+  @Get('/:course_uuid/check-posted')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '이미 작성한 코스인지 확인',
+    description: '작성 여부 확인 (중복 작성 방지용)',
+  })
+  @ApiSuccessResponse(ApiCommunityGetCheckPostedResponseDto, {
+    description: '작성 여부 조회 성공',
+  })
+  @ApiExceptionResponse([ERROR.NOT_EXIST_DATA], {
+    description: '해당 코스가 존재하지 않는 경우',
+  })
+  async checkPosted(
+    @Param('course_uuid') uuid: string,
+  ): Promise<ApiCommunityGetCheckPostedResponseDto> {
+    return this.communityService.checkPosted(uuid);
   }
 }

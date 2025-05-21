@@ -118,4 +118,10 @@ export class CommunityQueryRepository {
       like_count: parseInt(row.like_count, 10),
     }));
   }
+
+  async findCourse(uuid: string): Promise<CommunityEntity> {
+    return this.repository.findOne({
+      where: { course_uuid: uuid, archived_at: IsNull() },
+    });
+  }
 }
