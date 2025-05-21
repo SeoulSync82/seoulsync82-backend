@@ -159,6 +159,7 @@ describe('BookmarkService', () => {
       // Then
       expect(res.items).toHaveLength(1);
       expect(res.items[0].is_posted).toBe(false);
+      expect(res.items[0].community_uuid).toBe(null);
       expect(res.items[0].score).toBe('0.0');
       expect(res.items[0].like_count).toBe(0);
       expect(res.last_item_id).toBe(0);
@@ -185,7 +186,14 @@ describe('BookmarkService', () => {
       userQueryRepository.findUserList.mockResolvedValue([]);
       jest
         .spyOn((bookmarkService as any).communityQueryRepository, 'findExistingCourse')
-        .mockResolvedValue([{ course_uuid: 'course-2', score: '3.2', like_count: 2 }]);
+        .mockResolvedValue([
+          {
+            community_uuid: 'community-uuid-mock',
+            course_uuid: 'course-2',
+            score: '3.2',
+            like_count: 2,
+          },
+        ]);
       jest.spyOn(classTransformer, 'plainToInstance').mockReturnValue(courseList as any);
 
       // When
@@ -194,6 +202,7 @@ describe('BookmarkService', () => {
       // Then
       expect(res.items[0].user_profile_image).toBeNull();
       expect(res.items[0].is_posted).toBe(true);
+      expect(res.items[0].community_uuid).toBe('community-uuid-mock');
       expect(res.items[0].score).toBe('3.2');
       expect(res.items[0].like_count).toBe(2);
     });

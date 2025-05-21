@@ -193,7 +193,7 @@ export class CommunityController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: '이미 작성한 코스인지 확인',
+    summary: '작성 여부 조회',
     description: '작성 여부 확인 (중복 작성 방지용)',
   })
   @ApiSuccessResponse(ApiCommunityGetCheckPostedResponseDto, {

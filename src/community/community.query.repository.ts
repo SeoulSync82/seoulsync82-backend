@@ -104,6 +104,7 @@ export class CommunityQueryRepository {
       .createQueryBuilder('community')
       .leftJoin('community.reactions', 'reaction', 'reaction.like = 1')
       .select('community.course_uuid', 'course_uuid')
+      .addSelect('MIN(community.uuid)', 'community_uuid')
       .addSelect('community.score', 'score')
       .addSelect('COUNT(reaction.id)', 'like_count')
       .where('community.course_uuid IN (:...courseUuids)', { courseUuids })
@@ -113,6 +114,7 @@ export class CommunityQueryRepository {
       .getRawMany();
 
     return result.map((row) => ({
+      community_uuid: row.community_uuid,
       course_uuid: row.course_uuid,
       score: row.score,
       like_count: parseInt(row.like_count, 10),
