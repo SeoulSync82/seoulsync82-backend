@@ -451,7 +451,12 @@ describe('CourseService', () => {
         { uuid: 'user-uuid', profile_image: 'url-profile' },
       ] as any);
       communityQueryRepository.findExistingCourse.mockResolvedValue([
-        { course_uuid: 'course-1', score: '4.5', like_count: 10 },
+        {
+          course_uuid: 'course-1',
+          score: '4.5',
+          like_count: 10,
+          community_uuid: 'community-uuid-mock',
+        },
       ] as any);
 
       // When
@@ -463,6 +468,7 @@ describe('CourseService', () => {
       // Then
       expect(result.items[0].is_posted).toBe(true);
       expect(result.items[0].score).toBe('4.5');
+      expect(result.items[0].community_uuid).toBe('community-uuid-mock');
       expect(result.items[0].like_count).toBe(10);
     });
 

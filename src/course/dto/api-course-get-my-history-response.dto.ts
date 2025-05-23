@@ -78,6 +78,13 @@ export class ApiCourseGetMyHistoryResponseDto {
 
   @Expose()
   @ApiProperty({
+    example: 'c152acef58875943b20b5cd511f25902',
+    description: '커뮤니티 uuid',
+  })
+  community_uuid: string;
+
+  @Expose()
+  @ApiProperty({
     example: 4.0,
     description: '평점',
   })

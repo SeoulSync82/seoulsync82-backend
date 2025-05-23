@@ -201,6 +201,7 @@ export class CourseService {
           user_profile_image:
             userList.find((u) => u.uuid === myHistory.user_uuid)?.profile_image ?? null,
           is_posted: !!communityMeta,
+          community_uuid: communityMeta?.community_uuid ?? null,
           score: communityMeta?.score ?? '0.0',
           like_count: communityMeta?.like_count ?? 0,
         };
