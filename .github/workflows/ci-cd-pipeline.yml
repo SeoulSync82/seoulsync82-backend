@@ -85,5 +85,14 @@ jobs:
             -d '{
                   "type": "backend",
                   "host_port": 7008,
-                  "container_port": 3456
+                  "container_port": 3456,
+                  "env": {
+                    "NODE_ENV": "staging",
+                    "DB_HOST": "host.docker.internal",
+                    "DB_PORT": "7009",
+                    "DB_USERNAME": "'"${{ secrets.DB_USERNAME }}"'",
+                    "DB_PASSWORD": "'"${{ secrets.DB_PASSWORD }}"'",
+                    "DB_DATABASE": "'"${{ secrets.DB_DATABASE }}"'"
+                  },
+                  "extra_hosts": ["host.docker.internal:host-gateway"]
               }'

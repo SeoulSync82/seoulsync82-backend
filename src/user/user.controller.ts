@@ -49,8 +49,7 @@ export class UserController {
     name: 'uuid',
     type: 'string',
     required: false,
-    description:
-      '승모 - 2871948cc25b589ea0a672a6f060fae3 | 진리 - 9c3fd458bd5355dea4e649e3db77cfde',
+    description: '승모 - 2871948cc25b589ea0a672a6f060fae3',
   })
   async getAccessToken(@Param('uuid') uuid: string): Promise<ApiUserGetTokenResponseDto> {
     return this.userService.getAccessToken(uuid);
