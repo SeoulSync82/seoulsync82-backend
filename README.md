@@ -1,4 +1,4 @@
-<img src="https://github.com/user-attachments/assets/460f7cb9-ccd1-4f5f-887a-55aad1eae418" width="120"/>
+<img src="https://github.com/user-attachments/assets/de0e23b2-e31c-4e41-b580-0b6a3338f6e5" width="120"/>
 
 # seoulsync82-backend
 
@@ -198,3 +198,4 @@ npm run test:cov
 이 프로젝트는 [MIT License](./LICENSE)에 따라 배포 및 사용이 가능합니다.
 
 ---
+
